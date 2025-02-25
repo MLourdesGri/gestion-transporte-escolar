@@ -1,0 +1,7 @@
+{
+  "name": "transportes-escolares",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
