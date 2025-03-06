@@ -37,10 +37,8 @@
   } from '@ionic/vue';
   import { ref } from 'vue';
   import {
-    mailOutline,
-    mailSharp,
-    paperPlaneOutline,
-    paperPlaneSharp,
+    homeOutline,
+    personOutline,
   } from 'ionicons/icons';
   
   const selectedIndex = ref(0);
@@ -48,14 +46,12 @@
     {
       title: 'Inicio',
       url: '/home',
-      iosIcon: mailOutline,
-      mdIcon: mailSharp,
+      iosIcon: homeOutline,
     },
     {
       title: 'Perfil',
       url: '/profile',
-      iosIcon: paperPlaneOutline,
-      mdIcon: paperPlaneSharp,
+      iosIcon: personOutline,
     }
   ];
   

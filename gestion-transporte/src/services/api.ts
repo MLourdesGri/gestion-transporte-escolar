@@ -20,5 +20,17 @@ export const getUsers = async () => {
   }
 };
 
+export const getTrips = async () => {
+  try {
+    const response = await api.get("/trips");
+    return response.data;  // Devuelve solo los usuarios dentro de 'data'
+  } catch (error) {
+    console.error("Error obteniendo viajes:", error);
+    return [];
+  }
+};
+
+
+
 
 export default api;

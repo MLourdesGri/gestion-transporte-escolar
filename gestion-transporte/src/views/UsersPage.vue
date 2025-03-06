@@ -33,7 +33,7 @@
     console.error("Error loading users", error);
     users.value = [];  // Asegura que users siempre sea un arreglo vacío en caso de error
   }
-};
+  };
 
   
   onMounted(() => {
