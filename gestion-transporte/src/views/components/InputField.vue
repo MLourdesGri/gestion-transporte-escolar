@@ -11,15 +11,15 @@
   </ion-item>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { IonItem, IonLabel, IonInput } from '@ionic/vue';
 
-defineProps({
-  label: String,
-  type: String,
-  placeholder: String
-});
+defineProps<{
+  label: string;
+  type: string;
+  placeholder: string;
+}>();
 
 const inputValue = ref('');
 </script>

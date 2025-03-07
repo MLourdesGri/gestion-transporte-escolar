@@ -3,7 +3,7 @@
     <ion-content class="ion-padding">
       <div class="login-box">
         <ion-icon :icon="busOutline" class="bus-icon"></ion-icon>
-        <h2>Iniciar sesión</h2>
+        <h2 class="title">Iniciar sesión</h2>
         <p>¡Hola de nuevo!</p>
 
         <div class="input-fields">
@@ -13,28 +13,22 @@
 
         <CustomButton color="primary" class="login-button">Iniciar sesión</CustomButton>
 
-        <ion-button fill="clear" class="forgot-password" @click="recuperarContrasena">
-            ¿Olvidaste tu contraseña?
-        </ion-button>
+        <LinkButton class="forgot-password">¿Olvidaste tu contraseña?</LinkButton>
 
-        <ion-button expand="full" color="light" class="google-button">
-          <ion-icon :icon="logoGoogle" class="google-icon"></ion-icon>
-          Continuar con Google
-        </ion-button>
+        <CustomButton color="light" :icon="logoGoogle">Continuar con Google</CustomButton>
 
-        <ion-button fill="clear" class="register-link" @click="registrarse">
-            ¿Aún no te has registrado? Regístrate
-        </ion-button>
+        <LinkButton color="primary" class="register-link" to="/signup">¿Aún no te has registrado? Regístrate</LinkButton>
       </div>
     </ion-content>
   </ion-page>
 </template>
 
-<script setup>
-import { IonPage, IonContent, IonIcon, IonButton } from '@ionic/vue';
+<script setup lang="ts">
+import { IonPage, IonContent, IonIcon } from '@ionic/vue';
 import { busOutline, logoGoogle } from 'ionicons/icons';
 import InputField from '@/views/components/InputField.vue';
 import CustomButton from '@/views/components/CustomButton.vue';
+import LinkButton from '@/views/components/LinkButton.vue';
 </script>
 
 <style scoped>
@@ -47,6 +41,10 @@ import CustomButton from '@/views/components/CustomButton.vue';
   font-size: 90px;
   color: #003366;
   margin-bottom: 10px;
+}
+
+.title {
+  font-size: 30px;
 }
 
 .input-fields {
@@ -67,13 +65,13 @@ import CustomButton from '@/views/components/CustomButton.vue';
 
 .forgot-password {
   margin-top: 10px;
+  margin-bottom: 20px;
   font-size: 14px;
   color: #666;
 }
 
 .register-link {
-  margin-top: 40px;
+  margin-top: 30px;
   font-size: 14px;
-  color: rgb(35, 155, 192);
 }
 </style>
