@@ -17,7 +17,6 @@
               <div class="role-div">
                 <ion-label>Elige tu rol</ion-label>
                 <SegmentButton v-model="valorSeleccionado"/>
-                <IonLabel>Seleccionado: {{ valorSeleccionado }}</IonLabel>
               </div>
               <CustomButton class="signup-button" @click="register">Continuar</CustomButton>
               
@@ -64,7 +63,7 @@ const register = async () => {
     return;
   }
 
-  if (!form.value.email || !form.value.password || !form.value.confirmPassword) {
+  if (!form.value.email || !form.value.password || !form.value.confirmPassword || !form.value.full_name) {
     errorMessage.value = "Todos los campos son obligatorios";
     return;
   }
@@ -84,7 +83,7 @@ const register = async () => {
       email: form.value.email,
       password: form.value.password,
       full_name: form.value.full_name,
-      role: valorSeleccionado.value,
+      role_id: parseInt(valorSeleccionado.value),
     };
     const response = await postUser(user);
     if (response?.error) {
