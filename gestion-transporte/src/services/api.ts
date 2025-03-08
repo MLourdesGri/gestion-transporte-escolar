@@ -46,6 +46,20 @@ export const registerUser = async (user : User) => {
   }
 };
 
+export const postUser = async (user: User) => {
+  try {
+    const response = await api.post("/users", user);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error registrando usuario:", error);
+
+    if (error.response && error.response.data) {
+      return { error: error.response.data.message }; 
+    }
+
+    return { error: "Error desconocido. Inténtalo de nuevo." };
+  }
+};
 
 
 

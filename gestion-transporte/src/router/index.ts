@@ -8,7 +8,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/',
-    component: () => import ('../views/components/SideBar.vue'),
+    component: () => import ('../components/SideBar.vue'),
     children: [
       {path: 'home', component: () => import ('../views/HomePage.vue')},
       {path: 'profile', component: () => import ('../views/ProfilePage.vue')},

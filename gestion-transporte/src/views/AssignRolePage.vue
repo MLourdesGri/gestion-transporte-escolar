@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { IonPage, IonContent } from '@ionic/vue';
-import CustomButton from '@/views/components/CustomButton.vue';
+import CustomButton from '@/components/CustomButton.vue';
 </script>
 
 <style scoped>

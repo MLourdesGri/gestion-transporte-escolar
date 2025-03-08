@@ -29,9 +29,9 @@
 <script setup lang="ts">
 import { IonPage, IonContent, IonIcon } from '@ionic/vue';
 import { busOutline, logoGoogle } from 'ionicons/icons';
-import InputField from '@/views/components/InputField.vue';
-import CustomButton from '@/views/components/CustomButton.vue';
-import LinkButton from '@/views/components/LinkButton.vue';
+import InputField from '@/components/InputField.vue';
+import CustomButton from '@/components/CustomButton.vue';
+import LinkButton from '@/components/LinkButton.vue';
 </script>
 
 <style scoped>
