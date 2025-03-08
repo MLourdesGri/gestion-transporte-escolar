@@ -1,6 +1,14 @@
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+
+
+* {
+  font-family: 'Montserrat', sans-serif;
+}
+
 ion-button::part(native) {
     border-radius: 10px !important;
 }
+

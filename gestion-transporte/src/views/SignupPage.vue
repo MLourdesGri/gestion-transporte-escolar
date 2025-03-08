@@ -6,17 +6,18 @@
                 <p>Crea tu cuenta</p>
 
                 <div class="input-fields">
-                    <InputField label="Email" type="email" placeholder="example@email.com" />
-                    <InputField label="Contraseña" type="password" placeholder="••••••••" />
-                    <InputField label="Ingrese nuevamente su contraseña" type="password" placeholder="••••••••" />
+                    <InputField v-model="email" label="Mail" type="email" placeholder="example@email.com" name="email"/>
+                    <InputField v-model="password" label="Contraseña" type="password" placeholder="••••••••" name="password"/>
+                    <InputField label="Repetir contraseña" type="password" placeholder="••••••••" name="confirmPassword"/>
                 </div>
 
-                <CustomButton color="primary" class="signup-button" to="/assign-role">Continuar</CustomButton>
+                <CustomButton @click="handleRegister" class="signup-button" to="/assign-role">Continuar</CustomButton>
+                
+                <CustomButton color="light" :icon="logoGoogle">Continuar con Google</CustomButton>
 
                 <div class="link-buttons">
-                    <!-- <LinkButton to="/login">¿Ya tienes una cuenta?</LinkButton> -->
                     <p class="have-an-account">¿Ya tienes una cuenta?</p>
-                    <LinkButton color="primary" to="/login">Inicia sesión</LinkButton>    
+                    <LinkButton color="primary" to="/login">Ingresa</LinkButton>    
                 </div>
             </div>
         </ion-content>
@@ -24,10 +25,21 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonContent } from '@ionic/vue';
-import InputField from '@/views/components/InputField.vue';
-import CustomButton from '@/views/components/CustomButton.vue';
-import LinkButton from './components/LinkButton.vue';
+import { ref } from "vue";
+import { IonPage, IonContent } from "@ionic/vue";
+import InputField from "@/views/components/InputField.vue";
+import CustomButton from "@/views/components/CustomButton.vue";
+import LinkButton from "@/views/components/LinkButton.vue";
+import { registerUser } from "@/services/api";
+import { logoGoogle } from "ionicons/icons";
+
+const email = ref("");
+const password = ref("");
+
+const handleRegister = async () => {
+    await registerUser({ email: email.value, password: password.value });
+};
+
 </script>
 
 <style scoped>
@@ -46,6 +58,7 @@ import LinkButton from './components/LinkButton.vue';
 
 .signup-button {
   margin-top: 60px;
+  margin-bottom: 20px;
 }
 
 .link-buttons {
@@ -58,5 +71,10 @@ import LinkButton from './components/LinkButton.vue';
   color: gray;
   margin-top: 20px;
   margin-right: 0;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
 }
 </style>

@@ -7,17 +7,20 @@
         <p>¡Hola de nuevo!</p>
 
         <div class="input-fields">
-            <InputField label="Email" type="email" placeholder="example@email.com" />
-            <InputField label="Password" type="password" placeholder="••••••••" />
+            <InputField label="Mail" type="email" placeholder="example@email.com" />
+            <InputField label="Contraseña" type="password" placeholder="••••••••" />
         </div>
 
-        <CustomButton color="primary" class="login-button">Iniciar sesión</CustomButton>
+        <CustomButton class="login-button">Iniciar sesión</CustomButton>
 
         <LinkButton class="forgot-password">¿Olvidaste tu contraseña?</LinkButton>
 
         <CustomButton color="light" :icon="logoGoogle">Continuar con Google</CustomButton>
 
-        <LinkButton color="primary" class="register-link" to="/signup">¿Aún no te has registrado? Regístrate</LinkButton>
+      
+      <p class="have-an-account">¿Ya tienes una cuenta?</p>
+      <LinkButton color="primary" class="register-link" to="/signup">Regístrate</LinkButton>
+        
       </div>
     </ion-content>
   </ion-page>
@@ -36,6 +39,7 @@ import LinkButton from '@/views/components/LinkButton.vue';
   text-align: center;
   padding: 20px;
 }
+
 
 .bus-icon {
   font-size: 90px;
@@ -70,8 +74,15 @@ import LinkButton from '@/views/components/LinkButton.vue';
   color: #666;
 }
 
-.register-link {
+.have-an-account {
   margin-top: 30px;
+  margin-bottom: 0px;
+  font-size: 14px;
+  color: #666;
+}
+
+.register-link {
+  margin-top:0px;
   font-size: 14px;
 }
 </style>

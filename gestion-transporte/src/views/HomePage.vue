@@ -32,21 +32,21 @@
 <script setup lang="ts">
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle} from '@ionic/vue';
 import { ref, onMounted } from "vue";
-import { getTrips } from "../services/api"; // Cambia esto si usas otro servicio
+import { getTrips } from "../services/api"; 
   const trips = ref<any[]>([]);
   
   const loadTrips = async () => {
   try {
     const response = await getTrips();
     if (response && response.data) {
-      trips.value = response.data;  // Asigna solo los usuarios dentro de 'data'
+      trips.value = response.data;  
     } else {
       console.error("No trips found or invalid response");
-      trips.value = [];  // Manejar el caso vacío si no hay datos
+      trips.value = [];  
     }
   } catch (error) {
     console.error("Error loading trips", error);
-    trips.value = [];  // Asegura que trips siempre sea un arreglo vacío en caso de error
+    trips.value = []; 
   }
   };
 

@@ -1,5 +1,5 @@
 <template>
-    <ion-button expand="full" :color="color" :router-link="to" part="native">
+    <ion-button class="custom-button" expand="full" :router-link="to" part="native">
       <ion-icon v-if="icon" :icon="icon" class="custom-icon"></ion-icon>
       <slot></slot>
     </ion-button>
@@ -27,5 +27,12 @@ defineProps({
 <style scoped>
 .custom-icon {
   margin-right: 8px;
+}
+
+.custom-button {
+  --border-radius: 10px;
+  --background: #003366;
+  --color: white;
+  text-transform: none;
 }
 </style>

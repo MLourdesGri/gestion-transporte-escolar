@@ -9,6 +9,11 @@ const api = axios.create({
   },
 });
 
+interface User {
+  email: string;
+  password: string;
+}
+
 
 export const getUsers = async () => {
   try {
@@ -27,6 +32,17 @@ export const getTrips = async () => {
   } catch (error) {
     console.error("Error obteniendo viajes:", error);
     return [];
+  }
+
+};
+
+export const registerUser = async (user : User) => {
+  try {
+    const response = await api.post("/users", user);
+    return response.data;
+  } catch (error) {
+    console.error("Error registrando usuario:", error);
+    return null;
   }
 };
 

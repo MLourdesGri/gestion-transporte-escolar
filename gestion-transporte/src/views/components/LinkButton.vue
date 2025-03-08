@@ -1,5 +1,5 @@
 <template>
-    <ion-button fill="clear" :color="color" :router-link="to" part="native">
+    <ion-button fill="clear" class="link-button" :router-link="to" part="native">
       <slot></slot>
     </ion-button>
 </template>
@@ -20,4 +20,8 @@ defineProps({
 </script>
 
 <style scoped>
+.link-button {
+  --color: #003366;
+  text-transform: none;
+}
 </style>
