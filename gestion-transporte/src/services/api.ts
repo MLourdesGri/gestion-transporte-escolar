@@ -36,16 +36,6 @@ export const getTrips = async () => {
 
 };
 
-export const registerUser = async (user : User) => {
-  try {
-    const response = await api.post("/users", user);
-    return response.data;
-  } catch (error) {
-    console.error("Error registrando usuario:", error);
-    return null;
-  }
-};
-
 export const postUser = async (user: User) => {
   try {
     const response = await api.post("/users", user);

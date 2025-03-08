@@ -1,22 +1,3 @@
-<script setup lang="ts">
-import { IonItem, IonLabel, IonInput, IonIcon } from '@ionic/vue';
-import { eyeOutline, eyeOffOutline } from 'ionicons/icons'; 
-import { ref } from 'vue';
-
-defineProps<{
-  label: string;
-  type: string;
-  placeholder: string;
-}>();
-
-const model = defineModel<string>();
-const isPasswordVisible = ref(false); 
-
-const togglePasswordVisibility = () => {
-  isPasswordVisible.value = !isPasswordVisible.value;
-};
-</script>
-
 <template>
   <ion-item class="input-container">
     <ion-label position="stacked">{{ label }}</ion-label>
@@ -36,6 +17,25 @@ const togglePasswordVisibility = () => {
     />
   </ion-item>
 </template>
+
+<script setup lang="ts">
+import { IonItem, IonLabel, IonInput, IonIcon } from '@ionic/vue';
+import { eyeOutline, eyeOffOutline } from 'ionicons/icons'; 
+import { ref } from 'vue';
+
+defineProps<{
+  label: string;
+  type: string;
+  placeholder: string;
+}>();
+
+const model = defineModel<string>();
+const isPasswordVisible = ref(false); 
+
+const togglePasswordVisibility = () => {
+  isPasswordVisible.value = !isPasswordVisible.value;
+};
+</script>
 
 <style scoped>
 .password-toggle-icon {

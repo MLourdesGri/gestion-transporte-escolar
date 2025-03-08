@@ -6,6 +6,7 @@
               <p>Crea tu cuenta</p>
 
               <div class="input-fields">
+                <InputField label="Nombre y apellido" type="text" placeholder="Juan Perez" name="full_name" v-model="form.full_name" />
                 <InputField label="Mail" type="email" placeholder="example@email.com" name="email" v-model="form.email" />
                 <InputField label="Contraseña" type="password" placeholder="••••••••" name="password" v-model="form.password" />
                 <InputField label="Repetir contraseña" type="password" placeholder="••••••••" name="confirmPassword" v-model="form.confirmPassword" />
@@ -13,6 +14,11 @@
 
               <ErrorMessage :message="errorMessage" />
 
+              <div class="role-div">
+                <ion-label>Elige tu rol</ion-label>
+                <SegmentButton v-model="valorSeleccionado"/>
+                <IonLabel>Seleccionado: {{ valorSeleccionado }}</IonLabel>
+              </div>
               <CustomButton class="signup-button" @click="register">Continuar</CustomButton>
               
               <CustomButton color="light" :icon="logoGoogle">Continuar con Google</CustomButton>
@@ -29,20 +35,24 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonContent } from "@ionic/vue";
+import { IonPage, IonContent, IonLabel } from "@ionic/vue";
 import { ref } from "vue";
 import InputField from "@/components/InputField.vue";
 import CustomButton from "@/components/CustomButton.vue";
 import LinkButton from "@/components/LinkButton.vue";
 import ErrorMessage from "@/components/ErrorMessage.vue";
+import SegmentButton from "@/components/SegmentButton.vue";
 import { postUser } from "@/services/api";
 import { logoGoogle } from "ionicons/icons";
 import { isValidEmail, isValidPassword } from "@/utils/utils";
+
+const valorSeleccionado = ref("1");
 
 const form = ref({
   email: "",
   password: "",
   confirmPassword: "",
+  full_name: "",
 });
 
 const errorMessage = ref("");
@@ -73,6 +83,8 @@ const register = async () => {
     const user = {
       email: form.value.email,
       password: form.value.password,
+      full_name: form.value.full_name,
+      role: valorSeleccionado.value,
     };
     const response = await postUser(user);
     if (response?.error) {
@@ -108,6 +120,10 @@ margin-bottom: 20px;
 .link-buttons {
 display: inline-flex;
 white-space: nowrap;
+}
+
+.role-div {
+margin-top: 30px;
 }
 
 .have-an-account {
