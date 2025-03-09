@@ -1,5 +1,5 @@
 <template>
-    <ion-button class="custom-button" expand="full" :router-link="to" part="native">
+    <ion-button class="custom-button" expand="full" :router-link="to" part="native" :color="color">
       <ion-icon v-if="icon" :icon="icon" class="custom-icon"></ion-icon>
       <slot></slot>
     </ion-button>
@@ -11,7 +11,7 @@ import { IonButton, IonIcon } from '@ionic/vue';
 defineProps({
     color: {
       type: String,
-      default: 'primary'
+      default: "blue"
     },
     icon: {
       type: String,
