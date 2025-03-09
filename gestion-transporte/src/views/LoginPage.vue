@@ -7,11 +7,13 @@
         <p>¡Hola de nuevo!</p>
 
         <div class="input-fields">
-            <InputField label="Mail" type="email" placeholder="example@email.com" />
-            <InputField label="Contraseña" type="password" placeholder="••••••••" />
+            <InputField label="Mail" type="email" placeholder="example@email.com" v-model="email"/>
+            <InputField label="Contraseña" type="password" placeholder="••••••••" v-model="password"/>
         </div>
 
-        <CustomButton class="login-button">Iniciar sesión</CustomButton>
+        <CustomButton class="login-button" @click="handleLogin">Iniciar sesión</CustomButton>
+
+        <ErrorMessage :message="errorMessage" />
 
         <LinkButton class="forgot-password">¿Olvidaste tu contraseña?</LinkButton>
 
@@ -30,8 +32,32 @@
 import { IonPage, IonContent, IonIcon } from '@ionic/vue';
 import { busOutline, logoGoogle } from 'ionicons/icons';
 import InputField from '@/components/InputField.vue';
-import CustomButton from '@/components/CustomButton.vue';
+import CustomButton from '@/components/CustomButton.vue';7
+import ErrorMessage from '@/components/ErrorMessage.vue';
 import LinkButton from '@/components/LinkButton.vue';
+import { ref } from 'vue';
+import { loginUser } from '@/services/api';
+import { useRouter } from 'vue-router';
+
+const email = ref(''); 
+const password = ref('');
+const router = useRouter();
+const errorMessage = ref("");
+
+const handleLogin = async () => {
+  const response = await loginUser(email.value, password.value);
+
+  if (response?.error) {
+      errorMessage.value = response.error.message;
+      return;
+  } 
+  else {
+    localStorage.setItem('auth-token', response.token); 
+    localStorage.setItem('user', JSON.stringify(response.user));
+    router.push('/home');
+  }
+};
+
 </script>
 
 <style scoped>

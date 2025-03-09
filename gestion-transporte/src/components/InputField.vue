@@ -6,7 +6,7 @@
       v-model="model"
       class="custom-input"
       required>
-    <ion-input-password-toggle v-if="type === 'password'" slot="end" color="blue"></ion-input-password-toggle>
+    <ion-input-password-toggle v-if="type === 'password'" slot="end" color="blue" ></ion-input-password-toggle>
     </ion-input>
   </ion-item>
 </template>
@@ -26,6 +26,6 @@ const model = defineModel<string>();
 <style scoped>
 .password-toggle-icon {
   cursor: pointer;
-  font-size: 22px;
+  font-size: 18px;
 }
 </style>

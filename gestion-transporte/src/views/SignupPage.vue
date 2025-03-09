@@ -86,8 +86,8 @@ const register = async () => {
       role_id: parseInt(valorSeleccionado.value),
     };
     const response = await postUser(user);
-    if (response?.error?.message) {
-      errorMessage.value = response.error.message;
+    if (response?.error) {
+      errorMessage.value = response.error;
       return;
     }
   } catch (error) {
