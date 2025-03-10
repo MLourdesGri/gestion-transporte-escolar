@@ -1,171 +1,230 @@
 <template>
-    <IonPage>
-      <ion-split-pane content-id="main-content">
-        <ion-menu content-id="main-content" type="overlay">
-          <ion-content>
-            <ion-list id="inbox-list">
-              <ion-list-header>Inbox</ion-list-header>
-              <ion-note>hi@ionicframework.com</ion-note>
-              <ion-menu-toggle :auto-hide="false" v-for="(p, i) in appPages" :key="i">
-                <ion-item @click="selectedIndex = i" router-direction="root" :router-link="p.url" lines="none" :detail="false" class="hydrated" :class="{ selected: selectedIndex === i }">
-                  <ion-icon aria-hidden="true" slot="start" :ios="p.iosIcon" :md="p.mdIcon"></ion-icon>
-                  <ion-label>{{ p.title }}</ion-label>
-                </ion-item>
-              </ion-menu-toggle>
-            </ion-list>
-          </ion-content>
-        </ion-menu>
-        <ion-router-outlet id="main-content"></ion-router-outlet>
-      </ion-split-pane>
-    </IonPage>
+  <IonPage>
+    <ion-split-pane content-id="main-content">
+      <ion-menu content-id="main-content" type="overlay">
+        <ion-content>
+          <ion-list id="inbox-list">
+            <ion-list-header>Inbox</ion-list-header>
+            <ion-note>Hola, {{ user?.full_name || "Invitado" }}!</ion-note>
+
+            <ion-menu-toggle :auto-hide="false" v-for="(p, i) in appPages" :key="i">
+              <ion-item 
+                @click="selectedIndex = i" 
+                router-direction="root" 
+                :router-link="p.url" 
+                lines="none" 
+                :detail="false" 
+                class="hydrated" 
+                :class="{ selected: selectedIndex === i }"
+              >
+                <ion-icon aria-hidden="true" slot="start" :ios="p.iosIcon" :md="p.iosIcon"></ion-icon>
+                <ion-label>{{ p.title }}</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
+
+            <ion-menu-toggle auto-hide="false">
+              <ion-item @click="logout" lines="none" class="hydrated logout-btn">
+                <ion-icon aria-hidden="true" slot="start" :ios="logOutOutline" :md="logOutOutline"></ion-icon>
+                <ion-label>Cerrar Sesión</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
+          </ion-list>
+        </ion-content>
+      </ion-menu>
+      <ion-router-outlet id="main-content"></ion-router-outlet>
+    </ion-split-pane>
+  </IonPage>
 </template>
-  
-  <script setup lang="ts">
-  import {
-    IonPage,
-    IonContent,
-    IonIcon,
-    IonItem,
-    IonLabel,
-    IonList,
-    IonListHeader,
-    IonMenu,
-    IonMenuToggle,
-    IonNote,
-    IonRouterOutlet,
-    IonSplitPane,
-  } from '@ionic/vue';
-  import { ref } from 'vue';
-  import {
-    homeOutline,
-    personOutline,
-  } from 'ionicons/icons';
-  
-  const selectedIndex = ref(0);
-  const appPages = [
-    {
-      title: 'Inicio',
-      url: '/home',
-      iosIcon: homeOutline,
-    },
-    {
-      title: 'Perfil',
-      url: '/profile',
-      iosIcon: personOutline,
-    }
-  ];
-  
-  const path = window.location.pathname.split('/')[1];
-  if (path !== undefined) {
-    selectedIndex.value = appPages.findIndex((page) => page.title.toLowerCase() === path.toLowerCase());
+
+<script setup lang="ts">
+import {
+  IonPage,
+  IonContent,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonListHeader,
+  IonMenu,
+  IonMenuToggle,
+  IonNote,
+  IonRouterOutlet,
+  IonSplitPane,
+} from '@ionic/vue';
+import { ref, computed, onMounted, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { homeOutline, personOutline, settingsOutline, shieldOutline, logOutOutline } from 'ionicons/icons';
+
+const router = useRouter();
+const route = useRoute();
+const selectedIndex = ref(0);
+
+interface User {
+  full_name: string;
+  role_id: number;
+}
+
+const user = ref<User | null>(null);
+const role_id = ref<number | null>(null);
+
+// Función para cargar el usuario desde localStorage
+const loadUser = () => {
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    user.value = JSON.parse(storedUser);
+    role_id.value = user.value.role_id;
+  } else {
+    user.value = null;
+    role_id.value = null;
   }
-  </script>
-  
-  <style scoped>
-  ion-menu ion-content {
-    --background: var(--ion-item-background, var(--ion-background-color, #fff));
-  }
-  
-  ion-menu.md ion-content {
-    --padding-start: 8px;
-    --padding-end: 8px;
-    --padding-top: 20px;
-    --padding-bottom: 20px;
-  }
-  
-  ion-menu.md ion-list {
-    padding: 20px 0;
-  }
-  
-  ion-menu.md ion-note {
-    margin-bottom: 30px;
-  }
-  
-  ion-menu.md ion-list-header,
-  ion-menu.md ion-note {
-    padding-left: 10px;
-  }
-  
-  ion-menu.md ion-list#inbox-list {
-    border-bottom: 1px solid var(--ion-background-color-step-150, #d7d8da);
-  }
-  
-  ion-menu.md ion-list#inbox-list ion-list-header {
-    font-size: 22px;
-    font-weight: 600;
-  
-    min-height: 20px;
-  }
-  
-  ion-menu.md ion-item {
-    --padding-start: 10px;
-    --padding-end: 10px;
-    border-radius: 4px;
-  }
-  
-  ion-menu.md ion-item.selected {
-    --background: rgba(var(--ion-color-primary-rgb), 0.14);
-  }
-  
-  ion-menu.md ion-item.selected ion-icon {
-    color: var(--ion-color-primary);
-  }
-  
-  ion-menu.md ion-item ion-icon {
-    color: #616e7e;
-  }
-  
-  ion-menu.md ion-item ion-label {
-    font-weight: 500;
-  }
-  
-  ion-menu.ios ion-content {
-    --padding-bottom: 20px;
-  }
-  
-  ion-menu.ios ion-list {
-    padding: 20px 0 0 0;
-  }
-  
-  ion-menu.ios ion-note {
-    line-height: 24px;
-    margin-bottom: 20px;
-  }
-  
-  ion-menu.ios ion-item {
-    --padding-start: 16px;
-    --padding-end: 16px;
-    --min-height: 50px;
-  }
-  
-  ion-menu.ios ion-item.selected ion-icon {
-    color: var(--ion-color-primary);
-  }
-  
-  ion-menu.ios ion-item ion-icon {
-    font-size: 24px;
-    color: #73849a;
-  }
-  
-  ion-menu.ios ion-list-header,
-  ion-menu.ios ion-note {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-  
-  ion-menu.ios ion-note {
-    margin-bottom: 8px;
-  }
-  
-  ion-note {
-    display: inline-block;
-    font-size: 16px;
-  
-    color: var(--ion-color-medium-shade);
-  }
-  
-  ion-item.selected {
-    --color: var(--ion-color-primary);
-  }
-  </style>
-  
+}
+
+onMounted(() => {
+  loadUser();
+});
+
+watch(() => route.path, () => {
+  loadUser();
+});
+
+// Aca hay q poner las rutas y roles
+// Roles: 1- padre, 2- chofer, 3- admin
+const allPages = [
+  { title: "Inicio", url: "/home", iosIcon: homeOutline, roles: [1, 2, 3] },
+  { title: "Perfil", url: "/profile", iosIcon: personOutline, roles: [1, 2, 3] },
+  { title: "Admin", url: "/admin", iosIcon: shieldOutline, roles: [3] },
+  { title: "Configuracion", url: "/settings", iosIcon: settingsOutline, roles: [1, 2] }
+];
+
+const appPages = computed(() => {
+  return allPages.filter(page => role_id.value !== null && page.roles.includes(role_id.value));
+});
+
+// Actualizar índice del menú
+const path = window.location.pathname.split("/")[1];
+if (path !== undefined) {
+  selectedIndex.value = allPages.findIndex(page => page.url === `/${path}`);
+}
+
+// Función para cerrar sesión
+const logout = () => {
+  localStorage.removeItem("user");
+  localStorage.removeItem("token");
+  user.value = null;
+  role_id.value = null;
+  router.push("/login");
+  setTimeout(() => window.location.reload(), 300); // Forzar recarga después de logout
+};
+</script>
+
+<style scoped>
+ion-menu ion-content {
+  --background: var(--ion-item-background, var(--ion-background-color, #fff));
+}
+
+ion-menu.md ion-content {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --padding-top: 20px;
+  --padding-bottom: 20px;
+}
+
+ion-menu.md ion-list {
+  padding: 20px 0;
+}
+
+ion-menu.md ion-note {
+  margin-bottom: 30px;
+}
+
+ion-menu.md ion-list-header,
+ion-menu.md ion-note {
+  padding-left: 10px;
+}
+
+ion-menu.md ion-list#inbox-list {
+  border-bottom: 1px solid var(--ion-background-color-step-150, #d7d8da);
+}
+
+ion-menu.md ion-list#inbox-list ion-list-header {
+  font-size: 22px;
+  font-weight: 600;
+  min-height: 20px;
+}
+
+ion-menu.md ion-item {
+  --padding-start: 10px;
+  --padding-end: 10px;
+  border-radius: 4px;
+}
+
+ion-menu.md ion-item.selected {
+  --background: rgba(var(--ion-color-primary-rgb), 0.14);
+}
+
+ion-menu.md ion-item.selected ion-icon {
+  color: var(--ion-color-primary);
+}
+
+ion-menu.md ion-item ion-icon {
+  color: #616e7e;
+}
+
+ion-menu.md ion-item ion-label {
+  font-weight: 500;
+}
+
+ion-menu.ios ion-content {
+  --padding-bottom: 20px;
+}
+
+ion-menu.ios ion-list {
+  padding: 20px 0 0 0;
+}
+
+ion-menu.ios ion-note {
+  line-height: 24px;
+  margin-bottom: 20px;
+}
+
+ion-menu.ios ion-item {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --min-height: 50px;
+}
+
+ion-menu.ios ion-item.selected ion-icon {
+  color: var(--ion-color-primary);
+}
+
+ion-menu.ios ion-item ion-icon {
+  font-size: 24px;
+  color: #73849a;
+}
+
+ion-menu.ios ion-list-header,
+ion-menu.ios ion-note {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+ion-menu.ios ion-note {
+  margin-bottom: 8px;
+}
+
+ion-note {
+  display: inline-block;
+  font-size: 16px;
+  color: var(--ion-color-medium-shade);
+}
+
+ion-item.selected {
+  --color: var(--ion-color-primary);
+}
+
+/* Estilo para el botón de cerrar sesión */
+.logout-btn {
+  margin-top: 20px;
+}
+
+</style>

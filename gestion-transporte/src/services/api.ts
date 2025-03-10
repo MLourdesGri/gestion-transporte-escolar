@@ -50,8 +50,14 @@ export const postUser = async (user: User) => {
 
 export const loginUser = async (email: string, password: string) => {
   try {
-    const response = await api.post('/users/login', { email, password });
-
+    const response = await api.post<{ token: string }>('/users/login', { email, password });
+    const token = response.data.token;
+        
+    localStorage.setItem('token', token); // Guardar token
+        
+    const payload = JSON.parse(atob(token.split('.')[1])); // Decodificar token
+    localStorage.setItem('user_role', payload.role); // Guardar rol
+    
     return response.data; 
   } catch (error: any) {
     if (error.response && error.response.data) {
