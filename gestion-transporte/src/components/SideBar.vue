@@ -54,6 +54,7 @@ import {
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { homeOutline, personOutline, settingsOutline, shieldOutline, logOutOutline } from 'ionicons/icons';
+import { getUser } from '@/services/api';
 
 const router = useRouter();
 const route = useRoute();
@@ -67,16 +68,20 @@ interface User {
 const user = ref<User | null>(null);
 const role_id = ref<number | null>(null);
 
-// Función para cargar el usuario desde localStorage
-const loadUser = () => {
-  const storedUser = localStorage.getItem("user");
-  if (storedUser) {
-    user.value = JSON.parse(storedUser);
-    role_id.value = user.value.role_id;
-  } else {
-    user.value = null;
-    role_id.value = null;
-  }
+const loadUser = async () => { 
+  const token = localStorage.getItem("token");
+  if (token) {
+    try {
+      const userResponse = await getUser(token);
+      user.value = userResponse.data;
+      role_id.value = userResponse.data.role_id;
+    }
+    catch (error) {
+      console.error("Error cargando usuario", error);
+      user.value = null;
+      role_id.value = null;
+    }
+  } 
 }
 
 onMounted(() => {
@@ -106,14 +111,13 @@ if (path !== undefined) {
   selectedIndex.value = allPages.findIndex(page => page.url === `/${path}`);
 }
 
-// Función para cerrar sesión
+
 const logout = () => {
-  localStorage.removeItem("user");
   localStorage.removeItem("token");
   user.value = null;
   role_id.value = null;
   router.push("/login");
-  setTimeout(() => window.location.reload(), 300); // Forzar recarga después de logout
+  setTimeout(() => window.location.reload(), 300); 
 };
 </script>
 

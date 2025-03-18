@@ -41,11 +41,11 @@ import { getTrips } from "../services/api";
     if (response && response.data) {
       trips.value = response.data;  
     } else {
-      console.error("No trips found or invalid response");
+      console.error("No se encontraron viajes");
       trips.value = [];  
     }
   } catch (error) {
-    console.error("Error loading trips", error);
+    console.error("Error cargando viajes", error);
     trips.value = []; 
   }
   };

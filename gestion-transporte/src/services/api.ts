@@ -15,9 +15,13 @@ interface User {
 }
 
 
-export const getUsers = async () => {
+export const getUser = async (token: string) => {
   try {
-    const response = await api.get("/users");
+    const response = await api.get("/users/profile", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;  
   } catch (error) {
     console.error("Error obteniendo usuarios:", error);
@@ -38,7 +42,9 @@ export const getTrips = async () => {
 
 export const postUser = async (user: User) => {
   try {
-    const response = await api.post("/users/signup", user);
+    const response = await api.post<{ token: string, user:User, error:Error }>("/users/signup", user);
+    const token = response.data.token;
+    localStorage.setItem('token',token);
     return response.data;
   } catch (error: any) {
     if (error.response && error.response.data) {
@@ -50,18 +56,13 @@ export const postUser = async (user: User) => {
 
 export const loginUser = async (email: string, password: string) => {
   try {
-    const response = await api.post<{ token: string }>('/users/login', { email, password });
+    const response = await api.post<{ token: string, user:User, error:Error }>('/users/login', { email, password });
     const token = response.data.token;
-        
-    localStorage.setItem('token', token); // Guardar token
-        
-    const payload = JSON.parse(atob(token.split('.')[1])); // Decodificar token
-    localStorage.setItem('user_role', payload.role); // Guardar rol
-    
+    localStorage.setItem('token', token); 
     return response.data; 
   } catch (error: any) {
     if (error.response && error.response.data) {
-      return { error: error.response.data.error };
+      return { error: error.response.data.error.message };
     }
     return { error: 'Error desconocido. Inténtalo de nuevo.' };
   }

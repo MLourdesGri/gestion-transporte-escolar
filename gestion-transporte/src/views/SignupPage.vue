@@ -44,6 +44,9 @@ import SegmentButton from "@/components/SegmentButton.vue";
 import { postUser } from "@/services/api";
 import { logoGoogle } from "ionicons/icons";
 import { isValidEmail, isValidPassword } from "@/utils/utils";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const valorSeleccionado = ref("1");
 
@@ -85,10 +88,16 @@ const register = async () => {
       full_name: form.value.full_name,
       role_id: parseInt(valorSeleccionado.value),
     };
+    console.log(user);
     const response = await postUser(user);
+    console.log(response);
+    console.log('hola');
     if (response?.error) {
-      errorMessage.value = response.error;
+      errorMessage.value = response.error.message;
       return;
+    }
+    else {
+      router.push("/home");
     }
   } catch (error) {
     errorMessage.value = "Hubo un problema con el registro. Inténtalo nuevamente.";

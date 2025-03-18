@@ -48,12 +48,10 @@ const handleLogin = async () => {
   const response = await loginUser(email.value, password.value);
 
   if (response?.error) {
-      errorMessage.value = response.error.message;
+      errorMessage.value = response.error;
       return;
   } 
   else {
-    localStorage.setItem('auth-token', response.token); 
-    localStorage.setItem('user', JSON.stringify(response.user));
     router.push('/home');
   }
 };
