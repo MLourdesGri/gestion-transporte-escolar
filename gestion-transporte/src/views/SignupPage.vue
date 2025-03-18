@@ -48,7 +48,7 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-const valorSeleccionado = ref("1");
+const valorSeleccionado = ref("");
 
 const form = ref({
   email: "",
@@ -61,6 +61,7 @@ const errorMessage = ref("");
 
 const register = async () => {
   errorMessage.value = "";
+
   if (form.value.password !== form.value.confirmPassword) {
     errorMessage.value = "Las contraseñas no coinciden";
     return;
@@ -69,6 +70,11 @@ const register = async () => {
   if (!form.value.email || !form.value.password || !form.value.confirmPassword || !form.value.full_name) {
     errorMessage.value = "Todos los campos son obligatorios";
     return;
+  }
+
+  if (!valorSeleccionado.value) {
+  errorMessage.value = "Debes seleccionar un rol";
+  return;
   }
 
   if (!isValidEmail(form.value.email)) {
