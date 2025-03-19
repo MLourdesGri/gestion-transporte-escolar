@@ -1,5 +1,5 @@
 <template>
-    <ion-button fill="clear" class="link-button" :router-link="to" part="native">
+    <ion-button fill="clear" class="link-button" :to="to" part="native">
       <slot></slot>
     </ion-button>
 </template>

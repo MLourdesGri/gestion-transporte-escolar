@@ -16,29 +16,29 @@
   </template>
   
   <script setup lang="ts">
-  import { ref, onMounted } from "vue";
-  import { getUsers } from "../services/api"; // Cambia esto si usas otro servicio
+  import { ref } from "vue";
+  // import { getUsers } from "../services/api"; // Cambia esto si usas otro servicio
   const users = ref<any[]>([]);
   
-  const loadUsers = async () => {
-  try {
-    const response = await getUsers();
-    if (response && response.data) {
-      users.value = response.data;  // Asigna solo los usuarios dentro de 'data'
-    } else {
-      console.error("No users found or invalid response");
-      users.value = [];  // Manejar el caso vacío si no hay datos
-    }
-  } catch (error) {
-    console.error("Error loading users", error);
-    users.value = [];  // Asegura que users siempre sea un arreglo vacío en caso de error
-  }
-  };
+  // const loadUsers = async () => {
+  // try {
+  //   const response = await getUsers();
+  //   if (response && response.data) {
+  //     users.value = response.data;  // Asigna solo los usuarios dentro de 'data'
+  //   } else {
+  //     console.error("No users found or invalid response");
+  //     users.value = [];  // Manejar el caso vacío si no hay datos
+  //   }
+  // } catch (error) {
+  //   console.error("Error loading users", error);
+  //   users.value = [];  // Asegura que users siempre sea un arreglo vacío en caso de error
+  // }
+  // };
 
   
-  onMounted(() => {
-    loadUsers();
-  });
+  // onMounted(() => {
+  //   loadUsers();
+  // });
   </script>
   
   <style scoped>

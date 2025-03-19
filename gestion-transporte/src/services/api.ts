@@ -12,8 +12,11 @@ const api = axios.create({
 interface User {
   email: string;
   password: string;
+  full_name?: string;
+  phone_number?: string;
+  address?: string;
+  profile_picture?: string;
 }
-
 
 export const getUser = async (token: string) => {
   try {
@@ -22,6 +25,7 @@ export const getUser = async (token: string) => {
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log("response", response.data);
     return response.data;  
   } catch (error) {
     console.error("Error obteniendo usuarios:", error);
@@ -68,6 +72,21 @@ export const loginUser = async (email: string, password: string) => {
   }
 };
 
+export const putUser = async (user: Partial<User>, token: string) => {
+  try {
+    const response = await api.put<{ user: User; error?: Error }>("/users/update", user, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
+    return response.data;
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      return { error: error.response.data.error.message };
+    }
+    return { error: "Error desconocido. Inténtalo de nuevo." };
+  }
+};
 
 export default api;

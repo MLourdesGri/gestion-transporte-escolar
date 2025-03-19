@@ -11,7 +11,7 @@
               <ion-item 
                 @click="selectedIndex = i" 
                 router-direction="root" 
-                :router-link="p.url" 
+                :to="p.url" 
                 lines="none" 
                 :detail="false" 
                 class="hydrated" 
@@ -22,7 +22,7 @@
               </ion-item>
             </ion-menu-toggle>
 
-            <ion-menu-toggle auto-hide="false">
+            <ion-menu-toggle :auto-hide="false">
               <ion-item @click="logout" lines="none" class="hydrated logout-btn">
                 <ion-icon aria-hidden="true" slot="start" :ios="logOutOutline" :md="logOutOutline"></ion-icon>
                 <ion-label>Cerrar Sesión</ion-label>
@@ -73,7 +73,9 @@ const loadUser = async () => {
   if (token) {
     try {
       const userResponse = await getUser(token);
+      // @ts-ignore
       user.value = userResponse.data;
+      // @ts-ignore
       role_id.value = userResponse.data.role_id;
     }
     catch (error) {
