@@ -46,9 +46,7 @@ interface Trip {
 const loadTrips = async () => {
   try {
     const response = await getTrips();
-    // @ts-ignore
     if (response && response.data) {
-      // @ts-ignore
       return trips.value = response.data;  
     } else {
       console.error("No se encontraron viajes");

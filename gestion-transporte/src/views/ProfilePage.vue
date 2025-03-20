@@ -21,6 +21,9 @@
             <img class="pic-img" :src="user?.profile_picture || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Foto de perfil"/>
           </div>
           <strong>{{user?.email || form.email}}</strong> 
+          <div v-if="isEditing" class="upload-photo">
+            <CustomButton class="upload-photo-button" color="light">Subir foto</CustomButton>
+          </div>
         </div>
 
         <div class="input-fields">
@@ -48,6 +51,7 @@ import InputField from '@/components/InputField.vue';
 import CustomButton from '@/components/CustomButton.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
 import { getUser, putUser } from '@/services/api';
+// import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 interface User {
   email: string;
@@ -74,7 +78,6 @@ const getProfileData = async () => {
   if (token) {
     try {
       const userResponse = await getUser(token);
-      // @ts-ignore
       user.value = userResponse.data;
     }
     catch (error) {
@@ -85,6 +88,22 @@ const getProfileData = async () => {
 };
 
 onMounted(getProfileData);
+
+// const profileImage = ref<string | null>(null);
+
+// const selectImage = async () => {
+//   try {
+//     const image = await Camera.getPhoto({
+//       quality: 90,
+//       source: CameraSource.Photos,  // Permite solo seleccionar desde la galería
+//       resultType: CameraResultType.Uri,  // Devuelve una URI de la imagen
+//     });
+
+//     profileImage.value = image.webPath || null;  // Almacena la URI de la imagen seleccionada
+//   } catch (error) {
+//     console.error("Error al seleccionar la imagen:", error);
+//   }
+// };
 
 const isEditing = ref(false);
 const showToast = ref(false);
@@ -107,6 +126,7 @@ const toggleEdit = async () => {
         full_name: form.value.full_name,
         phone_number: form.value.phone_number,
         address: form.value.address,
+        profile_picture: profileImage.value || user.value?.profile_picture,
       };
 
       const token = localStorage.getItem("token");

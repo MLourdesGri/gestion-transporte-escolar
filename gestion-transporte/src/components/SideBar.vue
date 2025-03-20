@@ -8,18 +8,19 @@
             <ion-note>Hola, {{ user?.full_name || "Invitado" }}!</ion-note>
 
             <ion-menu-toggle :auto-hide="false" v-for="(p, i) in appPages" :key="i">
-              <ion-item 
-                @click="selectedIndex = i" 
-                router-direction="root" 
-                :to="p.url" 
-                lines="none" 
-                :detail="false" 
-                class="hydrated" 
-                :class="{ selected: selectedIndex === i }"
-              >
-                <ion-icon aria-hidden="true" slot="start" :ios="p.iosIcon" :md="p.iosIcon"></ion-icon>
-                <ion-label>{{ p.title }}</ion-label>
-              </ion-item>
+              <router-link :to="p.url" class="menu-link">
+                <ion-item 
+                  @click="selectedIndex = i" 
+                  router-direction="root"
+                  lines="none"
+                  :detail="false"
+                  class="hydrated" 
+                  :class="{ selected: selectedIndex === i }"
+                >
+                  <ion-icon aria-hidden="true" slot="start" :ios="p.iosIcon" :md="p.iosIcon"></ion-icon>
+                  <ion-label>{{ p.title }}</ion-label>
+                </ion-item>
+              </router-link>
             </ion-menu-toggle>
 
             <ion-menu-toggle :auto-hide="false">
@@ -52,7 +53,7 @@ import {
   IonSplitPane,
 } from '@ionic/vue';
 import { ref, computed, onMounted, watch } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter, useRoute, RouterLink } from 'vue-router';
 import { homeOutline, personOutline, settingsOutline, shieldOutline, logOutOutline } from 'ionicons/icons';
 import { getUser } from '@/services/api';
 
@@ -73,9 +74,7 @@ const loadUser = async () => {
   if (token) {
     try {
       const userResponse = await getUser(token);
-      // @ts-ignore
       user.value = userResponse.data;
-      // @ts-ignore
       role_id.value = userResponse.data.role_id;
     }
     catch (error) {

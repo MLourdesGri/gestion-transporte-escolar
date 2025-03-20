@@ -16,7 +16,6 @@
 <script setup lang="ts">
 import { IonItem, IonLabel, IonInput, IonInputPasswordToggle } from '@ionic/vue';
 import { TextFieldTypes } from '@ionic/core';
-import { defineProps, withDefaults } from 'vue';
 
 const props = withDefaults(defineProps<{
   label: string;
