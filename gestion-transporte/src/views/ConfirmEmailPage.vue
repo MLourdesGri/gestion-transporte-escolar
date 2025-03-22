@@ -20,12 +20,12 @@
               <p>¡Tu email ha sido confirmado correctamente!</p>
             </div>
             <div v-if="error" class="message error-message">
-              <p>Error al confirmar el email: {{ error }}</p>
+              <p>{{ error }}</p>
             </div>
           </ion-card-content>
         </ion-card>
   
-        <div v-if="success" class="footer">
+        <div  class="footer">
           <CustomButton expand="block" @click="redirectToLogin">Ir al login</CustomButton>
         </div>
       </ion-content>
@@ -54,7 +54,8 @@ import CustomButton from "@/components/CustomButton.vue";
         success.value = true;
       }
     } catch (err: any) {
-      error.value = err.response?.data?.message || "Ocurrió un error inesperado";
+      console.log(err.response);
+      error.value = err.response?.data?.error.message || "Ocurrió un error inesperado";
     } finally {
       loading.value = false;
     }
