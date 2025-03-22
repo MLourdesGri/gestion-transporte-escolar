@@ -48,7 +48,8 @@ import CustomButton from "@/components/CustomButton.vue";
   const confirmEmail = async () => {
     const token = route.params.token;
     try {
-      const response = await axios.get(`/api/users/confirm/${token}`);
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await axios.get(`${API_URL}/users/confirm-email/${token}`);
       if (response.status === 200) {
         success.value = true;
       }
