@@ -94,12 +94,9 @@ const register = async () => {
       full_name: form.value.full_name,
       role_id: parseInt(valorSeleccionado.value),
     };
-    console.log(user);
     const response = await postUser(user);
-    console.log(response);
-    console.log('hola');
     if (response?.error) {
-      errorMessage.value = response.error.message;
+      errorMessage.value = response.error;
       return;
     }
     else {

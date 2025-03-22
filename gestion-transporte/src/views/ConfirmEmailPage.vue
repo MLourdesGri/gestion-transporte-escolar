@@ -9,7 +9,7 @@
       <ion-content class="ion-padding">
         <ion-card>
           <ion-card-header style="background-color: #003366; color: white;">
-            <ion-card-title>Confirmando tu cuenta...</ion-card-title>
+            <ion-card-title color="white">Confirmando tu cuenta...</ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <div v-if="loading" class="message">
@@ -26,7 +26,7 @@
         </ion-card>
   
         <div v-if="success" class="footer">
-          <ion-button expand="block" color="primary" @click="redirectToLogin">Ir al login</ion-button>
+          <CustomButton expand="block" @click="redirectToLogin">Ir al login</CustomButton>
         </div>
       </ion-content>
     </ion-page>
@@ -37,6 +37,7 @@
   import { ref, onMounted } from "vue";
   import { useRoute, useRouter } from "vue-router";
   import axios from "axios";
+import CustomButton from "@/components/CustomButton.vue";
   
   const route = useRoute();
   const router = useRouter();
