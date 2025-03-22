@@ -33,7 +33,12 @@ const routes: Array<RouteRecordRaw> = [
     path: '/users',
     name: 'Users',
     component: () => import ('../views/UsersPage.vue'),
-  }  
+  }, 
+  {
+    path: '/confirm-email/:token',
+    name: 'ConfirmEmail',
+    component: () => import ('../views/ConfirmEmailPage.vue')
+  }
 ]
 
 const router = createRouter({

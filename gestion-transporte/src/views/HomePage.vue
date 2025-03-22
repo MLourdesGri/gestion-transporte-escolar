@@ -25,15 +25,33 @@
             Estado: {{ trip.status }}
           </ion-card-content>
         </ion-card> 
+        <ion-alert
+        v-if="showAlert"
+        :is-open="showAlert"
+        header="Cuenta no confirmada"
+        message="Revise su casilla de correo y confirme su cuenta para continuar usando la aplicación."
+        overlay
+        backdrop-dismiss="false"
+        ></ion-alert>
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle} from '@ionic/vue';
+import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonAlert} from '@ionic/vue';
 import { ref, onMounted } from "vue";
-import { getTrips } from "../services/api"; 
+import { getTrips, getUser } from "../services/api"; 
+
+interface User {
+  full_name: string;
+  role_id: number;
+  is_confirmed: boolean; 
+}
+
   const trips = ref<any[]>([]);
+  const user = ref<User | null>(null);
+  const role_id = ref<number | null>(null);
+  const showAlert = ref(false); 
   
   const loadTrips = async () => {
   try {
@@ -50,8 +68,29 @@ import { getTrips } from "../services/api";
   }
   };
 
+
+const loadUser = async () => { 
+  const token = localStorage.getItem("token");
+  if (token) {
+    try {
+      const userResponse = await getUser(token);
+      user.value = userResponse.data;
+      role_id.value = userResponse.data.role_id;
+
+      if (user.value && !user.value.is_confirmed) {
+        showAlert.value = true; 
+      }
+    } catch (error) {
+      console.error("Error cargando usuario", error);
+      user.value = null;
+      role_id.value = null;
+    }
+    }
+}
+
   onMounted(() => {
     loadTrips();
+    loadUser();
   });
 </script>
 
