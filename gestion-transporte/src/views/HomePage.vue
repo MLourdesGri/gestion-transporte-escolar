@@ -15,7 +15,7 @@
           <ion-title size="large">Inicio</ion-title>
         </ion-toolbar>
       </ion-header>
-        <ion-card v-for="trip in trips" :key="trip.trip_id" button="true" routerLink="/profile">
+        <ion-card v-for="trip in trips" :key="trip.trip_id" :button="true" to="/profile">
           <ion-card-header>
             <ion-card-title>Transporte a {{ trip.school }}</ion-card-title>
             <ion-card-subtitle>Fecha: {{ trip.date }}</ion-card-subtitle>
@@ -39,8 +39,15 @@
 
 <script setup lang="ts">
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonAlert} from '@ionic/vue';
-import { ref, onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { getTrips, getUser } from "../services/api"; 
+
+interface Trip {
+  trip_id: number;
+  school: string;
+  date: string;
+  status: string;
+}
 
 interface User {
   full_name: string;
@@ -48,16 +55,16 @@ interface User {
   is_confirmed: boolean; 
 }
 
-  const trips = ref<any[]>([]);
+  const trips = ref<Trip[]>([]);
   const user = ref<User | null>(null);
   const role_id = ref<number | null>(null);
   const showAlert = ref(false); 
   
-  const loadTrips = async () => {
+const loadTrips = async () => {
   try {
     const response = await getTrips();
     if (response && response.data) {
-      trips.value = response.data;  
+      return trips.value = response.data;  
     } else {
       console.error("No se encontraron viajes");
       trips.value = [];  
