@@ -15,7 +15,7 @@
 
         <ErrorMessage :message="errorMessage" />
 
-        <LinkButton class="forgot-password">¿Olvidaste tu contraseña?</LinkButton>
+        <LinkButton class="forgot-password" @click="handleForgotPassword">¿Olvidaste tu contraseña?</LinkButton>
 
         <CustomButton color="light" :icon="logoGoogle">Continuar con Google</CustomButton>
 
@@ -54,6 +54,10 @@ const handleLogin = async () => {
   else {
     router.push('/home');
   }
+};
+
+const handleForgotPassword = () => {
+  router.push('/forgot-password');
 };
 
 </script>

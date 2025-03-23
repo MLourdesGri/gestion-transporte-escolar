@@ -38,7 +38,17 @@ const routes: Array<RouteRecordRaw> = [
     path: '/confirm-email/:token',
     name: 'ConfirmEmail',
     component: () => import ('../views/ConfirmEmailPage.vue')
-  }
+  },
+  {
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    component: () => import ('../views/ForgotPasswordPage.vue')
+  },
+  {
+    path: '/reset-password/:token',
+    name: 'ResetPassword',
+    component: () => import ('../views/ResetPasswordPage.vue')
+  },
 ]
 
 const router = createRouter({

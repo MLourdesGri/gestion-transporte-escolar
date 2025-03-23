@@ -54,7 +54,6 @@ import CustomButton from "@/components/CustomButton.vue";
         success.value = true;
       }
     } catch (err: any) {
-      console.log(err.response);
       error.value = err.response?.data?.error.message || "Ocurrió un error inesperado";
     } finally {
       loading.value = false;
