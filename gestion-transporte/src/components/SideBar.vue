@@ -146,6 +146,10 @@ const logout = () => {
   text-decoration: none;
   color: inherit;
 }
+.menu-link {
+  text-decoration: none;
+  color: inherit; 
+}
 
 ion-menu ion-content {
   --background: var(--ion-item-background, var(--ion-background-color, #fff));
