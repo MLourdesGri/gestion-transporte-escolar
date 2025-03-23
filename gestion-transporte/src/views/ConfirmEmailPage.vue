@@ -1,42 +1,29 @@
 <template>
-    <ion-page>
-      <ion-header>
-        <ion-toolbar>
-          <ion-title>Confirmación de Email</ion-title>
-        </ion-toolbar>
-      </ion-header>
-  
-      <ion-content class="ion-padding">
-        <ion-card>
-          <ion-card-header style="background-color: #003366; color: white;">
-            <ion-card-title color="white">Confirmando tu cuenta...</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <div v-if="loading" class="message">
-              <ion-spinner name="crescent" color="primary"></ion-spinner>
-              <p>Por favor, espera...</p>
-            </div>
-            <div v-if="success" class="message success-message">
-              <p>¡Tu email ha sido confirmado correctamente!</p>
-            </div>
-            <div v-if="error" class="message error-message">
-              <p>{{ error }}</p>
-            </div>
-          </ion-card-content>
-        </ion-card>
-  
-        <div >
-          <CustomButton expand="block" @click="redirectToLogin">Ir al login</CustomButton>
+  <ion-page>
+    <ion-content class="ion-padding">
+      <div class="confirmation-box">
+        <h2 class="title single-line">Confirmación de Email</h2>
+   
+        <div v-if="success" class="message success-message fixed-center">
+          <p>¡Tu email ha sido confirmado correctamente!</p>
         </div>
-      </ion-content>
-    </ion-page>
-  </template>
-  
-  <script setup lang="ts">
-  import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonSpinner } from "@ionic/vue";
-  import { ref, onMounted } from "vue";
-  import { useRoute, useRouter } from "vue-router";
-  import axios from "axios";
+        <div v-if="error" class="message error-message fixed-center">
+          <p>{{ error }}</p>
+        </div>
+
+        <div class="link-buttons fixed-bottom ">
+            <CustomButton @click="redirectToLogin">Ingresa</CustomButton>
+        </div>
+      </div>
+    </ion-content>
+  </ion-page>
+</template>
+
+<script setup lang="ts">
+import { IonPage, IonContent, IonSpinner } from "@ionic/vue";
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import axios from "axios";
 import CustomButton from "@/components/CustomButton.vue";
   
   const route = useRoute();
@@ -86,6 +73,11 @@ import CustomButton from "@/components/CustomButton.vue";
     font-weight: bold;
   }
   
+  .footer {
+    margin-top: 30px;
+    text-align: center;
+  }
+  
   ion-card {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -106,6 +98,5 @@ import CustomButton from "@/components/CustomButton.vue";
     border-radius: 5px;
     font-weight: bold;
   }
-
   </style>
   
