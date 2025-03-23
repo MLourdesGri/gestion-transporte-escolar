@@ -9,7 +9,7 @@
       :disabled="disabled"
       required
       @input="checkInput">
-    <ion-input-password-toggle v-if="showToggle && type === 'password'" slot="end" color="blue"></ion-input-password-toggle>
+    <ion-input-password-toggle v-if="showToggle && type === 'password'" slot="end" color="blue" tabindex="-1"></ion-input-password-toggle>
     </ion-input>
   </ion-item>
 </template>
