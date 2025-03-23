@@ -15,7 +15,7 @@
           
           <div class="link-buttons fixed-bottom">
             <p class="remember-password">¿Recordaste tu contraseña?</p>
-            <LinkButton color="primary" to="/login">Ingresa</LinkButton>
+            <LinkButton color="primary" @click="handleLogin">Ingresa</LinkButton>
           </div>
         </div>
       </ion-content>
@@ -33,10 +33,17 @@
   import ErrorMessage from "@/components/ErrorMessage.vue";
   import { sendPasswordReset } from "@/services/api";
   import { isValidEmail } from "@/utils/utils";
+  import { useRouter } from "vue-router";
   
   const form = ref({ email: "" });
   const errorMessage = ref("");
   const showToast = ref(false);
+
+  const router = useRouter();
+
+  const handleLogin = () => {
+    router.push("/login");
+  };
   
   const sendResetLink = async () => {
     errorMessage.value = "";

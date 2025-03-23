@@ -26,7 +26,7 @@
   
           <CustomButton class="reset-button" @click="handleResetPassword">Restablecer Contraseña</CustomButton>
           <div class="link-buttons fixed-bottom">
-            <LinkButton color="primary" to="/login">Ir al login</LinkButton>
+            <LinkButton color="primary" @click="handleLogin">Ir al login</LinkButton>
           </div>
         </div>
       </ion-content>
@@ -45,7 +45,8 @@
     import { resetPassword } from "@/services/api"; 
     import { isValidPassword } from "@/utils/utils"; 
     import { useRoute } from "vue-router";
-import LinkButton from "@/components/LinkButton.vue";
+    import { useRouter } from "vue-router";
+    import LinkButton from "@/components/LinkButton.vue";
 
     const form = ref({
     newPassword: "",
@@ -54,8 +55,13 @@ import LinkButton from "@/components/LinkButton.vue";
 
     const route = useRoute();
     const token = route.params.token as string;
-    
 
+    const router = useRouter();
+
+    const handleLogin = () => {
+      router.push("/login");
+    };
+    
     const errorMessage = ref("");
     const showToast = ref(false);
 

@@ -1,15 +1,12 @@
 <template>
-    <router-link :to="to">
-      <ion-button class="custom-button" part="native" :color="color">
+      <ion-button class="custom-button" expand="full" part="native" :color="color">
         <ion-icon v-if="icon" :icon="icon" class="custom-icon"></ion-icon>
         <slot></slot>
       </ion-button>
-    </router-link>
 </template>
   
 <script setup lang="ts">
 import { IonButton, IonIcon } from '@ionic/vue';
-import { RouterLink } from 'vue-router';
   
 defineProps({
     color: {
@@ -19,10 +16,6 @@ defineProps({
     icon: {
       type: String,
       default: ''
-    },
-    to: {
-        type: String,
-        default: ''
     }
 });
 </script>
@@ -37,5 +30,6 @@ defineProps({
   --background: #003366;
   --color: white;
   text-transform: none;
+  margin-top: 10px;
 }
 </style>

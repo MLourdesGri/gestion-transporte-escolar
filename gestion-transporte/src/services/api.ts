@@ -25,7 +25,7 @@ export const getUser = async (token: string) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.data;  
+    return response.data
   } catch (error) {
     console.error("Error obteniendo usuarios:", error);
     return [];

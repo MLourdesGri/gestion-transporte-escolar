@@ -78,6 +78,7 @@ const getProfileData = async () => {
   if (token) {
     try {
       const userResponse = await getUser(token);
+      console.log(userResponse);
       user.value = userResponse.data;
     }
     catch (error) {
@@ -126,7 +127,6 @@ const toggleEdit = async () => {
         full_name: form.value.full_name,
         phone_number: form.value.phone_number,
         address: form.value.address,
-        profile_picture: profileImage.value || user.value?.profile_picture,
       };
 
       const token = localStorage.getItem("token");

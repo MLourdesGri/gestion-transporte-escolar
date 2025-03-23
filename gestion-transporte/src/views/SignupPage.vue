@@ -24,7 +24,7 @@
 
               <div class="link-buttons">
                   <p class="have-an-account">¿Ya tienes una cuenta?</p>
-                  <LinkButton color="primary" to="/login">Ingresa</LinkButton>
+                  <LinkButton color="primary" @click="handleLogin">Ingresa</LinkButton>
               </div>
 
           </div>
@@ -44,6 +44,10 @@ import { postUser } from "@/services/api";
 import { logoGoogle } from "ionicons/icons";
 import { isValidEmail, isValidPassword } from "@/utils/utils";
 import { useRouter } from "vue-router";
+
+const handleLogin = () => {
+  router.push("/login");
+};
 
 const router = useRouter();
 

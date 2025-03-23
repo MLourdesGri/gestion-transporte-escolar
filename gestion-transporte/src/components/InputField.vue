@@ -28,6 +28,8 @@ const props = withDefaults(defineProps<{
   disabled: false
 });
 
+console.log(props);
+
 const showToggle = ref(false);
 
 const checkInput = () => {

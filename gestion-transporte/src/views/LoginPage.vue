@@ -21,7 +21,7 @@
 
       
       <p class="have-an-account">¿Ya tienes una cuenta?</p>
-      <LinkButton color="primary" class="register-link" to="/signup">Regístrate</LinkButton>
+      <LinkButton color="primary" class="register-link" @click="handleSignUp">Regístrate</LinkButton>
         
       </div>
     </ion-content>
@@ -59,6 +59,10 @@ const handleLogin = async () => {
 
 const handleForgotPassword = () => {
   router.push('/forgot-password');
+};
+
+const handleSignUp = () => {
+  router.push('/signup');
 };
 
 const handleLoginGoogle = async () => {
