@@ -27,7 +27,6 @@
                   <LinkButton color="primary" to="/login">Ingresa</LinkButton>
               </div>
 
-              
           </div>
       </ion-content>
   </ion-page>

@@ -17,7 +17,7 @@
 
         <LinkButton class="forgot-password">¿Olvidaste tu contraseña?</LinkButton>
 
-        <CustomButton color="light" :icon="logoGoogle">Continuar con Google</CustomButton>
+        <CustomButton color="light" :icon="logoGoogle" @click="handleLoginGoogle">Continuar con Google</CustomButton>
 
       
       <p class="have-an-account">¿Ya tienes una cuenta?</p>
@@ -38,6 +38,7 @@ import LinkButton from '@/components/LinkButton.vue';
 import { ref } from 'vue';
 import { loginUser } from '@/services/api';
 import { useRouter } from 'vue-router';
+import { loginWithGoogle } from '@/firebase';
 
 const email = ref(''); 
 const password = ref('');
@@ -56,6 +57,23 @@ const handleLogin = async () => {
   }
 };
 
+const handleLoginGoogle = async () => {
+  const response = await loginWithGoogle();
+  console.log(response);
+  console.log("El nombre que traigo es: ", response?.displayName);
+  console.log("El email que traigo es: ", response?.email);
+
+  if (response?.error) {
+      errorMessage.value = response.error;
+      return;
+  } 
+  else {
+    // post user
+    // Aca deberia ir a la pagina de asignar rol
+    router.push('/assign-role');
+    // despues hacer put user
+  }
+};
 </script>
 
 <style scoped>
