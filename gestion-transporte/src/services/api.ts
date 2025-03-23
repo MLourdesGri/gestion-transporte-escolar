@@ -25,7 +25,6 @@ export const getUser = async (token: string) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("response", response.data);
     return response.data;  
   } catch (error) {
     console.error("Error obteniendo usuarios:", error);
@@ -82,6 +81,31 @@ export const putUser = async (user: Partial<User>, token: string) => {
 
     return response.data;
   } catch (error: any) {
+    if (error.response && error.response.data) {
+      return { error: error.response.data.error.message };
+    }
+    return { error: "Error desconocido. Inténtalo de nuevo." };
+  }
+};
+
+export const sendPasswordReset = async (email: string) => {
+  try {
+    const response = await api.post<{ message: string; error?: Error }>("/users/forgot-password", { email });
+    return response.data;
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      return { error: error.response.data.error.message };
+    }
+    return { error: "Error desconocido. Inténtalo de nuevo." };
+  }
+};
+
+export const resetPassword = async (password: string, token: string) => {
+  try {
+    const response = await api.post<{ message: string; error?: Error }>(`/users/reset-password/${token}`, { password });
+    return response.data;
+  }
+  catch (error: any) {
     if (error.response && error.response.data) {
       return { error: error.response.data.error.message };
     }

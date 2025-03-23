@@ -24,7 +24,7 @@
             </ion-menu-toggle>
 
             <ion-menu-toggle :auto-hide="false">
-              <ion-item @click="logout" lines="none" class="hydrated logout-btn">
+              <ion-item @click="showLogoutAlert = true" lines="none" class="hydrated logout-btn">
                 <ion-icon aria-hidden="true" slot="start" :ios="logOutOutline" :md="logOutOutline"></ion-icon>
                 <ion-label>Cerrar Sesión</ion-label>
               </ion-item>
@@ -34,6 +34,23 @@
       </ion-menu>
       <ion-router-outlet id="main-content"></ion-router-outlet>
     </ion-split-pane>
+    <IonAlert
+      :is-open="showLogoutAlert"
+      header="Confirmación"
+      message="¿Estás seguro que deseas cerrar sesión?"
+      :buttons="[
+        {
+          text: 'Sí',
+          handler: logout,
+        },
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: () => (showLogoutAlert = false),
+        },
+      ]"
+    />
+
   </IonPage>
 </template>
 
@@ -51,6 +68,7 @@ import {
   IonNote,
   IonRouterOutlet,
   IonSplitPane,
+  IonAlert,
 } from '@ionic/vue';
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter, useRoute, RouterLink } from 'vue-router';
@@ -60,6 +78,8 @@ import { getUser } from '@/services/api';
 const router = useRouter();
 const route = useRoute();
 const selectedIndex = ref(0);
+const showLogoutAlert = ref(false);
+
 
 interface User {
   full_name: string;
@@ -106,7 +126,6 @@ const appPages = computed(() => {
   return allPages.filter(page => role_id.value !== null && page.roles.includes(role_id.value));
 });
 
-// Actualizar índice del menú
 const path = window.location.pathname.split("/")[1];
 if (path !== undefined) {
   selectedIndex.value = allPages.findIndex(page => page.url === `/${path}`);
