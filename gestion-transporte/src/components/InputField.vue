@@ -7,8 +7,9 @@
       class="custom-input"
       :type="type"
       :disabled="disabled"
-      required>
-    <ion-input-password-toggle v-if="type === 'password'" slot="end" color="blue"></ion-input-password-toggle>
+      required
+      @input="checkInput">
+    <ion-input-password-toggle v-if="showToggle && type === 'password'" slot="end" color="blue"></ion-input-password-toggle>
     </ion-input>
   </ion-item>
 </template>
@@ -16,6 +17,7 @@
 <script setup lang="ts">
 import { IonItem, IonLabel, IonInput, IonInputPasswordToggle } from '@ionic/vue';
 import { TextFieldTypes } from '@ionic/core';
+import { ref } from 'vue';
 
 const props = withDefaults(defineProps<{
   label: string;
@@ -26,8 +28,11 @@ const props = withDefaults(defineProps<{
   disabled: false
 });
 
-// Si no lo hago me tira error pero es la unica manera de que funcione ya que el disabled es boolean
-console.log(props.disabled);
+const showToggle = ref(false);
+
+const checkInput = () => {
+  showToggle.value = !!model.value; // Muestra el ojo solo si hay texto
+};
 
 const model = defineModel<string>();
 </script>
@@ -36,5 +41,10 @@ const model = defineModel<string>();
 .password-toggle-icon {
   cursor: pointer;
   font-size: 18px;
+}
+
+/* Evita que el icono interrumpa el tab */
+ion-input-password-toggle {
+  pointer-events: auto;
 }
 </style>
