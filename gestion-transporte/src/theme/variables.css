@@ -29,3 +29,7 @@ ion-button::part(native) {
   --ion-color-shade: var(--ion-color-blue-shade);
   --ion-color-tint: var(--ion-color-blue-tint);
 }
+
+.custom-menu {
+  --color: #003366; /* Color del icono */
+}

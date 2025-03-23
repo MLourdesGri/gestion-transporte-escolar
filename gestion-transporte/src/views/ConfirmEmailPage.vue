@@ -25,83 +25,78 @@ import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import CustomButton from "@/components/CustomButton.vue";
-import LinkButton from "@/components/LinkButton.vue";
-
-const route = useRoute();
-const router = useRouter();
-const loading = ref(true);
-const success = ref(false);
-const error = ref("");
-
-const confirmEmail = async () => {
-  const token = route.params.token;
-  try {
-    const API_URL = import.meta.env.VITE_API_URL;
-    const response = await axios.get(`${API_URL}/users/confirm-email/${token}`);
-    if (response.status === 200) {
-      success.value = true;
-    }
-  } catch (err: any) {
-    error.value = err.response?.data?.error.message || "Ocurrió un error inesperado";
-  } finally {
-    loading.value = false;
-  }
-};
-
-const redirectToLogin = () => {
-  router.push("/login");
-};
-
-onMounted(() => {
-  confirmEmail();
-});
-</script>
-
-<style scoped>
-.confirmation-box {
-  text-align: center;
-  padding: 20px;
-}
-
-.title {
-  font-size: 24px;
-  white-space: normal;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  width: 100%;
-}
-
-.message {
-  text-align: center;
-  font-size: 16px;
-  margin-top: 20px;
-}
-
-.success-message {
-  color: green;
-  font-weight: bold;
-}
-
-.error-message {
-  color: red;
-  font-weight: bold;
-}
-
-.confirm-button {
-  margin-top: 40px;
-}
-
-.link-buttons {
-  margin-left: 10px;
-  margin-right: 10px;
-}
   
-  .fixed-bottom {
-    position: absolute;
-    bottom: 20px;
-    left: 0;
-    right: 0;
+  const route = useRoute();
+  const router = useRouter();
+  const loading = ref(true);
+  const success = ref(false);
+  const error = ref("");
+  
+  const confirmEmail = async () => {
+    const token = route.params.token;
+    try {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await axios.get(`${API_URL}/users/confirm-email/${token}`);
+      if (response.status === 200) {
+        success.value = true;
+      }
+    } catch (err: any) {
+      error.value = err.response?.data?.error.message || "Ocurrió un error inesperado";
+    } finally {
+      loading.value = false;
+    }
+  };
+  
+  const redirectToLogin = () => {
+    router.push("/login");
+  };
+  
+  onMounted(() => {
+    confirmEmail();
+  });
+  </script>
+  
+  <style scoped>
+  .message {
+    text-align: center;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+  
+  .success-message {
+    color: green;
+    font-weight: bold;
+  }
+  
+  .error-message {
+    color: red;
+    font-weight: bold;
+  }
+  
+  .footer {
+    margin-top: 30px;
     text-align: center;
   }
   
-</style>
+  ion-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  ion-card-header {
+    border-radius: 10px 10px 0 0;
+    background-color: #003366;
+    color: white;
+  }
+  
+  ion-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+  }
+  
+  ion-button {
+    border-radius: 5px;
+    font-weight: bold;
+  }
+  </style>
+  

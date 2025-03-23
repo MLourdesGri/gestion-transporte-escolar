@@ -72,7 +72,7 @@ import {
 } from '@ionic/vue';
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter, useRoute, RouterLink } from 'vue-router';
-import { homeOutline, personOutline, settingsOutline, shieldOutline, logOutOutline } from 'ionicons/icons';
+import { homeOutline, personOutline, settingsOutline, logOutOutline, carOutline } from 'ionicons/icons';
 import { getUser } from '@/services/api';
 
 const router = useRouter();
@@ -93,7 +93,7 @@ const loadUser = async () => {
   const token = localStorage.getItem("token");
   if (token) {
     try {
-      const userResponse = await getUser(token);
+      const userResponse = await getUser(token) as { data: User };
       user.value = userResponse.data;
       role_id.value = userResponse.data.role_id;
     }
@@ -117,8 +117,8 @@ watch(() => route.path, () => {
 // Roles: 1- padre, 2- chofer, 3- admin
 const allPages = [
   { title: "Inicio", url: "/home", iosIcon: homeOutline, roles: [1, 2, 3] },
+  { title: "Vehículo", url: "/vehicle", iosIcon: carOutline, roles: [2] },
   { title: "Perfil", url: "/profile", iosIcon: personOutline, roles: [1, 2, 3] },
-  { title: "Admin", url: "/admin", iosIcon: shieldOutline, roles: [3] },
   { title: "Configuracion", url: "/settings", iosIcon: settingsOutline, roles: [1, 2] }
 ];
 
@@ -142,6 +142,11 @@ const logout = () => {
 </script>
 
 <style scoped>
+.menu-item {
+  text-decoration: none;
+  color: inherit;
+}
+
 ion-menu ion-content {
   --background: var(--ion-item-background, var(--ion-background-color, #fff));
 }
