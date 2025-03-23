@@ -32,15 +32,18 @@ export const getUser = async (token: string) => {
   }
 };
 
-export const getTrips = async () => {
+export const getTripsByUser = async (token: string) => {
   try {
-    const response = await api.get("/trips");
-    return response.data; 
+    const response = await api.get("/trips", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }); 
+    return response.data;
   } catch (error) {
-    console.error("Error obteniendo viajes:", error);
+    console.error("Error obteniendo los viajes:", error);
     return [];
   }
-
 };
 
 export const postUser = async (user: User) => {
@@ -87,6 +90,48 @@ export const putUser = async (user: Partial<User>, token: string) => {
     return { error: "Error desconocido. Inténtalo de nuevo." };
   }
 };
+
+export const getVehicleByUser = async (token: string) => {
+  try {
+    const response = await api.get("/vehicle", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }); 
+    return response.data;
+  } catch (error) {
+    console.error("Error obteniendo vehículos:", error);
+    return [];
+  }
+}
+
+export const putVehicle = async (vehicle: any, token: string) => {
+  try {
+    const response = await api.put("/vehicle", vehicle, {
+      headers: {
+        Authorization: `Bearer ${token}`, 
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error("Error actualizando vehículo:", error);
+    return { error: "Error al actualizar el vehículo. Intenta nuevamente." };
+  }
+};
+
+export const postVehicle = async (vehicle: any, token: string) => {
+  try {
+    const response = await api.post("/vehicle", vehicle, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data; 
+  } catch (error) {
+    console.error("Error creando vehículo:", error);
+    return [];
+  }
+}
 
 export const sendPasswordReset = async (email: string) => {
   try {

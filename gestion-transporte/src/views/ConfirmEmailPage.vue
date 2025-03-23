@@ -1,8 +1,8 @@
 <template>
     <ion-page>
       <ion-header>
-        <ion-toolbar color="primary">
-          <ion-title style="color: white;">Confirmación de Email</ion-title>
+        <ion-toolbar>
+          <ion-title>Confirmación de Email</ion-title>
         </ion-toolbar>
       </ion-header>
   
@@ -25,7 +25,7 @@
           </ion-card-content>
         </ion-card>
   
-        <div  class="footer">
+        <div >
           <CustomButton expand="block" @click="redirectToLogin">Ir al login</CustomButton>
         </div>
       </ion-content>
@@ -33,7 +33,7 @@
   </template>
   
   <script setup lang="ts">
-  import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonSpinner, IonButton } from "@ionic/vue";
+  import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonSpinner } from "@ionic/vue";
   import { ref, onMounted } from "vue";
   import { useRoute, useRouter } from "vue-router";
   import axios from "axios";
@@ -86,11 +86,6 @@ import CustomButton from "@/components/CustomButton.vue";
     font-weight: bold;
   }
   
-  .footer {
-    margin-top: 30px;
-    text-align: center;
-  }
-  
   ion-card {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -111,5 +106,6 @@ import CustomButton from "@/components/CustomButton.vue";
     border-radius: 5px;
     font-weight: bold;
   }
+
   </style>
   
