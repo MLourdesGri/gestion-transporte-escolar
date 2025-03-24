@@ -72,7 +72,7 @@ import {
 } from '@ionic/vue';
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter, useRoute, RouterLink } from 'vue-router';
-import { homeOutline, personOutline, settingsOutline, logOutOutline, carOutline } from 'ionicons/icons';
+import { homeOutline, personOutline, settingsOutline, logOutOutline, carOutline, accessibilityOutline } from 'ionicons/icons';
 import { getUser } from '@/services/api';
 
 const router = useRouter();
@@ -117,6 +117,7 @@ watch(() => route.path, () => {
 // Roles: 1- padre, 2- chofer, 3- admin
 const allPages = [
   { title: "Inicio", url: "/home", iosIcon: homeOutline, roles: [1, 2, 3] },
+  { title: "Hijos", url: "/children", iosIcon: accessibilityOutline, roles: [1] },
   { title: "Vehículo", url: "/vehicle", iosIcon: carOutline, roles: [2] },
   { title: "Perfil", url: "/profile", iosIcon: personOutline, roles: [1, 2, 3] },
   { title: "Configuracion", url: "/settings", iosIcon: settingsOutline, roles: [1, 2] }

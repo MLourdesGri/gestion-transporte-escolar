@@ -174,4 +174,48 @@ export const resetPassword = async (password: string, token: string) => {
   }
 };
 
+export const getChildrenByUser = async (token: string) => {
+  try {
+    const response = await api.get("/child", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }); 
+    return response.data;
+  } catch (error) {
+    console.error("Error obteniendo hijos:", error);
+    return [];
+  }
+}
+
+export const postChild = async (child: any, token: string) => {
+  try {
+    const response = await api.post("/child", child, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data; 
+  } catch (error) {
+    console.error("Error creando hijo:", error);
+    return [];
+  }
+}
+
+export const putChild = async (childId: number, child: any, token: string) => {
+  try {
+    console.log("Datos que se van a enviar:", child);
+    console.log("ID del hijo:", childId);
+    const response = await api.put(`/child/${childId}`, child, {
+      headers: {
+        Authorization: `Bearer ${token}`, 
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error("Error actualizando hijo:", error);
+    return { error: "Error al actualizar el hijo. Intenta nuevamente." };
+  }
+}
+
 export default api;
