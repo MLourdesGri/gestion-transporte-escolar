@@ -27,9 +27,10 @@
         </div>
 
         <div class="input-fields">
-          <InputField label="Nombre y apellido" type="text" :placeholder= "user?.full_name || 'Juan Perez'" name="full_name" v-model="form.full_name" :disabled="!isEditing"/>
-          <InputField label="Número de telefono" type="text" :placeholder="user?.phone_number || '1111111'" name="phone_number" v-model="form.phone_number" :disabled="!isEditing"/>
-          <InputField label="Dirección" type="text" :placeholder="user?.address || 'Casa 123'" name="address" v-model="form.address" :disabled="!isEditing"/>
+          <InputField label="Nombre y apellido" type="text" name="full_name" v-model="form.full_name" :disabled="!isEditing"/>
+          <InputField label="Número de telefono" type="text" name="phone_number" v-model="form.phone_number" :disabled="!isEditing"/>
+          <InputField label="Dirección" type="text" name="address" v-model="form.address" :disabled="!isEditing"/>
+          <DatePicker label="Fecha de nacimiento" name="birth_date" v-model="form.birth_date" :disabled="!isEditing"/>
         </div>
 
         
@@ -51,6 +52,7 @@ import InputField from '@/components/InputField.vue';
 import CustomButton from '@/components/CustomButton.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
 import { getUser, putUser } from '@/services/api';
+import DatePicker from '@/components/DatePicker.vue';
 // import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 interface User {
@@ -59,6 +61,7 @@ interface User {
   phone_number: string;
   address: string;
   profile_picture: string;
+  birth_date: string;
 }
 
 const user = ref<User | null>(null);
@@ -71,15 +74,22 @@ const form = ref({
   phone_number: "",
   address: "",
   profile_picture: "",
+  birth_date: "",
 });
 
 const getProfileData = async () => {
   const token = localStorage.getItem("token");
   if (token) {
     try {
-      const userResponse = await getUser(token);
-      console.log(userResponse);
+      const userResponse = await getUser(token) as {data: User};
       user.value = userResponse.data;
+
+      form.value.full_name = user.value.full_name;
+      form.value.phone_number = user.value.phone_number;
+      form.value.address = user.value.address;
+      form.value.email = user.value.email;
+      form.value.profile_picture = user.value.profile_picture;
+      form.value.birth_date = user.value.birth_date;
     }
     catch (error) {
       console.error("Error cargando usuario", error);
@@ -127,6 +137,7 @@ const toggleEdit = async () => {
         full_name: form.value.full_name,
         phone_number: form.value.phone_number,
         address: form.value.address,
+        birth_date: form.value.birth_date,
       };
 
       const token = localStorage.getItem("token");

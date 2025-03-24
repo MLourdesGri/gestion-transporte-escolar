@@ -1,5 +1,5 @@
 <template>
-  <ion-item class="input-container">
+  <ion-item>
     <ion-label position="stacked">{{ label }}</ion-label>
     <ion-input
       :placeholder="placeholder"
@@ -22,7 +22,7 @@ import { ref } from 'vue';
 const props = withDefaults(defineProps<{
   label: string;
   type: TextFieldTypes | undefined;
-  placeholder: string;
+  placeholder?: string;
   disabled?: boolean;
 }>(), {
   disabled: false

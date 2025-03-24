@@ -39,6 +39,7 @@ import { ref } from 'vue';
 import { loginUser } from '@/services/api';
 import { useRouter } from 'vue-router';
 import { loginWithGoogle } from '@/firebase';
+import { postUser } from '@/services/api';
 
 const email = ref(''); 
 const password = ref('');
@@ -68,18 +69,25 @@ const handleSignUp = () => {
 const handleLoginGoogle = async () => {
   const response = await loginWithGoogle();
   console.log(response);
-  console.log("El nombre que traigo es: ", response?.displayName);
-  console.log("El email que traigo es: ", response?.email);
 
-  if (response?.error) {
+  const user = {
+      email: response?.email ?? '', 
+      full_name: response?.displayName ?? '',
+      role_id: parseInt("0"),
+      photo_picture: response?.photoURL ?? '',
+      is_confirmed: true
+  };
+  try {
+    const response = await postUser(user);
+    if (response?.error) {
       errorMessage.value = response.error;
       return;
-  } 
-  else {
-    // post user
-    // Aca deberia ir a la pagina de asignar rol
-    router.push('/assign-role');
-    // despues hacer put user
+    }
+    else {
+      router.push("/assign-role");
+    }
+  } catch (error) {
+    errorMessage.value = "Hubo un problema con el registro. Inténtalo nuevamente.";
   }
 };
 </script>

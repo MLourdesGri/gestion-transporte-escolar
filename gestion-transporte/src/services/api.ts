@@ -11,11 +11,13 @@ const api = axios.create({
 
 interface User {
   email: string;
-  password: string;
+  password?: string;
   full_name?: string;
   phone_number?: string;
   address?: string;
   profile_picture?: string;
+  role_id?: number;
+  birth_date?: string;
 }
 
 export const getUser = async (token: string) => {

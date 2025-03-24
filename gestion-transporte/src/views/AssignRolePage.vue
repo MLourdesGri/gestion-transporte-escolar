@@ -10,6 +10,9 @@
                 </div>
                 
                 <p class="warning">Advertencia: Este rol no puede ser cambiado en el futuro</p>
+
+                <ErrorMessage :message="errorMessage" />
+
                 <CustomButton class="signup-button" @click="update">Continuar</CustomButton>
             </div>
         </ion-content>
@@ -21,11 +24,38 @@ import { IonPage, IonContent } from '@ionic/vue';
 import { ref } from 'vue';
 import SegmentButton from '@/components/SegmentButton.vue';
 import CustomButton from '@/components/CustomButton.vue';
+import ErrorMessage from '@/components/ErrorMessage.vue';
+import { putUser } from '@/services/api';
+import { useRouter } from 'vue-router';
 
 const valorSeleccionado = ref("");
+const errorMessage = ref("");
+const router = useRouter();
 
-const update = () => {
-  console.log(valorSeleccionado.value);
+const update = async () => {
+  try {
+      const role = {
+        role_id: parseInt(valorSeleccionado.value),
+      };
+
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        errorMessage.value = "No se encontró el token. Inicia sesión nuevamente.";
+        return;
+      }
+
+      const response = await putUser(role, token);
+
+      if (response?.error) {
+        errorMessage.value = response.error;
+        return;
+      } else {
+        router.push('/home');
+      }
+    } catch (error) {
+      errorMessage.value = "Hubo un problema al elegir el rol. Inténtalo nuevamente.";
+    }
 };
 </script>
 

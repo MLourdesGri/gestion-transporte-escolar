@@ -58,6 +58,7 @@ const form = ref({
   password: "",
   confirmPassword: "",
   full_name: "",
+  birth_date: "2000-01-01",
 });
 
 const errorMessage = ref("");
@@ -96,6 +97,7 @@ const register = async () => {
       password: form.value.password,
       full_name: form.value.full_name,
       role_id: parseInt(valorSeleccionado.value),
+      birth_date: form.value.birth_date,
     };
     const response = await postUser(user);
     if (response?.error) {
