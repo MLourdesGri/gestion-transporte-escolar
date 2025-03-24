@@ -14,6 +14,7 @@ const routes: Array<RouteRecordRaw> = [
       {path: 'profile', component: () => import ('../views/ProfilePage.vue')},
       {path: 'settings', component: () => import ('../views/SettingsPage.vue')},
       {path: 'vehicle', component: () => import ('../views/VehiclePage.vue')},
+      {path: 'children', component: () => import ('../views/ChildrenPage.vue')},
     ]
   },
   {
