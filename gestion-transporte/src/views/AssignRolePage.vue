@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonContent } from '@ionic/vue';
+import { IonPage, IonContent, IonLabel } from '@ionic/vue';
 import { ref } from 'vue';
 import SegmentButton from '@/components/SegmentButton.vue';
 import CustomButton from '@/components/CustomButton.vue';
@@ -46,6 +46,7 @@ const update = async () => {
       }
 
       const response = await putUser(role, token);
+      console.log(response);
 
       if (response?.error) {
         errorMessage.value = response.error;

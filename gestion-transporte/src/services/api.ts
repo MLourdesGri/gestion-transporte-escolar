@@ -76,6 +76,20 @@ export const loginUser = async (email: string, password: string) => {
   }
 };
 
+export const signUpGoogle = async (user: User) => {
+  try {
+    const response = await api.post<{ token: string, user:User, error:Error }>("/users//signup-google", user);
+    const token = response.data.token;
+    localStorage.setItem('token',token);
+    return response.data;
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      return { error: error.response.data.error.message }; 
+    }
+    return { error: "Error desconocido. Inténtalo de nuevo." };
+  }
+}
+
 export const putUser = async (user: Partial<User>, token: string) => {
   try {
     const response = await api.put<{ user: User; error?: Error }>("/users/update", user, {

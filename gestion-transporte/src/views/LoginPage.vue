@@ -39,7 +39,7 @@ import { ref } from 'vue';
 import { loginUser } from '@/services/api';
 import { useRouter } from 'vue-router';
 import { loginWithGoogle } from '@/firebase';
-import { postUser } from '@/services/api';
+import { signUpGoogle } from '@/services/api';
 
 const email = ref(''); 
 const password = ref('');
@@ -74,14 +74,21 @@ const handleLoginGoogle = async () => {
       email: response?.email ?? '', 
       full_name: response?.displayName ?? '',
       role_id: parseInt("0"),
-      photo_picture: response?.photoURL ?? '',
-      is_confirmed: true
+      profile_picture: response?.photoURL ?? '',
+      phone_number: response?.phoneNumber ?? '',
+      birth_date: '2000-01-01',
+      is_confirmed: true,
   };
   try {
-    const response = await postUser(user);
+    const response = await signUpGoogle(user);
+    
     if (response?.error) {
       errorMessage.value = response.error;
       return;
+    }
+
+    if ('user' in response && response.user?.role_id != 0) {
+      router.push("/home");
     }
     else {
       router.push("/assign-role");
