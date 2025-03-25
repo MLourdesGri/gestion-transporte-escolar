@@ -40,7 +40,7 @@
           {{ isEditing ? 'Guardar' : 'Editar perfil' }}
         </CustomButton>
 
-        <ion-toast v-if="showToast" message="Perfil actualizado correctamente" position="bottom" color="light" :isOpen="!errorMessage" duration="3000"></ion-toast>
+        <ion-toast v-if="showToast" message="Perfil actualizado correctamente" position="bottom" color="success" :isOpen="!errorMessage" duration="3000"></ion-toast>
       </ion-content>
     </ion-page>
 </template>

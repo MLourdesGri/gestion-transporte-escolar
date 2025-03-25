@@ -138,8 +138,7 @@ const logout = () => {
   user.value = null;
   role_id.value = null;
   router.push("/login");
-  setTimeout(() => window.location.reload(), 300); 
-};
+  };
 </script>
 
 <style scoped>
