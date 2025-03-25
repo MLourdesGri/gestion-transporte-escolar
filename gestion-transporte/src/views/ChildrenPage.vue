@@ -48,26 +48,37 @@
   
         <ErrorMessage :message="errorMessage" duration="3000" />
   
-        <!-- Modal para agregar o editar hijo -->
         <ion-modal ref="modalRef" :is-open="isModalOpen" @did-dismiss="closeModal">
-          <ion-header>
-            <ion-toolbar>
-              <ion-buttons slot="start">
-                <ion-button @click="cancel()">Cancelar</ion-button>
-              </ion-buttons>
-              <ion-buttons slot="end">
-                <ion-button :strong="true" @click="confirm()">Confirmar</ion-button>
-              </ion-buttons>
-            </ion-toolbar>
-          </ion-header>
-          <ion-content class="ion-padding">
-            <InputField label="Nombre" type="text" name="name" placeholder="" v-model="form.name" />
-            <InputField label="Apellido" type="text" name="last_name" placeholder="" required="true" v-model="form.last_name" />
-            <InputField label="Edad" type="number" name="age" placeholder="" v-model="form.age" />
-            <InputField label="Escuela" type="text" name="school" placeholder="" v-model="form.school" />
-          </ion-content>
-        </ion-modal>
-  
+        <ion-header>
+          <ion-toolbar>
+            <ion-buttons slot="start">
+              <ion-button @click="cancel()">Cancelar</ion-button>
+            </ion-buttons>
+            <ion-buttons slot="end">
+              <ion-button v-if="isEditing || !currentChild" :strong="true" @click="confirm()">Confirmar</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content class="ion-padding">
+          <InputField label="Nombre" type="text" v-model="form.name" :disabled="!isEditing" />
+          <InputField label="Apellido" type="text" v-model="form.last_name" :disabled="!isEditing" />
+          <InputField label="Edad" type="number" v-model="form.age" :disabled="!isEditing" />
+          <InputField label="Escuela" type="text" v-model="form.school" :disabled="!isEditing" />
+          
+          <div class="button-group" v-if="currentChild">
+            <ion-button expand="full" @click="startEditing">Editar</ion-button>
+            <ion-button expand="full" color="danger" id="cancelButton">Eliminar</ion-button>
+          </div>
+        </ion-content>
+      
+        <ion-alert
+          trigger="cancelButton"
+          header="Eliminar hijo"
+          :buttons="alertButtons"
+          message="Está seguro de que desea eliminar al hijo?"
+        ></ion-alert>
+
+      </ion-modal>
         <ion-toast v-model:isOpen="showToast" message="Hijo creado/actualizado correctamente" position="bottom" color="success" duration="3000"></ion-toast>
       </ion-content>
     </ion-page>
@@ -109,8 +120,9 @@
   const showAlert = ref(false); 
   const errorMessage = ref("");
   const showToast = ref(false);
-  const currentChild = ref<Child | null>(null); // Agregado para editar un hijo
-  const isModalOpen = ref(false); // Estado para abrir/cerrar modal
+  const currentChild = ref<Child | null>(null); 
+  const isModalOpen = ref(false); 
+  const isEditing = ref(false);
   
   const loadChildren = async () => {
     const token = localStorage.getItem("token");
@@ -153,31 +165,33 @@
   onMounted(() => {
     loadChildren();
     loadUser();
+    isEditing.value = false;
   });
   
   const cancel = () => {
-    isModalOpen.value = false; // Cerrar el modal cuando se cancela
-    currentChild.value = null; // Limpiar el hijo actual
+    isModalOpen.value = false;
+    currentChild.value = null;
+    isEditing.value = false;
   };
 
   const closeModal = () => {
-    isModalOpen.value = false; // Cerrar el modal
-    currentChild.value = null; // Limpiar el hijo actual
+    isModalOpen.value = false; 
+    currentChild.value = null; 
   };
 
   const confirm = async () => {
     await saveChild();
-    isModalOpen.value = false; // Cerrar el modal después de confirmar
-    loadChildren(); // Recargar la lista de hijos
+    isModalOpen.value = false; 
+    loadChildren();
   };
   
   const openModal = () => {
-    currentChild.value = null; // Limpiar cualquier hijo anterior
-    form.value = { name: '', last_name: '', age: '', school: '' }; // Limpiar el formulario
-    isModalOpen.value = true; // Abrir el modal
+    currentChild.value = null; 
+    isEditing.value = true;
+    form.value = { name: '', last_name: '', age: '', school: '' }; 
+    isModalOpen.value = true; 
   };
   
-  // Nuevo hijo o editar uno existente
   const saveChild = async () => {
     const childData = {
       name: form.value.name,
@@ -199,10 +213,8 @@
         return;
       }
       if (currentChild.value) {
-        // Editar hijo
         response = await putChild(currentChild.value.child_id, childData, token);
       } else {
-        // Crear nuevo hijo
         response = await postChild(childData, token);
       }
       if (response && typeof response === 'object' && 'data' in response) {
@@ -219,12 +231,28 @@
     }
   };
   
-  // Abrir el modal para editar un hijo
   const editChild = (child: Child) => {
     currentChild.value = child;
-    form.value = { ...child, age: child.age.toString() }; // Convertir 'age' a string y llenar el formulario con los datos del hijo
-    isModalOpen.value = true; // Mostrar el modal
+    form.value = { ...child, age: child.age.toString() };
+    isModalOpen.value = true; 
   };
+
+  const startEditing = () => {
+  isEditing.value = true;
+  };
+
+  const alertButtons = [
+    {
+      text: 'Cancelar'
+    },
+    {
+      text: 'Confirmar',
+      handler: () => {
+        console.log(`Eliminado`); // ver como hacer la eliminacion
+      },
+    },
+  ];
+
   </script>
   
   <style scoped>
@@ -237,10 +265,20 @@
   .custom-fab {
     --background: #003366;
     --background-hover: #002244;
-    --color: white; /* Color del icono */
+    --color: white; 
   }
   .custom-menu {
-    --color: #003366; /* Color del icono */
+    --color: #003366; 
+  }
+  .button-group {
+    display: flex;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    bottom: 0;
+  }
+  .button-group ion-button {
+    flex: 1;
   }
   </style>
   
