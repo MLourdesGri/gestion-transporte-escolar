@@ -5,14 +5,14 @@
           <ion-buttons slot="start">
             <ion-menu-button class="custom-menu"></ion-menu-button>
           </ion-buttons>
-          <ion-title>Hijos</ion-title>
+          <ion-title>Alumnos</ion-title>
         </ion-toolbar>
       </ion-header>
   
       <ion-content :fullscreen="true">
         <ion-header collapse="condense">
           <ion-toolbar>
-            <ion-title size="large">Hijos</ion-title>
+            <ion-title size="large">Alumnos</ion-title>
           </ion-toolbar>
         </ion-header>
   
@@ -28,7 +28,7 @@
   
         <template v-else>
           <div class="no-children">
-            <p>No tienes hijos registrados.</p>
+            <p>No tienes alumnos registrados.</p>
           </div>
         </template>
   
@@ -73,13 +73,13 @@
       
         <ion-alert
           trigger="cancelButton"
-          header="Eliminar hijo"
+          header="Eliminar alumno"
           :buttons="alertButtons"
-          message="Está seguro de que desea eliminar al hijo?"
+          message="Está seguro de que desea eliminar al alumno?"
         ></ion-alert>
 
       </ion-modal>
-        <ion-toast v-model:isOpen="showToast" message="Hijo creado/actualizado correctamente" position="bottom" color="success" duration="3000"></ion-toast>
+        <ion-toast v-model:isOpen="showToast" message="Alumno creado/actualizado correctamente" position="bottom" color="success" duration="3000"></ion-toast>
       </ion-content>
     </ion-page>
   </template>
@@ -89,7 +89,7 @@
   IonCardSubtitle, IonCardTitle, IonAlert, IonFab, IonFabButton, IonIcon, IonModal, IonButton, IonToast} from '@ionic/vue';
   import InputField from '@/components/InputField.vue';
   import { onMounted, ref } from "vue";
-  import { getChildrenByUser, getUser, postChild, putChild } from "../services/api"; 
+  import { getChildrenByUser, getUser, postChild, putChild, deleteChild } from "../services/api"; 
   import { add } from 'ionicons/icons';
   import ErrorMessage from '@/components/ErrorMessage.vue';
   
@@ -123,6 +123,8 @@
   const currentChild = ref<Child | null>(null); 
   const isModalOpen = ref(false); 
   const isEditing = ref(false);
+
+  const token = localStorage.getItem("token");
   
   const loadChildren = async () => {
     const token = localStorage.getItem("token");
@@ -136,7 +138,7 @@
           children.value = [];
         }
       } catch (error) {
-        console.error("Error cargando hijos", error);
+        console.error("Error cargando alumnos", error);
         children.value = [];
       }
     }
@@ -165,7 +167,6 @@
   onMounted(() => {
     loadChildren();
     loadUser();
-    isEditing.value = false;
   });
   
   const cancel = () => {
@@ -207,7 +208,7 @@
   
     try {
       let response;
-      const token = localStorage.getItem("token");
+      
       if (!token) {
         errorMessage.value = "No se pudo autenticar. Por favor, inicie sesión nuevamente.";
         return;
@@ -223,7 +224,7 @@
           showToast.value = false;
         }, 3000);
       } else {
-        errorMessage.value = "Error al crear o editar el hijo. Inténtalo nuevamente.";
+        errorMessage.value = "Error al crear o editar el alumno. Inténtalo nuevamente.";
       }
     } catch (error) {
       console.error(error);
@@ -235,6 +236,7 @@
     currentChild.value = child;
     form.value = { ...child, age: child.age.toString() };
     isModalOpen.value = true; 
+    isEditing.value = false;
   };
 
   const startEditing = () => {
@@ -242,16 +244,27 @@
   };
 
   const alertButtons = [
-    {
-      text: 'Cancelar'
+  {
+    text: 'Cancelar'
+  },
+  {
+    text: 'Confirmar',
+    handler: async () => {  
+      if (currentChild.value && token) {
+        try {
+          await deleteChild(currentChild.value.child_id, token); 
+          closeModal();
+          await loadChildren();
+          currentChild.value = null;
+        } catch (error) {
+          console.error("Error eliminando alumno", error);
+        }
+      } else {
+        console.error("Token inválido o alumno no seleccionado");
+      }
     },
-    {
-      text: 'Confirmar',
-      handler: () => {
-        console.log(`Eliminado`); // ver como hacer la eliminacion
-      },
-    },
-  ];
+  },
+];
 
   </script>
   

@@ -204,8 +204,6 @@ export const postChild = async (child: any, token: string) => {
 
 export const putChild = async (childId: number, child: any, token: string) => {
   try {
-    console.log("Datos que se van a enviar:", child);
-    console.log("ID del hijo:", childId);
     const response = await api.put(`/child/${childId}`, child, {
       headers: {
         Authorization: `Bearer ${token}`, 
@@ -213,9 +211,21 @@ export const putChild = async (childId: number, child: any, token: string) => {
     });
     return response.data;
   } catch (error: any) {
-    console.error("Error actualizando hijo:", error);
     return { error: "Error al actualizar el hijo. Intenta nuevamente." };
   }
 }
+
+export const deleteChild = async (childId: number, token: string) => {
+  try {
+    const response = await api.delete(`/child/${childId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    return { error: "Error al eliminar el hijo. Intenta nuevamente." };
+  }
+};
 
 export default api;
