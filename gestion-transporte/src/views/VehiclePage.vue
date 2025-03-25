@@ -3,7 +3,7 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-menu-button color="primary"></ion-menu-button>
+          <ion-menu-button class="custom-menu"></ion-menu-button>
         </ion-buttons>
         <ion-title>Mi vehículo</ion-title>
       </ion-toolbar>

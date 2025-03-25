@@ -197,11 +197,11 @@ ion-menu.md ion-item.selected {
 }
 
 ion-menu.md ion-item.selected ion-icon {
-  color: var(--ion-color-primary);
+  color: var(--ion-color-blue);
 }
 
 ion-menu.md ion-item ion-icon {
-  color: #616e7e;
+  color: #003366;
 }
 
 ion-menu.md ion-item ion-label {
@@ -228,7 +228,7 @@ ion-menu.ios ion-item {
 }
 
 ion-menu.ios ion-item.selected ion-icon {
-  color: var(--ion-color-primary);
+  color: var(--ion-color-blue);
 }
 
 ion-menu.ios ion-item ion-icon {
@@ -249,11 +249,11 @@ ion-menu.ios ion-note {
 ion-note {
   display: inline-block;
   font-size: 16px;
-  color: var(--ion-color-medium-shade);
+  color: var(--ion-color-blue);
 }
 
 ion-item.selected {
-  --color: var(--ion-color-primary);
+  --color: var(--ion-color-blue);
 }
 
 /* Estilo para el botón de cerrar sesión */
