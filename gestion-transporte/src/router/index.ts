@@ -13,7 +13,12 @@ const routes: Array<RouteRecordRaw> = [
       {path: 'home', component: () => import ('../views/HomePage.vue')},
       {path: 'profile', component: () => import ('../views/ProfilePage.vue')},
       {path: 'settings', component: () => import ('../views/SettingsPage.vue')},
-      {path: 'vehicle', component: () => import ('../views/VehiclePage.vue')},
+      {path: '/vehicle',
+        component: () => import ('../components/SideBar.vue'),
+        children: [
+          { path: '', component: () => import ('../views/VehiclePage.vue') },  // Ruta para "vehicle"
+          { path: 'new-vehicle', component: () => import ('../views/NewVehiclePage.vue') },  // Ruta hija de "vehicle"
+        ]},
       {path: 'children', component: () => import ('../views/ChildrenPage.vue')},
     ]
   },
