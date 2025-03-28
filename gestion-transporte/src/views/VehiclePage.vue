@@ -71,7 +71,7 @@ import {
 } from "@ionic/vue";
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { getVehicleByUser, postVehicle, putVehicle } from "@/services/api";
+import { putVehicle } from "@/services/api";
 import CustomButton from "@/components/CustomButton.vue";
 
 interface Vehicle {

@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonToast } from '@ionic/vue';
+import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
 import { ref, onMounted } from 'vue';
 import InputField from '@/components/InputField.vue';
 import CustomButton from '@/components/CustomButton.vue';

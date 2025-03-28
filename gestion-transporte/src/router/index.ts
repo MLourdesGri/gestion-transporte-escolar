@@ -10,7 +10,12 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     component: () => import ('../components/SideBar.vue'),
     children: [
-      {path: 'home', component: () => import ('../views/HomePage.vue')},
+      {path: 'home',
+        component: () => import ('../components/SideBar.vue'),
+        children: [
+          { path: '', component: () => import ('../views/HomePage.vue') },  // Ruta para home
+          { path: 'new-trip', component: () => import ('../views/NewTripPage.vue') },  // Ruta hija de "viajes"
+        ]},
       {path: 'profile', component: () => import ('../views/ProfilePage.vue')},
       {path: 'settings', component: () => import ('../views/SettingsPage.vue')},
       {path: '/vehicle',
