@@ -42,7 +42,7 @@
           <!-- Paso 3: Archivos de Habilitación -->
           <div v-if="step === 3">
             <ion-title size="large" class="title">Espacio para subir archivos</ion-title>
-            <InputField label="Fecha de vencimiento" type="date" placeholder="Fecha de vencimiento" name="expiration_date" />
+            <InputFile accept="application/pdf" @file-uploaded="handleFileUpload">Subir PDF</InputFile>
           </div>
 
           <ErrorMessage :message="errorMessage" duration="3000" />
@@ -60,11 +60,12 @@
 </template>
 
 <script setup lang="ts">
-import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
+import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonContent } from '@ionic/vue';
 import { ref, onMounted } from 'vue';
 import InputField from '@/components/InputField.vue';
 import CustomButton from '@/components/CustomButton.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
+import InputFile from '@/components/InputFile.vue';
 import { getVehicleByUser, postVehicle, putVehicle } from '@/services/api';
 
 interface Vehicle {
@@ -135,6 +136,11 @@ const prevStep = () => {
 //     form.value[field] = target.files[0];
 //   }
 // };
+const fileUrl = ref<string | null>(null);
+
+const handleFileUpload = (url: string) => {
+    fileUrl.value = url;
+};
 
 const saveVehicle = async () => {
   errorMessage.value = "";
@@ -153,7 +159,7 @@ const saveVehicle = async () => {
     licensePlate: form.value.licensePlate,
     capacity: Number(form.value.capacity),
     driver_authorization_pdf: form.value.driver_authorization_pdf,
-    vehicle_authorization_pdf: form.value.vehicle_authorization_pdf,
+    vehicle_authorization_pdf: fileUrl.value,
   };
 
   if (!vehicleData.driver_name || !vehicleData.driver_license || !vehicleData.make || !vehicleData.model || !vehicleData.year || !vehicleData.licensePlate || !vehicleData.capacity) {
@@ -190,11 +196,9 @@ const saveVehicle = async () => {
 .vehicle-box {
   align-items: center;
   gap: 20px;
-  height: 100vh;
 }
 .input-fields {
   margin-top: 40px;
-  margin-left: 20px;
 }
 ion-toast {
   margin-bottom: 20px;
@@ -203,12 +207,15 @@ ion-toast {
   display: flex;
   justify-content: space-between;
   width: 100%;
+  position: absolute;
+  bottom: 10px;
+  left: 0;
 }
 .title {
   margin-bottom: 20px;
 }
 .btnNext {
-  margin-right: 20px;
+  margin-left: auto;
 }
 
 </style>

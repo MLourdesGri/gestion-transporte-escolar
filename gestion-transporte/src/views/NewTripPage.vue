@@ -5,9 +5,7 @@
           <ion-buttons slot="start">
             <ion-menu-button class="custom-menu"></ion-menu-button>
           </ion-buttons>
-          <div v-if="step === 1"><ion-title>Elige alumno</ion-title></div>
-          <div v-if="step === 2"><ion-title>Elige chofer</ion-title></div>
-          <div v-if="step === 3"><ion-title>Realiza el pago</ion-title></div>
+            <ion-title>Nuevo transporte</ion-title>
         </ion-toolbar>
       </ion-header>
   
@@ -22,6 +20,7 @@
           <div>
             <!-- Paso 1: Elegir hijo -->
             <div v-if="step === 1">
+                <ion-title size="large" class="title">Elegir hijo</ion-title>
                 <template v-if="children.length > 0">
                     <ion-card v-for="child in children" :key="child.child_id" :button="true" @click="selectChild(child)" :class="{ selected: currentChild && currentChild.child_id === child.child_id }">
                         <ion-card-header>
@@ -35,16 +34,17 @@
   
             <!-- Paso 2: Choferes disponibles-->
             <div v-if="step === 2">
+                <ion-title size="large" class="title">Elegir chofer</ion-title>
                 <template v-if="drivers.length > 0">
                     <ion-card v-for="driver in drivers" :key="driver.vehicle_id" :button="true" @click="selectDriver(driver)" :class="{ selected: currentDriver && currentDriver.vehicle_id === driver.vehicle_id }">
                         <ion-card-header>
-                        <ion-card-title>{{ driver.licensePlate }}</ion-card-title>
+                          <ion-card-title>{{ driver.licensePlate }}</ion-card-title>
                         </ion-card-header>
                         <ion-card-content>
-                        <p><strong>Marca:</strong> {{ driver.make }}</p>
-                        <p><strong>Modelo:</strong> {{ driver.model }}</p>
-                        <p><strong>Año:</strong> {{ driver.year }}</p>
-                        <p><strong>Capacidad:</strong> {{ driver.capacity }} pasajeros</p>
+                          <p><strong>Marca:</strong> {{ driver.make }}</p>
+                          <p><strong>Modelo:</strong> {{ driver.model }}</p>
+                          <p><strong>Año:</strong> {{ driver.year }}</p>
+                          <p><strong>Capacidad:</strong> {{ driver.capacity }} pasajeros</p>
                         </ion-card-content>
                     </ion-card>
                 </template>
@@ -52,6 +52,7 @@
   
             <!-- Paso 3: Pago MP -->
             <div v-if="step === 3">
+              <ion-title size="large" class="title">Realizar el pago</ion-title>
             </div>
   
             <ErrorMessage :message="errorMessage" duration="3000" />
@@ -214,6 +215,8 @@ const saveTrip = async () => {
   .selected {
   border: 2px solid #003366; 
     }
-  
+  .title {
+  margin-top: 20px;
+  }
 </style>
   
