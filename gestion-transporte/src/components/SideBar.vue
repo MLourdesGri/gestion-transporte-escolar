@@ -118,7 +118,7 @@ watch(() => route.path, () => {
 const allPages = [
   { title: "Inicio", url: "/home", iosIcon: homeOutline, roles: [1, 2, 3] },
   { title: "Hijos", url: "/children", iosIcon: accessibilityOutline, roles: [1] },
-  { title: "Habilitaciones", url: "/vehicle", iosIcon: carOutline, roles: [2] },
+  { title: "Habilitaciones", url: "/authorization", iosIcon: carOutline, roles: [2] },
   { title: "Perfil", url: "/profile", iosIcon: personOutline, roles: [1, 2, 3] },
   { title: "Configuracion", url: "/settings", iosIcon: settingsOutline, roles: [1, 2] }
 ];

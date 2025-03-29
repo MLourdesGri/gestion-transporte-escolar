@@ -18,11 +18,11 @@ const routes: Array<RouteRecordRaw> = [
         ]},
       {path: 'profile', component: () => import ('../views/ProfilePage.vue')},
       {path: 'settings', component: () => import ('../views/SettingsPage.vue')},
-      {path: '/vehicle',
+      {path: '/authorization',
         component: () => import ('../components/SideBar.vue'),
         children: [
-          { path: '', component: () => import ('../views/VehiclePage.vue') },  // Ruta para "vehicle"
-          { path: 'new-vehicle', component: () => import ('../views/NewVehiclePage.vue') },  // Ruta hija de "vehicle"
+          { path: '', component: () => import ('../views/AuthorizationPage.vue') },  // Ruta para "authorization"
+          { path: 'new-authorization', component: () => import ('../views/NewAuthorizationPage.vue') },  // Ruta hija de "authorization"
         ]},
       {path: 'children', component: () => import ('../views/ChildrenPage.vue')},
     ]

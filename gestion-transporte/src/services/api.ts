@@ -132,9 +132,9 @@ export const uploadFile = async (file: File): Promise<string> => {
   }
 };
 
-export const getVehicleByUser = async (token: string) => {
+export const getAuthorizationByUser = async (token: string) => {
   try {
-    const response = await api.get("/vehicle", {
+    const response = await api.get("/authorization", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -146,9 +146,9 @@ export const getVehicleByUser = async (token: string) => {
   }
 }
 
-export const putVehicle = async (vehicle: any, token: string) => {
+export const putAuthorization = async (authorization: any, token: string) => {
   try {
-    const response = await api.put("/vehicle", vehicle, {
+    const response = await api.put("/authorization", authorization, {
       headers: {
         Authorization: `Bearer ${token}`, 
       },
@@ -160,9 +160,9 @@ export const putVehicle = async (vehicle: any, token: string) => {
   }
 };
 
-export const postVehicle = async (vehicle: any, token: string) => {
+export const postAuthorization = async (authorization: any, token: string) => {
   try {
-    const response = await api.post("/vehicle", vehicle, {
+    const response = await api.post("/authorization", authorization, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -174,9 +174,9 @@ export const postVehicle = async (vehicle: any, token: string) => {
   }
 }
 
-export const getAllVehicles = async (token: string) => {
+export const getAllAuthorizations = async (token: string) => {
   try {
-    const response = await api.get("/vehicle/all", {
+    const response = await api.get("/authorization/all", {
       headers: {
         Authorization: `Bearer ${token}`,
       },

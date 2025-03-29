@@ -36,7 +36,7 @@
             <div v-if="step === 2">
                 <ion-title size="large" class="title">Elegir chofer</ion-title>
                 <template v-if="drivers.length > 0">
-                    <ion-card v-for="driver in drivers" :key="driver.vehicle_id" :button="true" @click="selectDriver(driver)" :class="{ selected: currentDriver && currentDriver.vehicle_id === driver.vehicle_id }">
+                    <ion-card v-for="driver in drivers" :key="driver.authorization_id" :button="true" @click="selectDriver(driver)" :class="{ selected: currentDriver && currentDriver.authorization_id === driver.authorization_id }">
                         <ion-card-header>
                           <ion-card-title>{{ driver.licensePlate }}</ion-card-title>
                         </ion-card-header>
@@ -75,7 +75,7 @@ import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, Io
 import { ref, onMounted } from 'vue';
 import CustomButton from '@/components/CustomButton.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
-import { getAllVehicles, getChildrenByUser } from '@/services/api';
+import { getAllAuthorizations, getChildrenByUser } from '@/services/api';
 
 
 interface Child {
@@ -86,8 +86,8 @@ interface Child {
     school: string;
 }
 
-interface Vehicle {
-    vehicle_id: number;
+interface Authorization {
+    authorization_id: number;
     make: string;
     model: string;
     year: number;
@@ -101,11 +101,11 @@ loadChildren();
 
 const step = ref(1); 
 const children = ref<Child[]>([]);
-const drivers = ref<Vehicle[]>([]);
+const drivers = ref<Authorization[]>([]);
 const errorMessage = ref("");
 const showToast = ref(false);
 const currentChild = ref<Child | null>(null); 
-const currentDriver = ref<Vehicle | null>(null);
+const currentDriver = ref<Authorization | null>(null);
 
 const token = localStorage.getItem("token");
 
@@ -139,7 +139,7 @@ const loadDriver = async () => {
 const token = localStorage.getItem("token");
 if (token) {
     try {
-    const driverResponse = await getAllVehicles(token);
+    const driverResponse = await getAllAuthorizations(token);
     if (driverResponse && typeof driverResponse === "object" && "data" in driverResponse) {
         const driverData = driverResponse.data;
         drivers.value = Array.isArray(driverData) ? driverData : (driverData ? [driverData] : []);
@@ -158,7 +158,7 @@ const selectChild = (child: Child) => {
     loadDriver();
 };
 
-const selectDriver = (driver: Vehicle) => {
+const selectDriver = (driver: Authorization) => {
     currentDriver.value = driver;
 };
 
