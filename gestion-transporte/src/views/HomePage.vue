@@ -142,7 +142,7 @@ const translateStatus = (status: string) => {
 
 const router = useRouter();
 const navigateToPage = () => {
-  router.push("/postTrip"); 
+  router.push("/home/new-trip"); 
 };
 </script>
 

@@ -174,6 +174,21 @@ export const postVehicle = async (vehicle: any, token: string) => {
   }
 }
 
+export const getAllVehicles = async (token: string) => {
+  try {
+    const response = await api.get("/vehicle/all", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  }
+  catch (error) {
+    console.error("Error obteniendo vehículos:", error);
+    return [];
+  }
+}
+
 export const sendPasswordReset = async (email: string) => {
   try {
     const response = await api.post<{ message: string; error?: Error }>("/users/forgot-password", { email });

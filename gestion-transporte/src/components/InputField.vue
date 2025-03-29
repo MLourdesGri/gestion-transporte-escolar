@@ -1,6 +1,6 @@
 <template>
   <ion-item>
-    <ion-label position="stacked">{{ label }}</ion-label>
+    <ion-label position="stacked" class="label">{{ label }}</ion-label>
     <ion-input
       :placeholder="placeholder"
       v-model="model"
@@ -48,5 +48,9 @@ const model = defineModel<string>();
 /* Evita que el icono interrumpa el tab */
 ion-input-password-toggle {
   pointer-events: auto;
+}
+
+.label {
+  font-size: 20px;
 }
 </style>
