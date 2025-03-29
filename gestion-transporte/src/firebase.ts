@@ -11,7 +11,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+export const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
 export const loginWithGoogle = async (): Promise<User | null> => {
@@ -27,5 +27,3 @@ export const loginWithGoogle = async (): Promise<User | null> => {
 export const logout = async () => {
   await signOut(auth);
 };
-
-export { auth };

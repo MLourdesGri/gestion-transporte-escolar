@@ -18,11 +18,11 @@
   
         <div class="avatar-box">
           <div class="pic">
-            <img class="pic-img" :src="user?.profile_picture || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Foto de perfil"/>
+            <img class="pic-img" :src="previewProfilePicture || user?.profile_picture || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Foto de perfil"/>
           </div>
           <strong>{{user?.email || form.email}}</strong> 
           <div v-if="isEditing" class="upload-photo">
-            <CustomButton class="upload-photo-button" color="light">Subir foto</CustomButton>
+            <InputFile accept="image/*" @file-uploaded="onFileUploaded">Subir foto</InputFile>
           </div>
         </div>
 
@@ -41,19 +41,21 @@
         </CustomButton>
 
         <ion-toast v-if="showToast" message="Perfil actualizado correctamente" position="bottom" color="success" :isOpen="!errorMessage" duration="3000"></ion-toast>
+
+        <ion-loading :isOpen="isLoading" message="Guardando cambios..." />
       </ion-content>
     </ion-page>
 </template>
   
 <script setup lang="ts">
-import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonToast } from '@ionic/vue';
+import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonToast, IonLoading } from '@ionic/vue';
 import { ref, onMounted } from 'vue';
 import InputField from '@/components/InputField.vue';
 import CustomButton from '@/components/CustomButton.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
-import { getUser, putUser } from '@/services/api';
 import DatePicker from '@/components/DatePicker.vue';
-// import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import InputFile from '@/components/InputFile.vue';
+import { getUser, putUser } from '@/services/api';
 
 interface User {
   email: string;
@@ -100,24 +102,20 @@ const getProfileData = async () => {
 
 onMounted(getProfileData);
 
-// const profileImage = ref<string | null>(null);
-
-// const selectImage = async () => {
-//   try {
-//     const image = await Camera.getPhoto({
-//       quality: 90,
-//       source: CameraSource.Photos,  // Permite solo seleccionar desde la galería
-//       resultType: CameraResultType.Uri,  // Devuelve una URI de la imagen
-//     });
-
-//     profileImage.value = image.webPath || null;  // Almacena la URI de la imagen seleccionada
-//   } catch (error) {
-//     console.error("Error al seleccionar la imagen:", error);
-//   }
-// };
-
+const previewProfilePicture = ref("");
 const isEditing = ref(false);
 const showToast = ref(false);
+const isLoading = ref(false);
+
+const onFileUploaded = async (url: string) => {
+  previewProfilePicture.value = url;
+  isLoading.value = true;
+
+  setTimeout(() => {
+    form.value.profile_picture = url;
+    isLoading.value = false;
+  }, 3000);
+};
 
 const toggleEdit = async () => {
   if (isEditing.value) {
@@ -138,6 +136,7 @@ const toggleEdit = async () => {
         phone_number: form.value.phone_number,
         address: form.value.address,
         birth_date: form.value.birth_date,
+        profile_picture: previewProfilePicture.value || form.value.profile_picture,
       };
 
       const token = localStorage.getItem("token");
@@ -157,7 +156,7 @@ const toggleEdit = async () => {
       await getProfileData();
     } catch (error) {
       errorMessage.value = "Hubo un problema con la actualización. Inténtalo nuevamente.";
-    }
+    } 
   }
 };
 </script>
