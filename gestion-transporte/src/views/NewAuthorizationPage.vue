@@ -18,32 +18,39 @@
 
       <div class="authorization-box">
         <div class="input-fields">
-          <!-- Paso 1: Datos del Chofer -->
           <div v-if="step === 1">
             <ion-title size="large" class="title">Datos del chofer</ion-title>
-            <InputField label="Nombre y Apellido" type="text" placeholder="Nombre" name="driver_name" v-model="form.driver_name" />
-            <InputField label="Domicilio" type="text" placeholder="Domicilio" name="address" v-model="form.address" />
-            <InputField label="Teléfono" type="text" placeholder="Teléfono" name="phone" v-model="form.phone"/>
-            <InputField label="Genero" type="text" placeholder="Genero" name="gender" v-model="form.gender"/>
-            <InputField label="Institucion educativa" type="text" placeholder="Institucion educativa" name="school" v-model="form.school" />
-            <InputField label="Turno de trabajo" type="text" placeholder="Turno de trabajo" name="work_shift"  v-model="form.work_shift"/>
+            <InputField label="Nombre y Apellido" type="text" placeholder="Juan" name="driver_name" v-model="form.driver_name" />
+            <InputField label="Domicilio" type="text" placeholder="Cordoba 1256" name="address" v-model="form.address" />
+            <InputField label="Teléfono" type="text" placeholder="3413456677" name="phone" v-model="form.phone"/>
+            <DropdownField 
+              label="Género" 
+              :options="genders" 
+              v-model="form.gender" 
+            />
+            <DropdownField 
+              label="Turno de trabajo" 
+              :options="workShifts" 
+              v-model="form.work_shift" 
+            />
+            <InputField label="Institución educativa" type="text" placeholder="Colegio Maria Auxiliadora" name="school" v-model="form.school" />
           </div>
 
-          <!-- Paso 2: Datos del Vehículo -->
           <div v-if="step === 2">
             <ion-title size="large" class="title">Datos del vehículo</ion-title>
-            <InputField label="Marca" type="text" placeholder="Marca" name="make" v-model="form.vehicle_make" />
-            <InputField label="Modelo" type="text" placeholder="Modelo" name="model" v-model="form.vehicle_model" />
-            <InputField label="Año" type="number" placeholder="Año" name="year" v-model="form.vehicle_year" />
-            <InputField label="Patente" type="text" placeholder="Patente" name="licensePlate" v-model="form.vehicle_license_plate" />
-            <InputField label="Capacidad" type="number" placeholder="Capacidad" name="capacity" v-model="form.vehicle_capacity" />
+            <InputField label="Marca" type="text" placeholder="Mercedes Benz" name="make" v-model="form.vehicle_make" />
+            <InputField label="Modelo" type="text" placeholder="Sprinter" name="model" v-model="form.vehicle_model" />
+            <InputField label="Año" type="number" placeholder="2020" name="year" v-model="form.vehicle_year" />
+            <InputField label="Patente" type="text" placeholder="ABC123" name="licensePlate" v-model="form.vehicle_license_plate" />
+            <InputField label="Cantidad de pasajeros" type="number" placeholder="23" name="capacity" v-model="form.vehicle_capacity" />
           </div>
 
-          <!-- Paso 3: Archivos de Habilitación -->
           <div v-if="step === 3">
-            <ion-title size="large" class="title">Espacio para subir archivos</ion-title>
-            <InputFile accept="application/pdf" @file-uploaded="handleFileUploadVehicle">Habilitacion del vehiculo</InputFile>
-            <InputFile accept="application/pdf" @file-uploaded="handleFileUploadDriver">Habilitacion del chofer</InputFile>
+            <ion-title size="large" class="title">Carga de habilitaciones</ion-title>
+            <InputFile accept="application/pdf" @file-uploaded="handleFileUploadVehicle">Habilitacion municipal del vehiculo</InputFile>
+            <InputField label="Fecha de vencimiento" type="date" placeholder="Fecha de vencimiento" name="due_date_vehicle" v-model="form.due_date_vehicle" />
+            <InputFile accept="application/pdf" @file-uploaded="handleFileUploadDriver">Habilitacion municipal del chofer</InputFile>
+            <InputField label="Fecha de vencimiento" type="date" placeholder="Fecha de vencimiento" name="due_date_driver" v-model="form.due_date_driver" />
           </div>
 
           <ErrorMessage :message="errorMessage" duration="3000" />
@@ -58,7 +65,7 @@
 
           <!-- Botones de navegación -->
           <div class="navigation-buttons">
-            <CustomButton v-if="step > 1" @click="prevStep">Anterior</CustomButton>
+            <CustomButton v-if="step > 1" @click="prevStep" class="btnBefore">Anterior</CustomButton>
             <CustomButton v-if="step < 3" @click="nextStep" class="btnNext">Siguiente</CustomButton>
             <CustomButton v-if="step === 3" @click="saveAuthorization" class="btnNext">Guardar</CustomButton>
           </div>
@@ -77,6 +84,31 @@ import ErrorMessage from '@/components/ErrorMessage.vue';
 import InputFile from '@/components/InputFile.vue';
 import { getAuthorizationByUser, postAuthorization} from '@/services/api';
 import router from '@/router';
+import DropdownField from '@/components/DropdownField.vue';
+
+enum WorkShift {
+  Manana = 1,
+  Tarde = 2,
+  MananaYTarde = 3,
+}
+
+enum Gender {
+  Masculino = 1,
+  Femenino = 2,
+  Otro = 3,
+}
+
+const workShifts = [
+  { value: WorkShift.Manana, label: 'Mañana' },
+  { value: WorkShift.Tarde, label: 'Tarde' },
+  { value: WorkShift.MananaYTarde, label: 'Mañana y Tarde' },
+];
+
+const genders = [
+  { value: Gender.Femenino, label: 'Femenino'},
+  { value: Gender.Masculino, label: 'Masculino' },
+  { value: Gender.Otro, label: 'Otro' },
+]
 
 interface Authorization {
   driver_name: string;
@@ -92,6 +124,8 @@ interface Authorization {
   vehicle_capacity: bigint;
   vehicle_authorization_pdf: string;
   driver_authorization_pdf: string;
+  due_date_vehicle: string;
+  due_date_driver: string;
 }
 
 const authorization = ref<Authorization | null>(null);
@@ -105,7 +139,7 @@ const form = ref({
   phone: "",
   gender: "",
   school: "",
-  work_shift: "",
+  work_shift: "",  
   vehicle_make: "",
   vehicle_model: "",
   vehicle_year: "",
@@ -113,6 +147,8 @@ const form = ref({
   vehicle_capacity: "",
   vehicle_authorization_pdf: null as File | null,
   driver_authorization_pdf: null as File | null,
+  due_date_vehicle: "",
+  due_date_driver: "",
 });
 
 const token = localStorage.getItem("token");
@@ -190,12 +226,13 @@ const saveAuthorization = async () => {
     vehicle_license_plate: form.value.vehicle_license_plate,
     vehicle_capacity: form.value.vehicle_capacity,
     driver_authorization_pdf: driverUrl.value,
-    vehicle_authorization_pdf: vehicleUrl.value
-
+    vehicle_authorization_pdf: vehicleUrl.value,
+    due_date_vehicle: form.value.due_date_vehicle,
+    due_date_driver: form.value.due_date_driver,
   };
 
   if (!authorizationData.driver_name || !authorizationData.vehicle_make || !authorizationData.vehicle_model ||
-   !authorizationData.vehicle_year || !authorizationData.vehicle_license_plate || !authorizationData.vehicle_capacity) {
+   !authorizationData.vehicle_year || !authorizationData.vehicle_license_plate || !authorizationData.vehicle_capacity || !authorizationData.due_date_vehicle || !authorizationData.due_date_driver) {
     errorMessage.value = "Todos los campos son obligatorios";
     return;
   }
@@ -244,6 +281,10 @@ ion-toast {
 }
 .btnNext {
   margin-left: auto;
+  margin-right: 10px;
 }
-
+.btnBefore {
+  margin-right: auto;
+  margin-left: 10px;
+}
 </style>

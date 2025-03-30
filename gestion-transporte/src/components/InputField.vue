@@ -33,7 +33,7 @@ console.log(props);
 const showToggle = ref(false);
 
 const checkInput = () => {
-  showToggle.value = !!model.value; // Muestra el ojo solo si hay texto
+  showToggle.value = !!model.value; 
 };
 
 const model = defineModel<string>();
@@ -45,7 +45,6 @@ const model = defineModel<string>();
   font-size: 18px;
 }
 
-/* Evita que el icono interrumpa el tab */
 ion-input-password-toggle {
   pointer-events: auto;
 }
@@ -53,4 +52,5 @@ ion-input-password-toggle {
 .label {
   font-size: 20px;
 }
+
 </style>

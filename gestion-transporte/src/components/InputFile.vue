@@ -47,3 +47,16 @@ const handleFileUpload = async (event: Event) => {
   }
 };
 </script>
+
+<style>
+.upload-photo-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 20px;
+  margin-left: 20px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+</style>

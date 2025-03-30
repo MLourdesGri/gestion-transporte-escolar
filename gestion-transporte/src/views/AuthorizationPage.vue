@@ -20,6 +20,7 @@
           <div class="no-authorization">
           <p>Aún no has registrado ninguna habilitación de chofer y vehículo.</p>
         </div>
+        <CustomButton class="new-hab" @click="navigateToAddAuthorization">Nueva habilitación</CustomButton>
       </template>
 
       <template v-else>
@@ -31,21 +32,10 @@
           <ion-card-content>
             <p><strong>Patente:</strong> {{ authorization.vehicle_license_plate }}</p>
             <p><strong>Capacidad:</strong> {{ authorization.vehicle_capacity }} pasajeros</p>
-            <CustomButton @click="toggleEdit">
-              {{ isEditing ? "Guardar Cambios" : "Editar Vehículo" }}
-            </CustomButton>
+            <p><strong>Fecha de vencimiento:</strong> {{ authorization.due_date }} pasajeros</p>
           </ion-card-content>
         </ion-card>
 
-        <CustomButton class="new-hab" @click="navigateToAddAuthorization">Nueva habilitación</CustomButton>
-
-        <ion-toast
-          v-model:isOpen="showToast"
-          message="Vehículo actualizado correctamente"
-          position="bottom"
-          color="success"
-          duration="3000"
-        ></ion-toast>
       </template>
     </ion-content>
 
@@ -68,6 +58,7 @@ interface Authorization {
   vehicle_year: number;
   vehicle_license_plate: string;
   vehicle_capacity: number;
+  due_date: string;
 }
 
 const authorization = ref<Authorization | null>(null);
@@ -99,24 +90,6 @@ const token = localStorage.getItem("token");
 onMounted(loadAuthorizations);
 
 
-const toggleEdit = () => {
-  isEditing.value = !isEditing.value;
-  if (!isEditing.value) {
-    saveAuthorization();
-  }
-};
-
-const saveAuthorization = async () => {
-  if (!token || !authorization.value) return;
-
-  try {
-    await putAuthorization(authorization.value, token);
-    showToast.value = true;
-  } catch (error) {
-    console.error("Error al actualizar el vehículo", error);
-  }
-};
-
 const navigateToAddAuthorization = () => {
   router.push("/authorization/new-authorization");
 };
@@ -137,5 +110,7 @@ const navigateToAddAuthorization = () => {
   position: absolute;
   left: 0;
   right: 0;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 </style>
