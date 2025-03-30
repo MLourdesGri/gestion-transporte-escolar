@@ -24,7 +24,7 @@
       </template>
 
       <template v-else>
-        <ion-card v-for="authorization in authorizations" :key="authorization.authorization_id" :button="true">
+        <ion-card v-for="authorization in authorizations" :key="authorization.authorization_id" :button="true" @click="authorizationDetail(authorization.authorization_id)">
           <ion-card-header>
             <ion-card-title>{{ authorization.vehicle_make }} {{ authorization.vehicle_model }}</ion-card-title>
             <ion-card-subtitle>Año: {{ authorization.vehicle_year }}</ion-card-subtitle>
@@ -32,7 +32,8 @@
           <ion-card-content>
             <p><strong>Patente:</strong> {{ authorization.vehicle_license_plate }}</p>
             <p><strong>Capacidad:</strong> {{ authorization.vehicle_capacity }} pasajeros</p>
-            <p><strong>Fecha de vencimiento:</strong> {{ authorization.due_date }} pasajeros</p>
+            <p><strong>Vehículo habilitado hasta:</strong> {{ authorization.due_date_vehicle }}</p>
+            <p><strong>Chofer habilitado hasta:</strong> {{ authorization.due_date_driver }}</p>
           </ion-card-content>
         </ion-card>
 
@@ -58,34 +59,36 @@ interface Authorization {
   vehicle_year: number;
   vehicle_license_plate: string;
   vehicle_capacity: number;
-  due_date: string;
+  due_date_vehicle: string;
+  due_date_driver: string;
 }
 
-const authorization = ref<Authorization | null>(null);
-const isEditing = ref(false);
-const showToast = ref(false);
 const router = useRouter();
 const authorizations = ref<Authorization[]>([]);
 
 const token = localStorage.getItem("token");
   
-  const loadAuthorizations = async () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const authorizationResponse = await getAuthorizationByUser(token);
-        if (authorizationResponse && typeof authorizationResponse === "object" && "data" in authorizationResponse) {
-          const authorizationData = authorizationResponse.data;
-          authorizations.value = Array.isArray(authorizationData) ? authorizationData : (authorizationData ? [authorizationData] : []);
-        } else {
-          authorizations.value = [];
-        }
-      } catch (error) {
-        console.error("Error cargando alumnos", error);
+const loadAuthorizations = async () => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    try {
+      const authorizationResponse = await getAuthorizationByUser(token);
+      if (authorizationResponse && typeof authorizationResponse === "object" && "data" in authorizationResponse) {
+        const authorizationData = authorizationResponse.data;
+        authorizations.value = Array.isArray(authorizationData) ? authorizationData : (authorizationData ? [authorizationData] : []);
+      } else {
         authorizations.value = [];
       }
+    } catch (error) {
+      console.error("Error cargando alumnos", error);
+      authorizations.value = [];
     }
-  };
+  }
+};
+
+const authorizationDetail = (authorizationId: number) => {
+  router.push(`/authorization/${authorizationId}`);
+};
 
 onMounted(loadAuthorizations);
 
