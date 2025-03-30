@@ -42,7 +42,7 @@
 
         <ion-toast v-if="showToast" message="Perfil actualizado correctamente" position="bottom" color="success" :isOpen="!errorMessage" duration="3000"></ion-toast>
 
-        <ion-loading :isOpen="isLoading" message="Guardando cambios..." />
+        <ion-loading :isOpen="isLoading" message="Actualizando foto de perfil..." />
       </ion-content>
     </ion-page>
 </template>

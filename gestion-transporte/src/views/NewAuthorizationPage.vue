@@ -47,14 +47,30 @@
 
           <div v-if="step === 3">
             <ion-title size="large" class="title">Carga de habilitaciones</ion-title>
-            <InputFile accept="application/pdf" @file-uploaded="handleFileUploadVehicle">Habilitacion municipal del vehiculo</InputFile>
+
+            <div class="file-upload-container">
+            <InputFile accept="application/pdf" @file-uploaded="handleFileUploadVehicle" class="input-field">Habilitacion municipal del vehiculo</InputFile>
+            <label v-if="vehicleUrl && isLoadingVehicle==false" class="file-uploaded-label">
+              Archivo cargado exitosamente!
+              <a :href="vehicleUrl" target="_blank" class="file-download-link">Ver</a>
+            </label>
+            </div>
             <InputField label="Fecha de vencimiento" type="date" placeholder="Fecha de vencimiento" name="due_date_vehicle" v-model="form.due_date_vehicle" />
-            <InputFile accept="application/pdf" @file-uploaded="handleFileUploadDriver">Habilitacion municipal del chofer</InputFile>
+            
+            
+            <div class="file-upload-container">
+            <InputFile accept="application/pdf" @file-uploaded="handleFileUploadDriver" class="input-field">Habilitacion municipal del chofer</InputFile>
+            <label v-if="driverUrl && isLoadingDriver==false" class="file-uploaded-label">
+              Archivo cargado exitosamente!
+              <a :href="driverUrl" target="_blank" class="file-download-link">Ver</a>
+            </label>
+            </div>
             <InputField label="Fecha de vencimiento" type="date" placeholder="Fecha de vencimiento" name="due_date_driver" v-model="form.due_date_driver" />
           </div>
 
+          <div class="error">
           <ErrorMessage :message="errorMessage" duration="3000" />
-
+         </div>
           <ion-toast
             v-model:isOpen="showToast"
             message="Habilitacion creada correctamente"
@@ -71,12 +87,14 @@
           </div>
         </div>
       </div>
+      <ion-loading :isOpen="isLoadingVehicle" message="Cargando archivo..." />
+      <ion-loading :isOpen="isLoadingDriver" message="Cargando archivo..." />
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonContent, IonToast } from '@ionic/vue';
+import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonContent, IonToast, IonLoading } from '@ionic/vue';
 import { ref, onMounted } from 'vue';
 import InputField from '@/components/InputField.vue';
 import CustomButton from '@/components/CustomButton.vue';
@@ -195,16 +213,26 @@ const prevStep = () => {
 // };
 const vehicleUrl = ref<string | null>(null);
 
+const isLoadingVehicle = ref(false);
+const isLoadingDriver = ref(false);
+
 const handleFileUploadVehicle = (url: string) => {
+  isLoadingVehicle.value = true;
   vehicleUrl.value = url;
+  setTimeout(() => {
+    isLoadingVehicle.value = false;
+  }, 3000);
 };
 
 const driverUrl = ref<string | null>(null);
 
 const handleFileUploadDriver = (url: string) => {
+  isLoadingDriver.value = true;
   driverUrl.value = url;
+  setTimeout(() => {
+    isLoadingDriver.value = false;
+  }, 3000);
 };
-
 const saveAuthorization = async () => {
   errorMessage.value = "";
 
@@ -234,6 +262,15 @@ const saveAuthorization = async () => {
   if (!authorizationData.driver_name || !authorizationData.vehicle_make || !authorizationData.vehicle_model ||
    !authorizationData.vehicle_year || !authorizationData.vehicle_license_plate || !authorizationData.vehicle_capacity || !authorizationData.due_date_vehicle || !authorizationData.due_date_driver) {
     errorMessage.value = "Todos los campos son obligatorios";
+    return;
+  }
+
+  if(authorizationData.due_date_vehicle < new Date().toISOString().split('T')[0]) {
+    errorMessage.value = "La fecha de vencimiento del vehículo no puede ser menor a la fecha actual";
+    return;
+  }
+  if(authorizationData.due_date_driver < new Date().toISOString().split('T')[0]) {
+    errorMessage.value = "La fecha de vencimiento del chofer no puede ser menor a la fecha actual";
     return;
   }
 
@@ -277,7 +314,7 @@ ion-toast {
   left: 0;
 }
 .title {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 .btnNext {
   margin-left: auto;
@@ -287,4 +324,31 @@ ion-toast {
   margin-right: auto;
   margin-left: 10px;
 }
+.file-uploaded-label {
+  font-size: 14px;
+  color: #4CAF50;
+}
+
+.file-download-link {
+  color: #007BFF;
+  text-decoration: underline;
+  margin-left: 10px;
+}
+
+.file-download-link:hover {
+  color: #0056b3;
+}
+
+.file-upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.error {
+  display: flex;
+  justify-content: center;
+}
+
 </style>
