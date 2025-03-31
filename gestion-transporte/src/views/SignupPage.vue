@@ -20,7 +20,7 @@
               </div>
               <CustomButton class="signup-button" @click="register">Continuar</CustomButton>
               
-              <CustomButton color="light" :icon="logoGoogle">Continuar con Google</CustomButton>
+              <CustomButton color="light" :icon="logoGoogle" @click="handleLoginGoogle">Continuar con Google</CustomButton>
 
               <div class="link-buttons">
                   <p class="have-an-account">¿Ya tienes una cuenta?</p>
@@ -44,6 +44,8 @@ import { postUser } from "@/services/api";
 import { logoGoogle } from "ionicons/icons";
 import { isValidEmail, isValidPassword } from "@/utils/utils";
 import { useRouter } from "vue-router";
+import { loginWithGoogle } from "@/firebase";
+import { signUpGoogle } from "@/services/api";
 
 const handleLogin = () => {
   router.push("/login");
@@ -106,6 +108,38 @@ const register = async () => {
     }
     else {
       router.push("/home");
+    }
+  } catch (error) {
+    errorMessage.value = "Hubo un problema con el registro. Inténtalo nuevamente.";
+  }
+};
+
+const handleLoginGoogle = async () => {
+  const response = await loginWithGoogle();
+  console.log(response);
+
+  const user = {
+      email: response?.email ?? '', 
+      full_name: response?.displayName ?? '',
+      role_id: parseInt("0"),
+      profile_picture: response?.photoURL ?? '',
+      phone_number: response?.phoneNumber ?? '',
+      birth_date: '2000-01-01',
+      is_confirmed: true,
+  };
+  try {
+    const response = await signUpGoogle(user);
+    
+    if (response?.error) {
+      errorMessage.value = response.error;
+      return;
+    }
+
+    if ('user' in response && response.user?.role_id != 0) {
+      router.push("/home");
+    }
+    else {
+      router.push("/assign-role");
     }
   } catch (error) {
     errorMessage.value = "Hubo un problema con el registro. Inténtalo nuevamente.";

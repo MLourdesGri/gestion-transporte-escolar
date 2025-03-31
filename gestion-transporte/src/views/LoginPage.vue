@@ -20,7 +20,7 @@
         <CustomButton color="light" :icon="logoGoogle" @click="handleLoginGoogle">Continuar con Google</CustomButton>
 
       
-      <p class="have-an-account">¿Ya tienes una cuenta?</p>
+      <p class="have-an-account">¿No tienes una cuenta?</p>
       <LinkButton color="primary" class="register-link" @click="handleSignUp">Regístrate</LinkButton>
         
       </div>

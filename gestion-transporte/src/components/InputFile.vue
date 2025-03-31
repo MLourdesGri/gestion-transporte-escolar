@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import CustomButton from "@/components/CustomButton.vue";
-import { uploadFile } from "@/services/api";
+import { uploadFile } from "@/services/externalApi";
 
 defineProps({
     accept: {

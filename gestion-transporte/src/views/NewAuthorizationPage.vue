@@ -33,7 +33,8 @@
               :options="workShifts" 
               v-model="form.work_shift" 
             />
-            <InputField label="Institución educativa" type="text" placeholder="Colegio Maria Auxiliadora" name="school" v-model="form.school" />
+            <!-- <InputField label="Institución educativa" type="text" placeholder="Colegio Maria Auxiliadora" name="school" v-model="form.school" /> -->
+            <InputWithMaps label="Institución educativa" type="text" placeholder="Colegio Maria Auxiliadora" name="school" v-model="form.school" />
           </div>
 
           <div v-if="step === 2">
@@ -103,6 +104,7 @@ import InputFile from '@/components/InputFile.vue';
 import { getAuthorizationByUser, postAuthorization} from '@/services/api';
 import router from '@/router';
 import DropdownField from '@/components/DropdownField.vue';
+import InputWithMaps from '@/components/InputWithMaps.vue';
 
 enum WorkShift {
   Manana = 1,
