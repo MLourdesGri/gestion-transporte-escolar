@@ -9,25 +9,45 @@ const api = axios.create({
   },
 });
 
-interface CloudinaryResponse {
-  secure_url: string;
+interface Response {
+  success: boolean;
+  data: { url: string };
+  error: string | null;
 }
 
-export const uploadFile = async (file: File): Promise<string> => {
+interface SignatureResponse {
+  signature: string;
+  timestamp: string;
+  api_key: string;
+}
+
+export const getSignature = async (): Promise<SignatureResponse> => {
+  try {
+    const response = await api.post<SignatureResponse>("/files/signature");
+  return response.data;
+  } catch (error) {
+    console.error("Error al obtener la firma:", error);
+    throw new Error("Error al obtener la firma");
+  }
+}
+
+export const uploadFile = async (file: File): Promise<Response> => {
+  const { signature, timestamp, api_key } = await getSignature();
+
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
-
-  const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL;
+  formData.append('api_key', api_key);
+  formData.append('timestamp', timestamp);
+  formData.append('signature', signature);
 
   try {
-    const response = await axios.post<CloudinaryResponse>(CLOUDINARY_URL, formData, {
+    const response = await api.post<Response>("/files/upload", formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
 
-    return response.data.secure_url;
+    return response.data;
   } catch (error) {
     console.error('Error subiendo el archivo:', error);
     throw new Error('Error al subir archivo');

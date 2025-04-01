@@ -10,6 +10,7 @@
   </template>
   
   <script setup>
+  import { IonItem, IonLabel, IonSelect, IonSelectOption } from '@ionic/vue';
   import { ref, watch } from 'vue';
   
   const props = defineProps({

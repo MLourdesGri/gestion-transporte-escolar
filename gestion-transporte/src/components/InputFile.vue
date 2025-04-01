@@ -38,7 +38,8 @@ const handleFileUpload = async (event: Event) => {
 
   if (file) {
     try {
-      const uploadedUrl = await uploadFile(file);
+      const response = await uploadFile(file);
+      const uploadedUrl = response.data.url;
       console.log('Archivo subido:', uploadedUrl);
       emitFileUrl('file-uploaded', uploadedUrl);
     } catch (error) {
