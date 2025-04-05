@@ -38,13 +38,13 @@
                 <template v-if="drivers.length > 0">
                     <ion-card v-for="driver in drivers" :key="driver.authorization_id" :button="true" @click="selectDriver(driver)" :class="{ selected: currentDriver && currentDriver.authorization_id === driver.authorization_id }">
                         <ion-card-header>
-                          <ion-card-title>{{ driver.licensePlate }}</ion-card-title>
+                          <ion-card-title>{{ driver.vehicle_license_plate }}</ion-card-title>
                         </ion-card-header>
                         <ion-card-content>
-                          <p><strong>Marca:</strong> {{ driver.make }}</p>
-                          <p><strong>Modelo:</strong> {{ driver.model }}</p>
-                          <p><strong>Año:</strong> {{ driver.year }}</p>
-                          <p><strong>Capacidad:</strong> {{ driver.capacity }} pasajeros</p>
+                          <p><strong>Marca:</strong> {{ driver.vehicle_make }}</p>
+                          <p><strong>Modelo:</strong> {{ driver.vehicle_model }}</p>
+                          <p><strong>Año:</strong> {{ driver.vehicle_year }}</p>
+                          <p><strong>Capacidad:</strong> {{ driver.vehicle_capacity }} pasajeros</p>
                         </ion-card-content>
                     </ion-card>
                 </template>
@@ -53,6 +53,7 @@
             <!-- Paso 3: Pago MP -->
             <div v-if="step === 3">
               <ion-title size="large" class="title">Realizar el pago</ion-title>
+              <CustomButton expand="full" @click="payWithMercadoPago">Pagar con Mercado Pago</CustomButton>
             </div>
   
             <ErrorMessage :message="errorMessage" duration="3000" />
@@ -75,7 +76,7 @@ import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, Io
 import { ref, onMounted } from 'vue';
 import CustomButton from '@/components/CustomButton.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
-import { getAllAuthorizations, getChildrenByUser } from '@/services/api';
+import { createPayment, getAllAuthorizations, getChildrenByUser, getUser } from '@/services/api';
 
 
 interface Child {
@@ -88,15 +89,26 @@ interface Child {
 
 interface Authorization {
     authorization_id: number;
-    make: string;
-    model: string;
-    year: number;
-    licensePlate: string;
-    capacity: number;
+    vehicle_make: string;
+    vehicle_model: string;
+    vehicle_year: number;
+    vehicle_license_plate: string;
+    vehicle_capacity: number;
+}
+
+interface Trip{
+    authorization_id: number;
+    child_id: number;
+    user_id: number
+}
+
+interface User{
+  id: number;
 }
 
 onMounted(() => {
 loadChildren();
+mercadopago.value = new window.MercadoPago("TEST-eadd1652-39b2-45fb-a417-b7731d105195", { locale: "es-AR" });
 });
 
 const step = ref(1); 
@@ -106,7 +118,8 @@ const errorMessage = ref("");
 const showToast = ref(false);
 const currentChild = ref<Child | null>(null); 
 const currentDriver = ref<Authorization | null>(null);
-
+const trip = ref<Trip | null>(null);
+const mercadopago = ref<any>(null);
 const token = localStorage.getItem("token");
 
 const nextStep = () => {
@@ -161,10 +174,41 @@ const selectChild = (child: Child) => {
 const selectDriver = (driver: Authorization) => {
     currentDriver.value = driver;
 };
+const user = ref<User | null>(null);
+
+declare global {
+  interface Window {
+      MercadoPago: any;
+  }
+}
+const payWithMercadoPago = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        throw new Error('Token is missing');
+    }
+    const userResponse = await getUser(token) as { data: User };
+    user.value = userResponse.data;
+    trip.value= {
+        authorization_id: currentDriver.value?.authorization_id || 0,
+        child_id: currentChild.value?.child_id || 0,
+        user_id: userResponse.data.id
+    };
+    const response = await createPayment(token, trip.value);
+    if (response && typeof response === "object" && "data" in response) {
+        const responseData = response.data as { preferenceId: string };
+        const mp = new window.MercadoPago("TEST-eadd1652-39b2-45fb-a417-b7731d105195", { locale: "es-AR" });
+
+        mp.checkout({
+            preference: {
+                id: responseData.preferenceId
+            }
+        }).open();
+    }
+};
 
 const saveTrip = async () => {
     errorMessage.value = "";
-
+    
     if (!token) {
     errorMessage.value = "No se encontró el token. Inicia sesión nuevamente.";
     return;

@@ -243,4 +243,18 @@ export const deleteChild = async (childId: number, token: string) => {
   }
 };
 
+export const createPayment = async (token: string, trip: any) => {
+  try {
+    const response = await api.post("/payment", trip, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error creando pago:", error);
+    return { error: "Error al crear el pago. Intenta nuevamente." };
+  }
+}
+
 export default api;

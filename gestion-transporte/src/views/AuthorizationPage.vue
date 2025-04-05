@@ -46,10 +46,10 @@
 
 <script setup lang="ts">
 import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonContent, IonCard, IonCardContent, IonCardHeader,
-  IonCardSubtitle, IonCardTitle, IonToast} from "@ionic/vue";
+  IonCardSubtitle, IonCardTitle} from "@ionic/vue";
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { getAuthorizationByUser, putAuthorization } from "@/services/api";
+import { getAuthorizationByUser } from "@/services/api";
 import CustomButton from "@/components/CustomButton.vue";
 
 interface Authorization {
@@ -65,8 +65,6 @@ interface Authorization {
 
 const router = useRouter();
 const authorizations = ref<Authorization[]>([]);
-
-const token = localStorage.getItem("token");
   
 const loadAuthorizations = async () => {
   const token = localStorage.getItem("token");

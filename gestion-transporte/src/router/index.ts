@@ -62,6 +62,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'ResetPassword',
     component: () => import ('../views/ResetPasswordPage.vue')
   },
+  {
+    path: '/success',
+    name: 'Success',
+    component: () => import ('../views/SuccessPage.vue')
+  }
 ]
 
 const router = createRouter({
