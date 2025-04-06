@@ -80,9 +80,36 @@ export const getPlaceDetails = async (place_id: string) => {
   }
 };
 
+interface RouteResponse {
+  success: boolean;
+  data: {
+    locations: { lat: number; lng: number; address: string }[];
+    routeSummary: {
+      totalDuration: number;
+      totalDurationText: string;
+      legs: {
+        from: string;
+        to: string;
+        duration: number;
+        durationText: string;
+        steps: {
+          distance: { text: string; value: number };
+          duration: { text: string; value: number };
+          end_location: { lat: number; lng: number };
+          start_location: { lat: number; lng: number };
+          html_instructions: string;
+          travel_mode: string;
+          maneuver?: string;
+        }[];
+      }[];
+    };
+  };
+  error: string | null;
+}
+
 export const geocodeAddresses = async () => {
   try {
-    const response = await api.get<Response>("/maps/geocode-trip");
+    const response = await api.get<RouteResponse>("/maps/geocode-trip");
 
     return response.data;
   } catch (error) {
