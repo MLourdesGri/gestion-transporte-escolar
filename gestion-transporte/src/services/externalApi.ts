@@ -79,3 +79,14 @@ export const getPlaceDetails = async (place_id: string) => {
     return null;
   }
 };
+
+export const geocodeAddresses = async () => {
+  try {
+    const response = await api.get<Response>("/maps/geocode-trip");
+
+    return response.data;
+  } catch (error) {
+    console.error("Error geocodificando direcciones:", error);
+    return null;
+  }
+}

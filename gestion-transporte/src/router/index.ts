@@ -66,6 +66,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/success',
     name: 'Success',
     component: () => import ('../views/SuccessPage.vue')
+  },
+  {
+    path: '/map',
+    name: 'Map',
+    component: () => import ('../views/MapPage.vue')
   }
 ]
 
