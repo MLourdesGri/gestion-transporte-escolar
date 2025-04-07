@@ -8,23 +8,22 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/',
-    component: () => import ('../components/SideBar.vue'),
+    component: () => import('../components/SideBar.vue'), // Layout principal con sidebar
     children: [
-      {path: 'home',
-        component: () => import ('../components/SideBar.vue'),
-        children: [
-          { path: '', component: () => import ('../views/HomePage.vue') },  // Ruta para home
-          { path: 'new-trip', component: () => import ('../views/NewTripPage.vue') },  // Ruta hija de "viajes"
-        ]},
-      {path: 'profile', component: () => import ('../views/ProfilePage.vue')},
-      {path: 'settings', component: () => import ('../views/SettingsPage.vue')},
-      {path: '/authorization',
-        component: () => import ('../components/SideBar.vue'),
-        children: [
-          { path: '', component: () => import ('../views/AuthorizationPage.vue') },  // Ruta para "authorization"
-          { path: 'new-authorization', component: () => import ('../views/NewAuthorizationPage.vue') },  // Ruta hija de "authorization"
-        ]},
-      {path: 'children', component: () => import ('../views/ChildrenPage.vue')},
+      { path: '', component: () => import('../views/HomePage.vue') }, // Página inicial
+      { path: 'home', component: () => import('../views/HomePage.vue') },
+      { path: 'home/new-trip', component: () => import('../views/NewTripPage.vue') },
+  
+      { path: 'profile', component: () => import('../views/ProfilePage.vue') },
+      { path: 'settings', component: () => import('../views/SettingsPage.vue') },
+  
+      { path: 'my-authorization', component: () => import('../views/AuthorizationPage.vue') },
+      { path: 'my-authorization/new-authorization', component: () => import('../views/NewAuthorizationPage.vue') },
+  
+      { path: 'children', component: () => import('../views/ChildrenPage.vue') },
+
+      { path: 'authorization', component: () => import('../views/AdminPage.vue') },
+      { path: 'authorization/:id', component: () => import('../views/AuthorizationDetailsPage.vue') },
     ]
   },
   {
