@@ -149,13 +149,20 @@ export const postAuthorization = async (authorization: any, token: string) => {
   }
 }
 
-export const getAllAuthorizations = async (token: string) => {
+export const getAllAuthorizations = async () => {
   try {
-    const response = await api.get("/authorization/all", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await api.get("/authorization/all");
+    return response.data;
+  }
+  catch (error) {
+    console.error("Error obteniendo vehículos:", error);
+    return [];
+  }
+}
+
+export const getAuthorizationById = async (id: number) => {
+  try {
+    const response = await api.get(`/authorization/${id}`);
     return response.data;
   }
   catch (error) {

@@ -17,10 +17,17 @@
       </ion-header>
 
       <template v-if="authorizations.length == 0">
+        <div v-if="role_id == 2">
           <div class="no-authorization">
-          <p>Aún no has registrado ninguna habilitación de chofer y vehículo.</p>
+            <p>Aún no has registrado ninguna habilitación de chofer y vehículo.</p>
+          </div>
+          <CustomButton class="new-hab" @click="navigateToAddAuthorization">Nueva habilitación</CustomButton>
         </div>
-        <CustomButton class="new-hab" @click="navigateToAddAuthorization">Nueva habilitación</CustomButton>
+        <div v-else>
+          <div class="no-authorization">
+            <p>No hay habilitaciones para administrar.</p>
+          </div>
+        </div>
       </template>
 
       <template v-else>
@@ -49,8 +56,33 @@ import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, Io
   IonCardSubtitle, IonCardTitle} from "@ionic/vue";
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { getAllAuthorizations, getUser } from "@/services/api";
 import { getAuthorizationByUser } from "@/services/api";
 import CustomButton from "@/components/CustomButton.vue";
+
+interface User {
+  full_name: string;
+  role_id: number;
+}
+
+const user = ref<User | null>(null);
+const role_id = ref<number | null>(null);
+
+const loadUser = async () => { 
+  const token = localStorage.getItem("token");
+  if (token) {
+    try {
+      const userResponse = await getUser(token) as { data: User };
+      user.value = userResponse.data;
+      role_id.value = userResponse.data.role_id;
+    }
+    catch (error) {
+      console.error("Error cargando usuario", error);
+      user.value = null;
+      role_id.value = null;
+    }
+  } 
+}
 
 interface Authorization {
   authorization_id: number;
@@ -70,7 +102,14 @@ const loadAuthorizations = async () => {
   const token = localStorage.getItem("token");
   if (token) {
     try {
-      const authorizationResponse = await getAuthorizationByUser(token);
+      let authorizationResponse;
+
+      if (role_id.value === 2) {
+        authorizationResponse = await getAuthorizationByUser(token);
+      } else {
+        authorizationResponse = await getAllAuthorizations();
+      }
+      
       if (authorizationResponse && typeof authorizationResponse === "object" && "data" in authorizationResponse) {
         const authorizationData = authorizationResponse.data;
         authorizations.value = Array.isArray(authorizationData) ? authorizationData : (authorizationData ? [authorizationData] : []);
@@ -88,7 +127,10 @@ const authorizationDetail = (authorizationId: number) => {
   router.push(`/authorization/${authorizationId}`);
 };
 
-onMounted(loadAuthorizations);
+onMounted( () => {
+  loadUser();
+  loadAuthorizations();
+});
 
 
 const navigateToAddAuthorization = () => {

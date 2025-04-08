@@ -8,22 +8,20 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/',
-    component: () => import('../components/SideBar.vue'), // Layout principal con sidebar
+    component: () => import('../components/SideBar.vue'),
     children: [
-      { path: '', component: () => import('../views/HomePage.vue') }, // Página inicial
+      { path: '', component: () => import('../views/HomePage.vue') },
       { path: 'home', component: () => import('../views/HomePage.vue') },
       { path: 'home/new-trip', component: () => import('../views/NewTripPage.vue') },
   
       { path: 'profile', component: () => import('../views/ProfilePage.vue') },
       { path: 'settings', component: () => import('../views/SettingsPage.vue') },
   
-      { path: 'my-authorization', component: () => import('../views/AuthorizationPage.vue') },
-      { path: 'my-authorization/new-authorization', component: () => import('../views/NewAuthorizationPage.vue') },
+      { path: 'authorization', component: () => import('../views/AuthorizationPage.vue') },
+      { path: 'authorization/new-authorization', component: () => import('../views/NewAuthorizationPage.vue') },
+      { path: 'authorization/:id', component: () => import('../views/AuthorizationDetailsPage.vue') },
   
       { path: 'children', component: () => import('../views/ChildrenPage.vue') },
-
-      { path: 'authorization', component: () => import('../views/AdminPage.vue') },
-      { path: 'authorization/:id', component: () => import('../views/AuthorizationDetailsPage.vue') },
     ]
   },
   {
