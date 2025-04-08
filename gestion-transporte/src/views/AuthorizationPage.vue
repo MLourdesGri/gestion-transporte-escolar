@@ -17,7 +17,7 @@
       </ion-header>
 
       <template v-if="authorizations.length == 0">
-        <div v-if="role_id == 2">
+        <div v-if="userStore.user?.role_id == 2">
           <div class="no-authorization">
             <p>Aún no has registrado ninguna habilitación de chofer y vehículo.</p>
           </div>
@@ -59,27 +59,25 @@ import { useRouter } from "vue-router";
 import { getAllAuthorizations, getUser } from "@/services/api";
 import { getAuthorizationByUser } from "@/services/api";
 import CustomButton from "@/components/CustomButton.vue";
+import { useUserStore } from "@/store/user";
 
 interface User {
   full_name: string;
   role_id: number;
 }
 
-const user = ref<User | null>(null);
-const role_id = ref<number | null>(null);
+const userStore = useUserStore();
 
 const loadUser = async () => { 
-  const token = localStorage.getItem("token");
+  const token = userStore.token;
   if (token) {
     try {
       const userResponse = await getUser(token) as { data: User };
-      user.value = userResponse.data;
-      role_id.value = userResponse.data.role_id;
+      userStore.setUser(userResponse.data);
     }
     catch (error) {
       console.error("Error cargando usuario", error);
-      user.value = null;
-      role_id.value = null;
+      userStore.setUser(null);
     }
   } 
 }
@@ -99,12 +97,12 @@ const router = useRouter();
 const authorizations = ref<Authorization[]>([]);
   
 const loadAuthorizations = async () => {
-  const token = localStorage.getItem("token");
+  const token = userStore.token;
   if (token) {
     try {
       let authorizationResponse;
 
-      if (role_id.value === 2) {
+      if (userStore.user?.role_id === 2) {
         authorizationResponse = await getAuthorizationByUser(token);
       } else {
         authorizationResponse = await getAllAuthorizations();

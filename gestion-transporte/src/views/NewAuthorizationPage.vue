@@ -105,6 +105,7 @@ import { getAuthorizationByUser, postAuthorization} from '@/services/api';
 import router from '@/router';
 import DropdownField from '@/components/DropdownField.vue';
 import InputWithMaps from '@/components/InputWithMaps.vue';
+import { useUserStore } from '@/store/user';
 
 enum WorkShift {
   Manana = 1,
@@ -171,11 +172,13 @@ const form = ref({
   due_date_driver: "",
 });
 
-const token = localStorage.getItem("token");
-
 const step = ref(1); 
 
+const userStore = useUserStore();
+
 const getAuthorizationData = async () => {
+  const token = userStore.token;
+
   if (token) {
     try {
       const authorizationResponse = await getAuthorizationByUser(token);
@@ -277,6 +280,7 @@ const saveAuthorization = async () => {
   }
 
   try {
+    
     const response = await postAuthorization(authorizationData, token); 
 
     if (response && typeof response === 'object' && 'data' in response) {

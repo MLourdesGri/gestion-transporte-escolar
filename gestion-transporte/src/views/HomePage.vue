@@ -59,6 +59,7 @@ import { onMounted, ref } from "vue";
 import { getTripsByUser, getUser } from "../services/api"; 
 import { add } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/store/user';
 
 interface Trip {
   trip_id: number;
@@ -75,12 +76,12 @@ interface User {
 }
 
 const trips = ref<Trip[]>([]);
-const user = ref<User | null>(null);
-const role_id = ref<number | null>(null);
 const showAlert = ref(false); 
 
+const userStore = useUserStore();
+
 const loadTrips = async () => {
-  const token = localStorage.getItem("token");
+  const token = userStore.token;
   if (token) {
     try {
       const tripResponse = await getTripsByUser(token);
@@ -98,20 +99,18 @@ const loadTrips = async () => {
 };
 
 const loadUser = async () => { 
-  const token = localStorage.getItem("token");
+  const token = userStore.token;
   if (token) {
     try {
       const userResponse = await getUser(token) as { data: User };
-      user.value = userResponse.data;
-      role_id.value = userResponse.data.role_id;
+      userStore.setUser(userResponse.data);
 
-      if (user.value && !user.value.is_confirmed) {
+      if (userResponse.data && !userResponse.data.is_confirmed) {
         showAlert.value = true; 
       }
     } catch (error) {
       console.error("Error cargando usuario", error);
-      user.value = null;
-      role_id.value = null;
+      userStore.setUser(null);
     }
   }
 };

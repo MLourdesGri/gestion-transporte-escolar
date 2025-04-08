@@ -5,7 +5,7 @@
         <ion-content>
           <ion-list id="inbox-list">
             <ion-list-header>TeLlevoAlCole</ion-list-header>
-            <ion-note>Hola, {{ user?.full_name || "Invitado" }}!</ion-note>
+            <ion-note>Hola, {{ userStore.user?.full_name || "Invitado" }}!</ion-note>
 
             <ion-menu-toggle :auto-hide="false" v-for="(p, i) in appPages" :key="i">
               <router-link :to="p.url" class="menu-link">
@@ -74,33 +74,31 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter, useRoute, RouterLink } from 'vue-router';
 import { homeOutline, personOutline, settingsOutline, logOutOutline, carOutline, accessibilityOutline } from 'ionicons/icons';
 import { getUser } from '@/services/api';
+import { useUserStore } from '@/store/user';
 
 const router = useRouter();
 const route = useRoute();
 const selectedIndex = ref(0);
 const showLogoutAlert = ref(false);
 
-
 interface User {
   full_name: string;
   role_id: number;
 }
 
-const user = ref<User | null>(null);
-const role_id = ref<number | null>(null);
+const userStore = useUserStore();
 
 const loadUser = async () => { 
-  const token = localStorage.getItem("token");
+  const token = userStore.token;
+  
   if (token) {
     try {
       const userResponse = await getUser(token) as { data: User };
-      user.value = userResponse.data;
-      role_id.value = userResponse.data.role_id;
+      userStore.setUser(userResponse.data);
     }
     catch (error) {
       console.error("Error cargando usuario", error);
-      user.value = null;
-      role_id.value = null;
+      userStore.setUser(null);
     }
   } 
 }
@@ -124,7 +122,7 @@ const allPages = [
 ];
 
 const appPages = computed(() => {
-  return allPages.filter(page => role_id.value !== null && page.roles.includes(role_id.value));
+  return allPages.filter(page => typeof userStore.user?.role_id === 'number' && page.roles.includes(userStore.user.role_id as number));
 });
 
 const path = window.location.pathname.split("/")[1];
@@ -132,13 +130,10 @@ if (path !== undefined) {
   selectedIndex.value = allPages.findIndex(page => page.url === `/${path}`);
 }
 
-
 const logout = () => {
-  localStorage.removeItem("token");
-  user.value = null;
-  role_id.value = null;
-  router.push("/login");
-  };
+  userStore.logout()
+  router.replace({ name: 'Login' })
+}
 </script>
 
 <style scoped>

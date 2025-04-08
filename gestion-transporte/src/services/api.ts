@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useUserStore } from "@/store/user";
 
 const API_URL = "http://localhost:3000"; 
 
@@ -19,6 +20,8 @@ interface User {
   role_id?: number;
   birth_date?: string;
 }
+
+const userStore = useUserStore();
 
 export const getUser = async (token: string) => {
   try {
@@ -52,7 +55,7 @@ export const postUser = async (user: User) => {
   try {
     const response = await api.post<{ token: string, user:User, error:Error }>("/users/signup", user);
     const token = response.data.token;
-    localStorage.setItem('token',token);
+    userStore.setToken(token);
     return response.data;
   } catch (error: any) {
     if (error.response && error.response.data) {
@@ -66,7 +69,7 @@ export const loginUser = async (email: string, password: string) => {
   try {
     const response = await api.post<{ token: string, user:User, error:Error }>('/users/login', { email, password });
     const token = response.data.token;
-    localStorage.setItem('token', token); 
+    userStore.setToken(token);
     return response.data; 
   } catch (error: any) {
     if (error.response && error.response.data) {
@@ -80,7 +83,7 @@ export const signUpGoogle = async (user: User) => {
   try {
     const response = await api.post<{ token: string, user:User, error:Error }>("/users/signup-google", user);
     const token = response.data.token;
-    localStorage.setItem('token',token);
+    userStore.setToken(token);
     return response.data;
   } catch (error: any) {
     if (error.response && error.response.data) {

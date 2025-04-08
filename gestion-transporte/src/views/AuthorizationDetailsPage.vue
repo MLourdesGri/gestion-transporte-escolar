@@ -39,7 +39,7 @@
         <CustomButton color="light" class="download-authorization-driver" @click="downloadDriverPDF()">Descargar habilitación del chofer</CustomButton>
       </div>
 
-      <div class="buttons" v-if="role_id === 3">
+      <div class="buttons" v-if="userStore.user?.role_id === 3">
         <CustomButton color="success" class="btnApprove">Aprobar</CustomButton>
         <CustomButton color="danger" class="btnReject">Rechazar</CustomButton>
       </div>
@@ -53,6 +53,7 @@ import { useRoute } from 'vue-router';
 import { ref, watchEffect } from 'vue';
 import { getAuthorizationById, getUser } from '@/services/api';
 import CustomButton from '@/components/CustomButton.vue';
+import { useUserStore } from '@/store/user';
 
 const route = useRoute();
 const id = ref<number>(Number(route.params.id));
@@ -62,21 +63,17 @@ interface User {
   role_id: number;
 }
 
-const user = ref<User | null>(null);
-const role_id = ref<number | null>(null);
+const userStore = useUserStore();
 
 const loadUser = async () => {
-  const token = localStorage.getItem("token");
+  const token = userStore.token;
   if (token) {
     try {
       const userResponse = await getUser(token) as { data: User };
-      user.value = userResponse.data;
-      role_id.value = userResponse.data.role_id;
-      console.log("id role", role_id.value);
+      userStore.setUser(userResponse.data);
     } catch (error) {
       console.error("Error cargando usuario", error);
-      user.value = null;
-      role_id.value = null;
+      userStore.setUser(null);
     }
   }
 };

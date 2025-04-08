@@ -56,6 +56,7 @@ import ErrorMessage from '@/components/ErrorMessage.vue';
 import DatePicker from '@/components/DatePicker.vue';
 import InputFile from '@/components/InputFile.vue';
 import { getUser, putUser } from '@/services/api';
+import { useUserStore } from '@/store/user';
 
 interface User {
   email: string;
@@ -79,8 +80,10 @@ const form = ref({
   birth_date: "",
 });
 
+const userStore = useUserStore();
+
 const getProfileData = async () => {
-  const token = localStorage.getItem("token");
+  const token = userStore.token;
   if (token) {
     try {
       const userResponse = await getUser(token) as {data: User};
@@ -139,7 +142,7 @@ const toggleEdit = async () => {
         profile_picture: previewProfilePicture.value || form.value.profile_picture,
       };
 
-      const token = localStorage.getItem("token");
+      const token = userStore.token;
 
       if (!token) {
         errorMessage.value = "No se encontró el token. Inicia sesión nuevamente.";

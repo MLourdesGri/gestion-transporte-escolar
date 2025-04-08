@@ -27,6 +27,7 @@
     "firebase": "^11.5.0",
     "ionicons": "^7.0.0",
     "mercadopago": "^2.3.0",
+    "pinia": "^3.0.1",
     "vue": "^3.3.0",
     "vue-router": "^4.2.0"
   },

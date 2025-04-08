@@ -27,10 +27,13 @@ import CustomButton from '@/components/CustomButton.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
 import { putUser } from '@/services/api';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/store/user';
 
 const valorSeleccionado = ref("");
 const errorMessage = ref("");
 const router = useRouter();
+
+const userStore = useUserStore();
 
 const update = async () => {
   try {
@@ -38,7 +41,7 @@ const update = async () => {
         role_id: parseInt(valorSeleccionado.value),
       };
 
-      const token = localStorage.getItem("token");
+      const token = userStore.token;
 
       if (!token) {
         errorMessage.value = "No se encontró el token. Inicia sesión nuevamente.";

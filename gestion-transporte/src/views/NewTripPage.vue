@@ -77,7 +77,7 @@ import { ref, onMounted } from 'vue';
 import CustomButton from '@/components/CustomButton.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
 import { createPayment, getAllAuthorizations, getChildrenByUser, getUser } from '@/services/api';
-
+import { useUserStore } from '@/store/user';
 
 interface Child {
     child_id: number;
@@ -106,6 +106,8 @@ interface User{
   id: number;
 }
 
+const userStore = useUserStore();
+
 onMounted(() => {
 loadChildren();
 mercadopago.value = new window.MercadoPago("TEST-eadd1652-39b2-45fb-a417-b7731d105195", { locale: "es-AR" });
@@ -120,7 +122,7 @@ const currentChild = ref<Child | null>(null);
 const currentDriver = ref<Authorization | null>(null);
 const trip = ref<Trip | null>(null);
 const mercadopago = ref<any>(null);
-const token = localStorage.getItem("token");
+const token = userStore.token;
 
 const nextStep = () => {
 if (step.value < 3) step.value++;
@@ -131,7 +133,7 @@ if (step.value > 1) step.value--;
 };
 
 const loadChildren = async () => {
-const token = localStorage.getItem("token");
+const token = userStore.token;
 if (token) {
     try {
     const childResponse = await getChildrenByUser(token);
@@ -149,10 +151,10 @@ if (token) {
 };
 
 const loadDriver = async () => {
-const token = localStorage.getItem("token");
+const token = userStore.token;
 if (token) {
     try {
-    const driverResponse = await getAllAuthorizations(token);
+    const driverResponse = await getAllAuthorizations();
     if (driverResponse && typeof driverResponse === "object" && "data" in driverResponse) {
         const driverData = driverResponse.data;
         drivers.value = Array.isArray(driverData) ? driverData : (driverData ? [driverData] : []);

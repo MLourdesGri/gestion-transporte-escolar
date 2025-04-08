@@ -18,11 +18,15 @@
   <script setup lang="ts">
   import { ref, onMounted } from "vue";
   import { getUser } from "../services/api"; 
+  import { useUserStore } from "@/store/user";
+
   const users = ref<any[]>([]);
+
+  const userStore = useUserStore();
   
   const loadUsers = async () => {
   try {
-    const token = localStorage.getItem("token");
+    const token = userStore.token;
     const response = await getUser(token? token : "");
     if (response && response.data) {
       users.value = response.data; 

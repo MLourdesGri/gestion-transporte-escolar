@@ -92,6 +92,7 @@
   import { getChildrenByUser, getUser, postChild, putChild, deleteChild } from "../services/api"; 
   import { add } from 'ionicons/icons';
   import ErrorMessage from '@/components/ErrorMessage.vue';
+  import { useUserStore } from '@/store/user';
   
   interface Child {
     child_id: number;
@@ -115,8 +116,6 @@
   });
   
   const children = ref<Child[]>([]);
-  const user = ref<User | null>(null);
-  const role_id = ref<number | null>(null);
   const showAlert = ref(false); 
   const errorMessage = ref("");
   const showToast = ref(false);
@@ -124,10 +123,10 @@
   const isModalOpen = ref(false); 
   const isEditing = ref(false);
 
-  const token = localStorage.getItem("token");
+  const userStore = useUserStore();
   
   const loadChildren = async () => {
-    const token = localStorage.getItem("token");
+    const token = userStore.token;
     if (token) {
       try {
         const childResponse = await getChildrenByUser(token);
@@ -144,22 +143,21 @@
     }
   };
   
+  const token = userStore.token;
+  
   const loadUser = async () => { 
-    const token = localStorage.getItem("token");
   
     if (token) {
       try {
         const userResponse = await getUser(token) as { data: User };
-        user.value = userResponse.data;
-        role_id.value = userResponse.data.role_id;
+        userStore.setUser(userResponse.data);
   
-        if (user.value && !user.value.is_confirmed) {
+        if (userResponse.data && !userResponse.data.is_confirmed) {
           showAlert.value = true; 
         }
       } catch (error) {
         console.error("Error cargando usuario", error);
-        user.value = null;
-        role_id.value = null;
+        userStore.setUser(null);
       }
     }
   };
