@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+// import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -15,7 +16,8 @@ export const useUserStore = defineStore('user', {
     logout() {
       this.user = null;
       this.token = null;
-    },
+    }
   },
+  persist: true,
 });
 
