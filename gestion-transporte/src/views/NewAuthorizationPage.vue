@@ -270,6 +270,11 @@ const saveAuthorization = async () => {
     return;
   }
 
+  if(!authorizationData.driver_authorization_pdf || !authorizationData.vehicle_authorization_pdf) {
+    errorMessage.value = "Los archivos de habilitación son obligatorios";
+    return;
+  }
+
   if(authorizationData.due_date_vehicle < new Date().toISOString().split('T')[0]) {
     errorMessage.value = "La fecha de vencimiento del vehículo no puede ser menor a la fecha actual";
     return;

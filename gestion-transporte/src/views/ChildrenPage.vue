@@ -32,42 +32,39 @@
           </div>
         </template>
   
-        <ion-alert
-          v-if="showAlert"
-          :is-open="showAlert"
-          header="Cuenta no confirmada"
-          message="Revise su casilla de correo y confirme su cuenta para continuar usando la aplicación."
-          backdrop-dismiss="false"
-        />
-  
         <ion-fab slot="fixed" vertical="bottom" horizontal="end">
           <ion-fab-button class="custom-fab" id="open-modal" expand="block" @click="openModal">
             <ion-icon :icon="add"></ion-icon>
           </ion-fab-button>
         </ion-fab>
   
-        <ErrorMessage :message="errorMessage" duration="3000" />
-  
         <ion-modal ref="modalRef" :is-open="isModalOpen" @did-dismiss="closeModal">
-        <ion-header>
-          <ion-toolbar>
-            <ion-buttons slot="start">
-              <ion-button @click="cancel()">Cancelar</ion-button>
-            </ion-buttons>
-            <ion-buttons slot="end">
-              <ion-button v-if="isEditing || !currentChild" :strong="true" @click="confirm()">Confirmar</ion-button>
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-header>
+          <ion-header :translucent="true">
+            <ion-toolbar>
+              <ion-title>Crear hijo/a</ion-title>
+            </ion-toolbar>
+          </ion-header>
         <ion-content class="ion-padding">
           <InputField label="Nombre" type="text" v-model="form.name" :disabled="!isEditing" />
           <InputField label="Apellido" type="text" v-model="form.last_name" :disabled="!isEditing" />
           <InputField label="Edad" type="number" v-model="form.age" :disabled="!isEditing" />
-          <InputField label="Escuela" type="text" v-model="form.school" :disabled="!isEditing" />
-          
+          <DropdownField 
+              label="Turno" 
+              :options="schoolShifts" 
+              v-model="form.school_shift" 
+            />
+          <InputWithMaps label="Institución educativa" type="text" placeholder="Colegio Maria Auxiliadora" name="school" v-model="form.school" :disabled="!isEditing" />
+          <div class="error">
+          <ErrorMessage :message="errorMessage" duration="3000" />
+         </div>
           <div class="button-group" v-if="currentChild">
-            <ion-button expand="full" @click="startEditing">Editar</ion-button>
-            <ion-button expand="full" color="danger" id="cancelButton">Eliminar</ion-button>
+            <CustomButton expand="block" color="medium" @click="cancel">Volver</CustomButton>
+            <CustomButton expand="block" color="danger" id="cancelButton">Eliminar</CustomButton>
+            <CustomButton expand="block" @click="confirm">Guardar</CustomButton>
+          </div>
+          <div class="bottom-buttons" v-else>
+            <CustomButton expand="block" color="medium" @click="cancel">Volver</CustomButton>
+            <CustomButton expand="block" @click="confirm">Guardar</CustomButton>
           </div>
         </ion-content>
       
@@ -90,8 +87,23 @@
   import InputField from '@/components/InputField.vue';
   import { onMounted, ref } from "vue";
   import { getChildrenByUser, getUser, postChild, putChild, deleteChild } from "../services/api"; 
-  import { add } from 'ionicons/icons';
+  import { add, school } from 'ionicons/icons';
   import ErrorMessage from '@/components/ErrorMessage.vue';
+  import InputWithMaps from '@/components/InputWithMaps.vue';
+import CustomButton from '@/components/CustomButton.vue';
+import DropdownField from '@/components/DropdownField.vue';
+
+enum SchoolShift {
+  Manana = 1,
+  Tarde = 2,
+}
+
+const schoolShifts = [
+  { value: SchoolShift.Manana, label: 'Mañana' },
+  { value: SchoolShift.Tarde, label: 'Tarde' },
+];
+
+
   import { useUserStore } from '@/store/user';
   
   interface Child {
@@ -100,6 +112,7 @@
     last_name: string;
     age: number;
     school: string;
+    school_shift: string;
   }
   
   interface User {
@@ -112,7 +125,8 @@
     name: '',
     last_name: '',
     age: '',
-    school: ''
+    school: '',
+    school_shift: ''
   });
   
   const children = ref<Child[]>([]);
@@ -179,6 +193,11 @@
   };
 
   const confirm = async () => {
+    if(!form.value.name || !form.value.last_name || !form.value.age || !form.value.school || !form.value.school_shift) {
+      console.log(form.value.school_shift);
+      errorMessage.value = "Todos los campos son obligatorios";
+      return;
+    }
     await saveChild();
     isModalOpen.value = false; 
     loadChildren();
@@ -187,7 +206,7 @@
   const openModal = () => {
     currentChild.value = null; 
     isEditing.value = true;
-    form.value = { name: '', last_name: '', age: '', school: '' }; 
+    form.value = { name: '', last_name: '', age: '', school: '', school_shift: '' }; 
     isModalOpen.value = true; 
   };
   
@@ -196,11 +215,11 @@
       name: form.value.name,
       last_name: form.value.last_name,
       age: form.value.age,
-      school: form.value.school
+      school: form.value.school,
+      school_shift: form.value.school_shift
     };
   
     if (!childData.name || !childData.last_name || !childData.age || !childData.school) {
-      console.error("Error: Campos incompletos");
       return;
     }
   
@@ -234,11 +253,7 @@
     currentChild.value = child;
     form.value = { ...child, age: child.age.toString() };
     isModalOpen.value = true; 
-    isEditing.value = false;
-  };
-
-  const startEditing = () => {
-  isEditing.value = true;
+    isEditing.value = true;
   };
 
   const alertButtons = [
@@ -267,6 +282,24 @@
   </script>
   
   <style scoped>
+.btnNext {
+  margin-left: auto;
+  margin-right: 10px;
+}
+
+.bottom-buttons {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px;
+  background: white;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+}
+
   .no-children {
     text-align: center;
     padding: 20px;
@@ -290,6 +323,10 @@
   }
   .button-group ion-button {
     flex: 1;
+  }
+  .error {
+  display: flex;
+  justify-content: center;
   }
   </style>
   
