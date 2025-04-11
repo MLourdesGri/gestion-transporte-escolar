@@ -31,7 +31,9 @@
       </template>
 
       <template v-else>
-        <ion-card v-for="authorization in authorizations" :key="authorization.authorization_id" :button="true" @click="authorizationDetail(authorization.authorization_id)">
+        <ion-card v-for="authorization in authorizations" :key="authorization.authorization_id" :button="true" @click="authorizationDetail(authorization.authorization_id)"
+        :class="getCardClass(authorization.state)"
+        >
           <ion-card-header>
             <ion-card-title>{{ authorization.vehicle_make }} {{ authorization.vehicle_model }}</ion-card-title>
             <ion-card-subtitle>Año: {{ authorization.vehicle_year }}</ion-card-subtitle>
@@ -54,7 +56,7 @@
 <script setup lang="ts">
 import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonContent, IonCard, IonCardContent, IonCardHeader,
   IonCardSubtitle, IonCardTitle} from "@ionic/vue";
-import { ref, onMounted, onActivated } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { getAllAuthorizations, getUser } from "@/services/api";
 import { getAuthorizationByUser } from "@/services/api";
@@ -91,6 +93,7 @@ interface Authorization {
   vehicle_capacity: number;
   due_date_vehicle: string;
   due_date_driver: string;
+  state: number;
 }
 
 const router = useRouter();
@@ -130,6 +133,16 @@ onMounted( () => {
   loadAuthorizations();
 });
 
+const getCardClass = (state: number) => {
+  switch (state) {
+    case 2:
+      return 'card-green';
+    case 3:
+      return 'card-red';
+    default:
+      return 'card-gray';
+  }
+};
 
 const navigateToAddAuthorization = () => {
   router.push("/authorization/new-authorization");
@@ -146,6 +159,7 @@ const navigateToAddAuthorization = () => {
 .authorization-content {
   padding-top: 10px;
 }
+
 .new-hab {
   bottom: 10px;
   position: absolute;
@@ -154,4 +168,17 @@ const navigateToAddAuthorization = () => {
   margin-left: 20px;
   margin-right: 20px;
 }
+
+.card-gray {
+  --background: #f4f4f4;
+}
+
+.card-green {
+  --background: #07912791;
+}
+
+.card-red {
+  --background: #58050c;
+}
+
 </style>
