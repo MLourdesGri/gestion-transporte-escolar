@@ -37,26 +37,49 @@
         </div>
 
         <CustomButton color="light" class="download-authorization-driver" @click="downloadDriverPDF()">Descargar habilitación del chofer</CustomButton>
+
+        <div class="detail-section">
+          <h2>Estado</h2>
+          <p v-if="authorization.state === 1">Pendiente</p>
+          <p v-else-if="authorization.state === 2">Aprobada</p>
+          <p v-else-if="authorization.state === 3">Rechazada</p>
+        </div>
       </div>
 
-      <div class="buttons" v-if="userStore.user?.role_id === 3">
-        <CustomButton color="success" class="btnApprove">Aprobar</CustomButton>
-        <CustomButton color="danger" class="btnReject">Rechazar</CustomButton>
+        <div class="error">
+          <ErrorMessage :message="errorMessage" duration="3000" />
+        </div>
+
+        <ion-toast
+            v-model:isOpen="showToast"
+            :message="message"
+            position="bottom"
+            color="success"
+            duration="3000"
+        ></ion-toast>
+
+      <div class="buttons" v-if="userStore.user?.role_id === 3 && authorization?.state === 1">
+        <CustomButton color="success" class="btnApprove" @click="approveAuthorization()">Aprobar</CustomButton>
+        <CustomButton color="danger" class="btnReject" @click="rejectAuthorization()">Rechazar</CustomButton>
       </div>
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonTitle, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent } from '@ionic/vue';
+import { IonPage, IonTitle, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonToast } from '@ionic/vue';
 import { useRoute } from 'vue-router';
 import { ref, watchEffect } from 'vue';
-import { getAuthorizationById, getUser } from '@/services/api';
+import { getAuthorizationById, getUser, putAuthorization, postTrip } from '@/services/api';
 import CustomButton from '@/components/CustomButton.vue';
 import { useUserStore } from '@/store/user';
+import ErrorMessage from '@/components/ErrorMessage.vue';
 
 const route = useRoute();
 const id = ref<number>(Number(route.params.id));
+const errorMessage = ref<string | undefined>(undefined);
+const showToast = ref(false);
+const message = ref<string | null>(null);
 
 interface User {
   full_name: string;
@@ -92,6 +115,7 @@ interface Authorization {
   phone: string;
   vehicle_authorization_pdf: string;
   driver_authorization_pdf: string;
+  state: number;
 }
 
 const authorization = ref<Authorization | null>(null);
@@ -127,6 +151,103 @@ function downloadDriverPDF() {
   if (!authorization.value) return;
   window.open(authorization.value.driver_authorization_pdf, '_blank');
 }
+
+console.log("ID de la habilitación:", id.value);
+
+const approveAuthorization = async () => {
+  try {
+    const token = userStore.token;
+
+    if (!token) {
+      console.error("El token es nulo. No se puede aprobar la habilitación.");
+      return;
+    }
+
+    const editedAuthorization = {
+      state: 2,
+    };
+
+    const authorizationResponse = await putAuthorization(editedAuthorization, id.value, token);
+
+    if (authorizationResponse) {
+      showToast.value = true;
+      message.value = "Habilitación aprobada correctamente.";
+
+      const baseDate = new Date(); // today
+      baseDate.setDate(baseDate.getDate() + 1); // tomorrow
+
+      let allTripsCreated = true;
+
+      for (let i = 0; i < 5; i++) {
+        const tripDate = new Date(baseDate);
+        tripDate.setDate(baseDate.getDate() + i);
+        const formattedDate = tripDate.toISOString().split("T")[0]; // yyyy-mm-dd
+
+        const trip = {
+          authorization: id.value,
+          available_capacity: authorization.value?.vehicle_capacity ?? 0,
+          date: formattedDate,
+        };
+
+        try {
+          const tripResponse = await postTrip(trip, token);
+          if (tripResponse) {
+            console.log(`Viaje para ${formattedDate} creado correctamente.`);
+          } else {
+            console.error(`Error al crear el viaje para ${formattedDate}`);
+            errorMessage.value = "Error al crear uno de los viajes. Inténtalo nuevamente.";
+            allTripsCreated = false;
+            break;
+          }
+        } catch (e) {
+          console.error(`Error al crear viaje para ${formattedDate}`, e);
+          errorMessage.value = "Ocurrió un error al crear uno de los viajes.";
+          allTripsCreated = false;
+          break;
+        }
+      }
+
+      if (allTripsCreated) {
+        console.log("Todos los viajes creados correctamente.");
+      }
+
+    } else {
+      errorMessage.value = "Error al aprobar la habilitación. Inténtalo nuevamente.";
+    }
+  } catch (error) {
+    console.error("Error al aprobar la habilitación", error);
+  } finally {
+    loadAuthorization();
+  }
+};
+
+const rejectAuthorization = async () => {
+  try {
+    const token = userStore.token;
+
+    if (!token) {
+      console.error("El token es nulo. No se puede rechazar la habilitación.");
+      return;
+    }
+
+    const editedAuthorization = {
+      state: 3,
+    }
+
+    const authorizationResponse = await putAuthorization(editedAuthorization, id.value, token);
+
+    if (authorizationResponse) {
+      showToast.value = true;
+      message.value = "Habilitación rechazada correctamente.";
+    } else {
+      errorMessage.value = "Error al rechazar la habilitación. Inténtalo nuevamente.";
+    }
+  } catch (error) {
+    console.error("Error al rechazar la habilitación", error);
+  } finally {
+    loadAuthorization();
+  }
+}
 </script>
 
 <style scoped>
@@ -159,4 +280,30 @@ function downloadDriverPDF() {
   color: #fff;
   cursor: pointer;
 }
+
+.error {
+  display: flex;
+  justify-content: center;
+}
 </style>
+
+<!-- Para crear viajes hasta la fecha mas cercana de vencimiento -->
+<!-- const dueDateVehicle = new Date(authorization.value?.due_date_vehicle);
+      const dueDateDriver = new Date(authorization.value?.due_date_driver);
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+
+      // Elegir la fecha más próxima
+      const endDate = dueDateVehicle < dueDateDriver ? dueDateVehicle : dueDateDriver;
+
+      // Normalizar horas para evitar errores de comparación
+      tomorrow.setHours(0, 0, 0, 0);
+      endDate.setHours(0, 0, 0, 0);
+
+      const daysDiff = Math.ceil((endDate.getTime() - tomorrow.getTime()) / (1000 * 60 * 60 * 24));
+      
+      if (daysDiff < 0) {
+        errorMessage.value = "La habilitación vence antes de mañana. No se pueden crear viajes.";
+        return;
+      } -->

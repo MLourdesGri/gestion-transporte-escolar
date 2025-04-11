@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
+import { useUserStore } from '@/store/user';
+import type { RouteLocationNormalized } from 'vue-router';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -18,7 +20,7 @@ const routes: Array<RouteRecordRaw> = [
       { path: 'profile', component: () => import('../views/ProfilePage.vue') },
       { path: 'settings', component: () => import('../views/SettingsPage.vue') },
   
-      { path: 'authorizati4on', component: () => import('../views/AuthorizationPage.vue') },
+      { path: 'authorization', component: () => import('../views/AuthorizationPage.vue') },
       { path: 'authorization/new-authorization', component: () => import('../views/NewAuthorizationPage.vue') },
       { path: 'authorization/:id', component: () => import('../views/AuthorizationDetailsPage.vue') },
   
@@ -75,6 +77,19 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
-})
+});
+
+router.beforeEach((to: RouteLocationNormalized, from, next) => {
+  const userStore = useUserStore();
+  const publicPages = ['/login', '/signup', '/forgot-password', '/reset-password', '/confirm-email/:token'];
+  const isPublic = publicPages.includes(to.path);
+  const isLoggedIn = !!userStore.token;
+
+  if (!isLoggedIn && !isPublic) {
+    return next('/login');
+  }
+
+  next();
+});
 
 export default router

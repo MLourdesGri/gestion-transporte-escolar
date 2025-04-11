@@ -264,6 +264,7 @@ const saveAuthorization = async () => {
     vehicle_authorization_pdf: vehicleUrl.value,
     due_date_vehicle: form.value.due_date_vehicle,
     due_date_driver: form.value.due_date_driver,
+    state: 1, //estado "subido"
   };
 
   if (!authorizationData.driver_name || !authorizationData.vehicle_make || !authorizationData.vehicle_model ||
@@ -363,5 +364,4 @@ ion-toast {
   display: flex;
   justify-content: center;
 }
-
 </style>

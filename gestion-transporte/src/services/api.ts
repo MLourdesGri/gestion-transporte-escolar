@@ -124,9 +124,9 @@ export const getAuthorizationByUser = async (token: string) => {
   }
 }
 
-export const putAuthorization = async (authorization: any, token: string) => {
+export const putAuthorization = async (authorization: any, id: number, token: string) => {
   try {
-    const response = await api.put("/authorization", authorization, {
+    const response = await api.put(`authorization/${id}`, authorization, {
       headers: {
         Authorization: `Bearer ${token}`, 
       },
@@ -252,6 +252,20 @@ export const deleteChild = async (childId: number, token: string) => {
     return { error: "Error al eliminar el hijo. Intenta nuevamente." };
   }
 };
+
+export const postTrip = async (trip: any, token: string) => {
+  try {
+    const response = await api.post("/trips", trip, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error creando viaje:", error);
+    return { error: "Error al crear el viaje. Intenta nuevamente." };
+  }
+}
 
 export const createPayment = async (token: string, trip: any) => {
   try {
