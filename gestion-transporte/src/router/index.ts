@@ -18,7 +18,7 @@ const routes: Array<RouteRecordRaw> = [
       { path: 'profile', component: () => import('../views/ProfilePage.vue') },
       { path: 'settings', component: () => import('../views/SettingsPage.vue') },
   
-      { path: 'authorization', component: () => import('../views/AuthorizationPage.vue') },
+      { path: 'authorizati4on', component: () => import('../views/AuthorizationPage.vue') },
       { path: 'authorization/new-authorization', component: () => import('../views/NewAuthorizationPage.vue') },
       { path: 'authorization/:id', component: () => import('../views/AuthorizationDetailsPage.vue') },
   

@@ -107,6 +107,7 @@ import DropdownField from '@/components/DropdownField.vue';
 import InputWithMaps from '@/components/InputWithMaps.vue';
 import { useUserStore } from '@/store/user';
 
+
 enum WorkShift {
   Manana = 1,
   Tarde = 2,
@@ -240,6 +241,7 @@ const handleFileUploadDriver = (url: string) => {
 };
 const saveAuthorization = async () => {
   errorMessage.value = "";
+  const token = userStore.token;
 
   if (!token) {
     errorMessage.value = "No se encontró el token. Inicia sesión nuevamente.";

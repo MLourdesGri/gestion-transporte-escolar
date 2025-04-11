@@ -138,7 +138,7 @@ function downloadDriverPDF() {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 1.2rem;
   margin-bottom: 25px;
-  color: #3880ff;
+  color: #003388;
 }
 
 .detail-section p {
