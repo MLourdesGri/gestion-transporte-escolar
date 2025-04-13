@@ -20,6 +20,7 @@
         <div class="input-fields">
           <div v-if="step === 1">
             <ion-title size="large" class="title">Datos del chofer</ion-title>
+            <InputField label="Documento" type="text" placeholder="43403067" name="dni" v-model="form.dni" />
             <InputField label="Nombre y Apellido" type="text" placeholder="Juan" name="driver_name" v-model="form.driver_name" />
             <InputField label="Domicilio" type="text" placeholder="Cordoba 1256" name="address" v-model="form.address" />
             <InputField label="Teléfono" type="text" placeholder="3413456677" name="phone" v-model="form.phone"/>
@@ -147,6 +148,7 @@ interface Authorization {
   driver_authorization_pdf: string;
   due_date_vehicle: string;
   due_date_driver: string;
+  dni: string;
 }
 
 const authorization = ref<Authorization | null>(null);
@@ -170,6 +172,7 @@ const form = ref({
   driver_authorization_pdf: null as File | null,
   due_date_vehicle: "",
   due_date_driver: "",
+  dni: "",
 });
 
 const step = ref(1); 
@@ -258,6 +261,7 @@ const saveAuthorization = async () => {
     due_date_vehicle: form.value.due_date_vehicle,
     due_date_driver: form.value.due_date_driver,
     state: 1, //estado "subido"
+    dni: form.value.dni,
   };
 
   if (!authorizationData.driver_name || !authorizationData.vehicle_make || !authorizationData.vehicle_model ||

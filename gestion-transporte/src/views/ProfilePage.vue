@@ -30,6 +30,7 @@
           <InputField label="Nombre y apellido" type="text" name="full_name" v-model="form.full_name" :disabled="!isEditing"/>
           <InputField label="Número de telefono" type="text" name="phone_number" v-model="form.phone_number" :disabled="!isEditing"/>
           <InputField label="Dirección" type="text" name="address" v-model="form.address" :disabled="!isEditing"/>
+          <InputField label="Dni" type="text" name="dni" v-model="form.dni" :disabled="!isEditing"/>
           <DatePicker label="Fecha de nacimiento" name="birth_date" v-model="form.birth_date" :disabled="!isEditing"/>
         </div>
 
@@ -65,6 +66,7 @@ interface User {
   address: string;
   profile_picture: string;
   birth_date: string;
+  dni: string;
 }
 
 const user = ref<User | null>(null);
@@ -78,6 +80,7 @@ const form = ref({
   address: "",
   profile_picture: "",
   birth_date: "",
+  dni: "",
 });
 
 const userStore = useUserStore();
@@ -95,6 +98,7 @@ const getProfileData = async () => {
       form.value.email = user.value.email;
       form.value.profile_picture = user.value.profile_picture;
       form.value.birth_date = user.value.birth_date;
+      form.value.dni = user.value.dni;
     }
     catch (error) {
       console.error("Error cargando usuario", error);
@@ -140,6 +144,7 @@ const toggleEdit = async () => {
         address: form.value.address,
         birth_date: form.value.birth_date,
         profile_picture: previewProfilePicture.value || form.value.profile_picture,
+        dni: form.value.dni,
       };
 
       const token = userStore.token;
