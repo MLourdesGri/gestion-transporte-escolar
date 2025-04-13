@@ -126,7 +126,7 @@ const schoolShifts = [
     last_name: '',
     age: '',
     school: '',
-    school_shift: ''
+    school_shift: null as number | null,
   });
   
   const children = ref<Child[]>([]);
@@ -194,7 +194,6 @@ const schoolShifts = [
 
   const confirm = async () => {
     if(!form.value.name || !form.value.last_name || !form.value.age || !form.value.school || !form.value.school_shift) {
-      console.log(form.value.school_shift);
       errorMessage.value = "Todos los campos son obligatorios";
       return;
     }
@@ -206,7 +205,7 @@ const schoolShifts = [
   const openModal = () => {
     currentChild.value = null; 
     isEditing.value = true;
-    form.value = { name: '', last_name: '', age: '', school: '', school_shift: '' }; 
+    form.value = { name: '', last_name: '', age: '', school: '', school_shift: null as number | null }; 
     isModalOpen.value = true; 
   };
   
@@ -251,7 +250,7 @@ const schoolShifts = [
   
   const editChild = (child: Child) => {
     currentChild.value = child;
-    form.value = { ...child, age: child.age.toString() };
+    form.value = { ...child, age: child.age.toString(), school_shift: Number(child.school_shift)};
     isModalOpen.value = true; 
     isEditing.value = true;
   };

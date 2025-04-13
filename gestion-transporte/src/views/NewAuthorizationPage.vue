@@ -122,8 +122,7 @@ enum Gender {
 
 const workShifts = [
   { value: WorkShift.Manana, label: 'Mañana' },
-  { value: WorkShift.Tarde, label: 'Tarde' },
-  { value: WorkShift.MananaYTarde, label: 'Mañana y Tarde' },
+  { value: WorkShift.Tarde, label: 'Tarde' }
 ];
 
 const genders = [
@@ -211,12 +210,6 @@ const prevStep = () => {
   if (step.value > 1) step.value--;
 };
 
-// const handleFileChange = (field: string, event: Event) => {
-//   const target = event.target as HTMLInputElement;
-//   if (target && target.files && target.files[0]) {
-//     form.value[field] = target.files[0];
-//   }
-// };
 const vehicleUrl = ref<string | null>(null);
 
 const isLoadingVehicle = ref(false);

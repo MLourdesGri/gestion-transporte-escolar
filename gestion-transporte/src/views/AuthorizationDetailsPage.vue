@@ -34,6 +34,7 @@
           <p><strong>Nombre:</strong> {{ authorization.driver_name }}</p>
           <p><strong>Dirección:</strong> {{ authorization.address }}</p>
           <p><strong>Teléfono:</strong> {{ authorization.phone }}</p>
+          <p><strong>Habilitado hasta:</strong> {{ authorization.due_date_driver }}</p>
         </div>
 
         <CustomButton color="light" class="download-authorization-driver" @click="downloadDriverPDF()">Descargar habilitación del chofer</CustomButton>
