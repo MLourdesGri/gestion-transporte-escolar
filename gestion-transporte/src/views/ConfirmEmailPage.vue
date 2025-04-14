@@ -1,9 +1,7 @@
 <template>
   <ion-page>
-    <ion-content class="ion-padding">
-      <div class="confirmation-box">
-        
-   
+    <ion-content :fullscreen="true" class="ion-padding">
+      <div class="confimation-box">
         <div v-if="success" class="message success-message fixed-center">
           <ion-icon :icon="checkmarkCircle" class="success-icon"></ion-icon>
           <p>¡Tu email ha sido confirmado correctamente!</p>
@@ -60,6 +58,11 @@ onMounted(() => {
 .confirmation-box {
   text-align: center;
   padding: 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .title {

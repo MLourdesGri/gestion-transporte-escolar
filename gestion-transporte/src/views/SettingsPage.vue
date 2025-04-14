@@ -10,11 +10,6 @@
         </ion-header>
   
         <ion-content :fullscreen="true" class="ion-padding">
-            <ion-header collapse="condense">
-            <ion-toolbar>
-                <ion-title size="large">Configuraciones</ion-title>
-            </ion-toolbar>
-            </ion-header>
             <InputFile accept="application/pdf" @file-uploaded="handleFileUpload">Subir PDF</InputFile>
             <div class="iframe-container">
                 <iframe

@@ -1,7 +1,7 @@
 <template>
   <ion-page>
-      <ion-content class="ion-padding">
-          <div class="signup-box">
+    <ion-content :fullscreen="true" class="ion-padding">
+        <div class="signup-box">
               <h2 class="title">Registrarse</h2>
               <p>Crea tu cuenta</p>
 
@@ -26,9 +26,8 @@
                   <p class="have-an-account">¿Ya tienes una cuenta?</p>
                   <LinkButton color="primary" @click="handleLogin">Ingresa</LinkButton>
               </div>
-
           </div>
-      </ion-content>
+    </ion-content>
   </ion-page>
 </template>
 
@@ -151,7 +150,12 @@ const handleLoginGoogle = async () => {
 <style scoped>
 .signup-box {
 text-align: center;
-padding: 20px;
+padding: 16px;
+position: absolute;
+top: 0;
+margin: 0;
+left: 0;
+right: 0;
 }
 
 .title {
@@ -159,11 +163,11 @@ font-size: 30px;
 }
 
 .input-fields {
-margin-top: 40px;
+margin-top: 30px;
 }
 
 .signup-button {
-margin-top: 60px;
+margin-top: 30px;
 margin-bottom: 20px;
 }
 

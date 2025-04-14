@@ -10,12 +10,6 @@
     </ion-header>
 
     <ion-content :fullscreen="true" class="ion-padding">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Mis habilitaciones</ion-title>
-        </ion-toolbar>
-      </ion-header>
-
       <template v-if="authorizations.length == 0">
         <div v-if="userStore.user?.role_id == 2">
           <div class="no-authorization">

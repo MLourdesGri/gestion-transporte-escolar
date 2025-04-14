@@ -83,7 +83,7 @@
   
   <script setup lang="ts">
   import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, 
-  IonCardSubtitle, IonCardTitle, IonAlert, IonFab, IonFabButton, IonIcon, IonModal, IonButton, IonToast} from '@ionic/vue';
+  IonCardSubtitle, IonCardTitle, IonAlert, IonFab, IonFabButton, IonIcon, IonModal, IonToast} from '@ionic/vue';
   import InputField from '@/components/InputField.vue';
   import { onMounted, ref } from "vue";
   import { getChildrenByUser, getUser, postChild, putChild, deleteChild } from "../services/api"; 

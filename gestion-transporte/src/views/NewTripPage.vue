@@ -9,13 +9,7 @@
         </ion-toolbar>
       </ion-header>
   
-      <ion-content :fullscreen="true" >
-        <ion-header collapse="condense">
-          <ion-toolbar>
-            <ion-title size="large">Nuevo transporte</ion-title>
-          </ion-toolbar>
-        </ion-header>
-  
+      <ion-content :fullscreen="true" class="ion-padding">
         <div class="vehicle-box">
           <div>
             <!-- Paso 1: Elegir hijo -->
@@ -241,6 +235,11 @@ const saveTrip = async () => {
     flex-direction: column;
     justify-content: space-between;
     padding-bottom: 10px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
   }
   ion-toast {
     margin-bottom: 20px;

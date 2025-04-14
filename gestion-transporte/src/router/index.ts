@@ -25,6 +25,8 @@ const routes: Array<RouteRecordRaw> = [
       { path: 'authorization/:id', component: () => import('../views/AuthorizationDetailsPage.vue') },
   
       { path: 'children', component: () => import('../views/ChildrenPage.vue') },
+
+      { path: 'map', component: () => import('../views/MapPage.vue') },
     ]
   },
   {
@@ -67,11 +69,6 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Success',
     component: () => import ('../views/SuccessPage.vue')
   },
-  {
-    path: '/map',
-    name: 'Map',
-    component: () => import ('../views/MapPage.vue')
-  }
 ]
 
 const router = createRouter({

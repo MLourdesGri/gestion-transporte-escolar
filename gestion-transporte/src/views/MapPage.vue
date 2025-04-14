@@ -1,24 +1,32 @@
 <template>
-  <IonPage>
-    <IonContent>
+  <ion-page>
+    <ion-header :translucent="true">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-button class="custom-menu"></ion-menu-button>
+        </ion-buttons>
+        <ion-title>Mapa de viaje #</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content :fullscreen="true">
       <div class="map-wrapper">
         <div class="info-box">
           Tiempo total de viaje: {{ totalDurationText }}
         </div>
         <div ref="mapContainer" class="map"></div>
       </div>
-    </IonContent>
-  </IonPage>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script lang="ts" setup>
-import { IonContent, IonPage } from '@ionic/vue';
+import { IonPage, IonHeader,IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent } from '@ionic/vue';
 import { onMounted, ref } from 'vue';
 import { Loader } from '@googlemaps/js-api-loader';
 import { geocodeAddresses } from '@/services/externalApi';
 
 const mapContainer = ref<HTMLElement | null>(null);
-
 const totalDurationText = ref<string>('');
 
 onMounted(async () => {
@@ -99,17 +107,12 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
-
 .map-wrapper {
-  height: 100vh;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 }
 
 .map {

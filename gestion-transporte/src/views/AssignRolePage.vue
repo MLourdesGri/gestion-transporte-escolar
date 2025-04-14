@@ -1,6 +1,6 @@
 <template>
     <ion-page>
-        <ion-content class="ion-padding">
+        <ion-content :fullscreen="true">
             <div class="role-box">
                 <h2 class="title">¿Cuál es tu rol?</h2>
 

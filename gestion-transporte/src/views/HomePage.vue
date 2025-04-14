@@ -9,13 +9,7 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Inicio</ion-title>
-        </ion-toolbar>
-      </ion-header>
-
+    <ion-content :fullscreen="true" class="ion-padding">
       <template v-if="trips.length > 0">
         <ion-card v-for="trip in trips" :key="trip.trip_id" :button="true" to="/profile">
           <ion-card-header>
