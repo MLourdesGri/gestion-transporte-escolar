@@ -15,7 +15,7 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       { path: '', component: () => import('../views/HomePage.vue') },
       { path: 'home', component: () => import('../views/HomePage.vue') },
-      { path: 'home/new-trip', component: () => import('../views/NewTripPage.vue') },
+      { path: 'home/new-trip', component: () => import('../views/NewTripChildPage.vue') },
   
       { path: 'profile', component: () => import('../views/ProfilePage.vue') },
       { path: 'settings', component: () => import('../views/SettingsPage.vue') },

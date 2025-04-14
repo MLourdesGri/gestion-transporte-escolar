@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonTitle } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonTitle} from '@ionic/vue';
 import InputFile from '@/components/InputFile.vue';
 
 const fileUrl = ref<string | null>(null);
@@ -35,6 +35,11 @@ const handleFileUpload = (url: string) => {
     fileUrl.value = url;
 };
 
+
+
+
+
+  
 // Este código es para abrir el PDF en una nueva pestaña
 
 // const openFile = () => {

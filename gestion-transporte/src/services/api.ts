@@ -158,7 +158,18 @@ export const getAllAuthorizations = async () => {
     return response.data;
   }
   catch (error) {
-    console.error("Error obteniendo vehículos:", error);
+    console.error("Error obteniendo habilitaciones:", error);
+    return [];
+  }
+}
+
+export const getAllTrips = async () => {
+  try {
+    const response = await api.get("/trips");
+    return response.data;
+  }
+  catch (error) {
+    console.error("Error obteniendo viajes:", error);
     return [];
   }
 }
