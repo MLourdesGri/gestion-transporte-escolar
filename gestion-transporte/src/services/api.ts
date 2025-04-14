@@ -163,6 +163,17 @@ export const getAllAuthorizations = async () => {
   }
 }
 
+export const getChildAuthorizations = async (childId: number) => {
+  try {
+    const response = await api.get(`/authorization/child/${childId}`);
+    return response.data;
+  }
+  catch (error) {
+    console.error("Error obteniendo vehículos:", error);
+    return [];
+  }
+}
+
 export const getAuthorizationById = async (id: number) => {
   try {
     const response = await api.get(`/authorization/${id}`);

@@ -76,7 +76,7 @@ import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, Io
 import { ref, onMounted } from 'vue';
 import CustomButton from '@/components/CustomButton.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
-import { createPayment, getAllAuthorizations, getChildrenByUser, getUser } from '@/services/api';
+import { createPayment, getChildAuthorizations, getChildrenByUser, getUser } from '@/services/api';
 import { useUserStore } from '@/store/user';
 
 interface Child {
@@ -152,9 +152,10 @@ if (token) {
 
 const loadDriver = async () => {
 const token = userStore.token;
-if (token) {
+if (token && currentChild.value) {
     try {
-    const driverResponse = await getAllAuthorizations();
+    const childId = currentChild.value.child_id;
+    const driverResponse = await getChildAuthorizations(childId);
     if (driverResponse && typeof driverResponse === "object" && "data" in driverResponse) {
         const driverData = driverResponse.data;
         drivers.value = Array.isArray(driverData) ? driverData : (driverData ? [driverData] : []);

@@ -43,7 +43,7 @@
         backdrop-dismiss="false"
       />
 
-      <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+      <ion-fab slot="fixed" vertical="bottom" horizontal="end" v-if="userStore.user?.role_id === 1">
         <ion-fab-button @click="navigateToPage" class="custom-fab">
           <ion-icon :icon="add"></ion-icon>
         </ion-fab-button>
