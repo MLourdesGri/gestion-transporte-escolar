@@ -58,7 +58,6 @@
 
             <!-- Paso 4: Pago MP -->
             <div v-if="step === 4">
-              <CustomButton @click="ver">ver cosas</CustomButton>
               <ion-title size="large" class="title">Realizar el pago</ion-title>
               <CustomButton expand="full" @click="payWithMercadoPago">Pagar con Mercado Pago</CustomButton>
             </div>
@@ -104,10 +103,10 @@ interface Authorization {
 }
 
 interface Trip_Child{
+    user_id: number;
     authorization_id: number;
     child_id: number;
     selected_dates: string[];
-    user_id: number;
 }
 
 interface User{
@@ -145,20 +144,7 @@ const prevStep = () => {
 if (step.value > 1) step.value--;
 };
 
-const ver = async () => {
-    if (!token) {
-        throw new Error('Token is missing');
-    }
-    const userResponse = await getUser(token) as { data: User };
-    user.value = userResponse.data;
-    trip_child.value= {
-        authorization_id: currentDriver.value?.authorization_id || 0,
-        child_id: currentChild.value?.child_id || 0,
-        selected_dates: toRaw(selectedDates.value),
-        user_id: user.value?.id || 0
-    };
-console.log("ver cosas", trip_child.value);
-};
+
 
 const loadChildren = async () => {
 const token = userStore.token;
@@ -220,11 +206,12 @@ const payWithMercadoPago = async () => {
     const userResponse = await getUser(token) as { data: User };
     user.value = userResponse.data;
     trip_child.value= {
+        user_id: userResponse.data.id,
         authorization_id: currentDriver.value?.authorization_id || 0,
         child_id: currentChild.value?.child_id || 0,
-        selected_dates: toRaw(selectedDates.value),
-        user_id: user.value?.id || 0
+        selected_dates: toRaw(selectedDates.value)
     };
+    console.log("trip_child", trip_child.value);
     const response = await createPayment(token, trip_child);
     if (response && typeof response === "object" && "data" in response) {
         const responseData = response.data as { preferenceId: string };
