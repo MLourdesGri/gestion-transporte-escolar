@@ -5,7 +5,7 @@
         <ion-buttons slot="start">
           <ion-menu-button class="custom-menu"></ion-menu-button>
         </ion-buttons>
-        <ion-title>Mapa de viaje #</ion-title>
+        <ion-title>Mapa de viaje #{{ tripId }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -25,13 +25,23 @@ import { IonPage, IonHeader,IonToolbar, IonButtons, IonMenuButton, IonTitle, Ion
 import { onMounted, ref } from 'vue';
 import { Loader } from '@googlemaps/js-api-loader';
 import { geocodeAddresses } from '@/services/externalApi';
+import { useRoute } from 'vue-router';
+import { useUserStore } from '@/store/user';
+
+const route = useRoute();
+const tripId = Number(route.params.id);
+
+const userStore = useUserStore();
+const token = userStore.token || '';
 
 const mapContainer = ref<HTMLElement | null>(null);
 const totalDurationText = ref<string>('');
 
 onMounted(async () => {
-  const apiResult = await geocodeAddresses();
+  try {
+    const apiResult = await geocodeAddresses(tripId, token);
   if (!apiResult?.success || !Array.isArray(apiResult.data.locations)) {
+    console.error("Error en la respuesta de la API:", apiResult);
     console.error("No se pudieron obtener las ubicaciones");
     return;
   }
@@ -103,6 +113,9 @@ onMounted(async () => {
       }
     }
   );
+  } catch (error) {
+    console.error('Error al cargar el mapa:', error);
+  }
 });
 </script>
 
@@ -125,7 +138,7 @@ onMounted(async () => {
   bottom: 25px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: rgb(12, 199, 22);
+  background-color: #4CAF50;
   padding: 10px 20px;
   border-radius: 12px;
   font-weight: bold;

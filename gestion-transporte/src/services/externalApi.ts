@@ -107,9 +107,13 @@ interface RouteResponse {
   error: string | null;
 }
 
-export const geocodeAddresses = async () => {
+export const geocodeAddresses = async (tripId: number, token: string) => {
   try {
-    const response = await api.get<RouteResponse>("/maps/geocode-trip");
+    const response = await api.get<RouteResponse>(`/maps/geocode-trip/${tripId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, 
+      },
+    });
 
     return response.data;
   } catch (error) {

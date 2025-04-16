@@ -16,6 +16,7 @@ const routes: Array<RouteRecordRaw> = [
       { path: '', component: () => import('../views/HomePage.vue') },
       { path: 'home', component: () => import('../views/HomePage.vue') },
       { path: 'home/new-trip', component: () => import('../views/NewTripChildPage.vue') },
+      { path: 'home/map/:id', component: () => import('../views/MapPage.vue') },
   
       { path: 'profile', component: () => import('../views/ProfilePage.vue') },
       { path: 'settings', component: () => import('../views/SettingsPage.vue') },
@@ -25,8 +26,6 @@ const routes: Array<RouteRecordRaw> = [
       { path: 'authorization/:id', component: () => import('../views/AuthorizationDetailsPage.vue') },
   
       { path: 'children', component: () => import('../views/ChildrenPage.vue') },
-
-      { path: 'map', component: () => import('../views/MapPage.vue') },
     ]
   },
   {

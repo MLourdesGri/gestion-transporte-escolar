@@ -11,7 +11,7 @@
 
     <ion-content :fullscreen="true" class="ion-padding">
       <template v-if="trips.length > 0">
-        <ion-card v-for="trip in trips" :key="trip.trip_id" :button="true" to="/profile">
+        <ion-card v-for="trip in trips" :key="trip.trip_id" :button="true" @click="getMapTrip(trip.trip_id)">
           <ion-card-header>
             <ion-card-title>Transporte a {{ trip.school }}</ion-card-title>
             <ion-card-subtitle>Fecha: {{ formatDate(trip.date) }}</ion-card-subtitle>
@@ -136,6 +136,10 @@ const translateStatus = (status: string) => {
 const router = useRouter();
 const navigateToPage = () => {
   router.push("/home/new-trip"); 
+};
+
+const getMapTrip = (tripId: number) => {
+  router.push(`/home/map/${tripId}`); 
 };
 </script>
 
