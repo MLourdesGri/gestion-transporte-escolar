@@ -70,6 +70,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Success',
     component: () => import ('../views/SuccessPage.vue')
   },
+  {
+    path: '/failure',
+    name: 'Failure',
+    component: () => import ('../views/FailurePage.vue')
+  }
 ]
 
 const router = createRouter({
