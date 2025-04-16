@@ -13,13 +13,12 @@
       <template v-if="trips.length > 0">
         <ion-card v-for="trip in trips" :key="trip.trip_id" :button="true" @click="getMapTrip(trip.trip_id)">
           <ion-card-header>
-            <ion-card-title>Transporte a {{ trip.school }}</ion-card-title>
+            <ion-card-title>Transporte {{ trip.school }} </ion-card-title>
+            <ion-card-subtitle>Alumno: {{ trip.name }} {{ trip.last_name }}</ion-card-subtitle>
             <ion-card-subtitle>Fecha: {{ formatDate(trip.date) }}</ion-card-subtitle>
-            <ion-card-subtitle>Hora: {{ trip.time }}</ion-card-subtitle>
+            <ion-card-subtitle>Turno: {{ trip.school_shift }}</ion-card-subtitle>
+            <ion-card-subtitle>Estado: {{ translateStatus(trip.status) }}</ion-card-subtitle>
           </ion-card-header>
-          <ion-card-content>
-            Estado: {{ translateStatus(trip.status) }}
-          </ion-card-content>
         </ion-card>
       </template>
 
@@ -47,21 +46,48 @@
 </template>
 
 <script setup lang="ts">
-import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardContent, IonCardHeader, 
+import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, 
   IonCardSubtitle, IonCardTitle, IonAlert, IonFab, IonFabButton, IonIcon} from '@ionic/vue';
 import { onMounted, ref } from "vue";
-import { getTripsByUser, getUser } from "../services/api"; 
+import {  getTripChildByUserId, getUser } from "../services/api"; 
 import { add } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/store/user';
 
-interface Trip {
-  trip_id: number;
-  school: string;
-  date: string;
-  status: string;
-  time: string;
+interface Trip_Child {
+  trip_child_id: number;
+  trip_id: Trip;
+  child_id: Child;
 }
+
+interface Trip{
+    trip_id: number;
+    date: string;
+    time: string;
+    status: string;
+    school: string;
+    school_shift: string;
+  }
+
+interface Child {
+    child_id: number;
+    name: string;
+    last_name: string;
+    age: number;
+    school: string;
+    school_shift: string;
+  }
+
+  interface TripAndChildren{
+    trip_id: number;
+    date: string;
+    status: string;
+    child_id: number;
+    name: string;
+    last_name: string;
+    school: string;
+    school_shift: string;
+  }
 
 interface User {
   full_name: string;
@@ -69,26 +95,40 @@ interface User {
   is_confirmed: boolean; 
 }
 
-const trips = ref<Trip[]>([]);
 const showAlert = ref(false); 
+const trips = ref<TripAndChildren[]>([]);
 
 const userStore = useUserStore();
 
 const loadTrips = async () => {
   const token = userStore.token;
-  if (token) {
-    try {
-      const tripResponse = await getTripsByUser(token);
-      if (tripResponse && typeof tripResponse === "object" && "data" in tripResponse) {
-        const tripData = tripResponse.data;
-        trips.value = Array.isArray(tripData) ? tripData : (tripData ? [tripData] : []);
-      } else {
-        trips.value = [];
+  if (!token) return;
+
+  try {
+    trips.value = []; // Limpiar lista antes de cargar
+
+    const tripChildResponse = await getTripChildByUserId(token) as { data: Trip_Child[] };
+    const tripChildData = tripChildResponse.data ?? [];
+
+    const tripChildArray = Array.isArray(tripChildData)
+      ? tripChildData
+      : [tripChildData];
+    for (const tripChild of tripChildArray) {
+        trips.value.push({
+          trip_id: tripChild.trip_id.trip_id,
+          date: tripChild.trip_id.date,
+          status: tripChild.trip_id.status,
+          child_id: tripChild.child_id.child_id,
+          name: tripChild.child_id.name,
+          last_name: tripChild.child_id.last_name,
+          school: tripChild.child_id.school,
+          school_shift: tripChild.child_id.school_shift
+        });
       }
-    } catch (error) {
-      console.error("Error cargando viajes", error);
-      trips.value = [];
     }
+ catch (error) {
+    console.error("Error cargando viajes", error);
+    trips.value = [];
   }
 };
 
