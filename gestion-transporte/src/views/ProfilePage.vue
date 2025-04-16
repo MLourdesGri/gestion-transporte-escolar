@@ -10,40 +10,37 @@
       </ion-header>
   
       <ion-content :fullscreen="true" class="ion-padding">
-        <ion-header collapse="condense">
-          <ion-toolbar>
-            <ion-title size="large">Perfil</ion-title>
-          </ion-toolbar>
-        </ion-header>
-  
-        <div class="avatar-box">
-          <div class="pic">
-            <img class="pic-img" :src="previewProfilePicture || user?.profile_picture || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Foto de perfil"/>
+        <div class="page">
+          <div class="avatar-box">
+            <div class="pic">
+              <img class="pic-img" :src="previewProfilePicture || user?.profile_picture || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Foto de perfil"/>
+            </div>
+            <strong>{{user?.email || form.email}}</strong> 
+            <div v-if="isEditing" class="upload-photo">
+              <InputFile accept="image/*" @file-uploaded="onFileUploaded">Subir foto</InputFile>
+            </div>
           </div>
-          <strong>{{user?.email || form.email}}</strong> 
-          <div v-if="isEditing" class="upload-photo">
-            <InputFile accept="image/*" @file-uploaded="onFileUploaded">Subir foto</InputFile>
+
+          <div class="input-fields">
+            <InputField label="Nombre y apellido" type="text" name="full_name" v-model="form.full_name" :disabled="!isEditing"/>
+            <InputField label="Número de telefono" type="text" name="phone_number" v-model="form.phone_number" :disabled="!isEditing"/>
+            <InputField label="Dirección" type="text" name="address" v-model="form.address" :disabled="!isEditing"/>
+            <InputField label="Dni" type="text" name="dni" v-model="form.dni" :disabled="!isEditing"/>
+            <DatePicker label="Fecha de nacimiento" name="birth_date" v-model="form.birth_date" :disabled="!isEditing"/>
           </div>
-        </div>
 
-        <div class="input-fields">
-          <InputField label="Nombre y apellido" type="text" name="full_name" v-model="form.full_name" :disabled="!isEditing"/>
-          <InputField label="Número de telefono" type="text" name="phone_number" v-model="form.phone_number" :disabled="!isEditing"/>
-          <InputField label="Dirección" type="text" name="address" v-model="form.address" :disabled="!isEditing"/>
-          <InputField label="Dni" type="text" name="dni" v-model="form.dni" :disabled="!isEditing"/>
-          <DatePicker label="Fecha de nacimiento" name="birth_date" v-model="form.birth_date" :disabled="!isEditing"/>
-        </div>
+          
+          <ErrorMessage :message="errorMessage" />
 
+          <CustomButton class="edit-profile" @click="toggleEdit">
+            {{ isEditing ? 'Guardar' : 'Editar perfil' }}
+          </CustomButton>
+
+          <ion-toast v-if="showToast" message="Perfil actualizado correctamente" position="bottom" color="success" :isOpen="!errorMessage" duration="3000"></ion-toast>
+
+          <ion-loading :isOpen="isLoading" message="Actualizando foto de perfil..." />
+        </div>  
         
-        <ErrorMessage :message="errorMessage" />
-
-        <CustomButton class="edit-profile" @click="toggleEdit">
-          {{ isEditing ? 'Guardar' : 'Editar perfil' }}
-        </CustomButton>
-
-        <ion-toast v-if="showToast" message="Perfil actualizado correctamente" position="bottom" color="success" :isOpen="!errorMessage" duration="3000"></ion-toast>
-
-        <ion-loading :isOpen="isLoading" message="Actualizando foto de perfil..." />
       </ion-content>
     </ion-page>
 </template>
@@ -170,12 +167,22 @@ const toggleEdit = async () => {
 </script>
   
 <style scoped>
+.page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  padding: 1rem;
+}
+
 .avatar-box {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 30px;
-  gap: 20px;
+  gap: 10px;
+  padding-top: 30px;
 }
 
 .pic {
@@ -192,7 +199,7 @@ const toggleEdit = async () => {
 }
 
 .input-fields {
-  margin-top: 70px;
+  margin-top: 40px;
 }
 
 .edit-profile {

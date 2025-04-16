@@ -37,9 +37,9 @@ export const getUser = async (token: string) => {
   }
 };
 
-export const getTripsByUser = async (token: string) => {
+export const getTripChildByUserId = async (token: string) => {
   try {
-    const response = await api.get("/trips", {
+    const response = await api.get("/tripchild", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -158,7 +158,18 @@ export const getAllAuthorizations = async () => {
     return response.data;
   }
   catch (error) {
-    console.error("Error obteniendo vehículos:", error);
+    console.error("Error obteniendo habilitaciones:", error);
+    return [];
+  }
+}
+
+export const getAllTrips = async () => {
+  try {
+    const response = await api.get("/trips");
+    return response.data;
+  }
+  catch (error) {
+    console.error("Error obteniendo viajes:", error);
     return [];
   }
 }
@@ -278,9 +289,11 @@ export const postTrip = async (trip: any, token: string) => {
   }
 }
 
+
 export const createPayment = async (token: string, trip: any) => {
   try {
-    const response = await api.post("/payment", trip, {
+    console.log("Trip enviado al backend:", trip.value);
+    const response = await api.post("/payment", trip.value, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

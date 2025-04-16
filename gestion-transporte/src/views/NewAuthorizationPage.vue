@@ -9,13 +9,7 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true" >
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Nueva habilitación</ion-title>
-        </ion-toolbar>
-      </ion-header>
-
+    <ion-content :fullscreen="true" class="ion-padding">
       <div class="authorization-box">
         <div class="input-fields">
           <div v-if="step === 1">
@@ -309,6 +303,11 @@ const saveAuthorization = async () => {
 .authorization-box {
   align-items: center;
   gap: 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 .input-fields {
   margin-top: 40px;

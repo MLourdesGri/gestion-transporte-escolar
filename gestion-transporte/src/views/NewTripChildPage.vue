@@ -49,9 +49,15 @@
                     </ion-card>
                 </template>
             </div>
-  
-            <!-- Paso 3: Pago MP -->
+            
+            <!-- Paso 3: Eleccion de fecha -->
             <div v-if="step === 3">
+              <ion-title size="large" class="title">Elige las fechas de transporte</ion-title>
+              <ion-datetime presentation="date" :multiple="true" v-model="selectedDates"></ion-datetime>
+            </div>
+
+            <!-- Paso 4: Pago MP -->
+            <div v-if="step === 4">
               <ion-title size="large" class="title">Realizar el pago</ion-title>
               <CustomButton expand="full" @click="payWithMercadoPago">Pagar con Mercado Pago</CustomButton>
             </div>
@@ -61,8 +67,8 @@
             <!-- Botones de navegación -->
             <div class="navigation-buttons">
               <CustomButton v-if="step > 1" @click="prevStep" class="btnPrev">Anterior</CustomButton>
-              <CustomButton v-if="step < 3" @click="nextStep" class="btnNext">Siguiente</CustomButton>
-              <CustomButton v-if="step === 3" @click="saveTrip" class="btnNext">Guardar</CustomButton>
+              <CustomButton v-if="step < 4" @click="nextStep" class="btnNext">Siguiente</CustomButton>
+              <CustomButton v-if="step === 4" @click="saveTrip" class="btnNext">Guardar</CustomButton>
             </div>
           </div>
         </div>
@@ -72,8 +78,8 @@
   
 <script setup lang="ts">
 import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonContent, IonCard, IonCardHeader, 
-    IonCardSubtitle, IonCardTitle, IonCardContent} from '@ionic/vue';
-import { ref, onMounted } from 'vue';
+    IonCardSubtitle, IonCardTitle, IonCardContent, IonDatetime} from '@ionic/vue';
+import { ref, onMounted, toRaw } from 'vue';
 import CustomButton from '@/components/CustomButton.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
 import { createPayment, getChildAuthorizations, getChildrenByUser, getUser } from '@/services/api';
@@ -96,10 +102,11 @@ interface Authorization {
     vehicle_capacity: number;
 }
 
-interface Trip{
+interface Trip_Child{
+    user_id: number;
     authorization_id: number;
     child_id: number;
-    user_id: number
+    selected_dates: string[];
 }
 
 interface User{
@@ -120,17 +127,24 @@ const errorMessage = ref("");
 const showToast = ref(false);
 const currentChild = ref<Child | null>(null); 
 const currentDriver = ref<Authorization | null>(null);
-const trip = ref<Trip | null>(null);
+const trip_child = ref<Trip_Child | null>(null);
 const mercadopago = ref<any>(null);
 const token = userStore.token;
+const selectedDates = ref<string[]>([]);
+
+//const verFechas = () => {
+//    console.log(selectedDates.value);
+//};
 
 const nextStep = () => {
-if (step.value < 3) step.value++;
+if (step.value < 4) step.value++;
 };
 
 const prevStep = () => {
 if (step.value > 1) step.value--;
 };
+
+
 
 const loadChildren = async () => {
 const token = userStore.token;
@@ -185,18 +199,20 @@ declare global {
   }
 }
 const payWithMercadoPago = async () => {
-    const token = localStorage.getItem('token');
+    const token = userStore.token;
     if (!token) {
         throw new Error('Token is missing');
     }
     const userResponse = await getUser(token) as { data: User };
     user.value = userResponse.data;
-    trip.value= {
+    trip_child.value= {
+        user_id: userResponse.data.id,
         authorization_id: currentDriver.value?.authorization_id || 0,
         child_id: currentChild.value?.child_id || 0,
-        user_id: userResponse.data.id
+        selected_dates: toRaw(selectedDates.value)
     };
-    const response = await createPayment(token, trip.value);
+    console.log("trip_child", trip_child.value);
+    const response = await createPayment(token, trip_child);
     if (response && typeof response === "object" && "data" in response) {
         const responseData = response.data as { preferenceId: string };
         const mp = new window.MercadoPago("TEST-eadd1652-39b2-45fb-a417-b7731d105195", { locale: "es-AR" });
@@ -241,6 +257,11 @@ const saveTrip = async () => {
     flex-direction: column;
     justify-content: space-between;
     padding-bottom: 10px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
   }
   ion-toast {
     margin-bottom: 20px;

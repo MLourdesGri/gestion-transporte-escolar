@@ -1,6 +1,6 @@
 <template>
     <ion-page>
-      <ion-content class="ion-padding">
+      <ion-content :fullscreen="true" class="ion-padding">
         <div class="forgot-password-box">
           <h2 class="title single-line">Recuperar Contraseña</h2>
           <p>Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.</p>

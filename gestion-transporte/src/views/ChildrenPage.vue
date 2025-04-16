@@ -83,11 +83,11 @@
   
   <script setup lang="ts">
   import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, 
-  IonCardSubtitle, IonCardTitle, IonAlert, IonFab, IonFabButton, IonIcon, IonModal, IonButton, IonToast} from '@ionic/vue';
+  IonCardSubtitle, IonCardTitle, IonAlert, IonFab, IonFabButton, IonIcon, IonModal, IonToast} from '@ionic/vue';
   import InputField from '@/components/InputField.vue';
   import { onMounted, ref } from "vue";
   import { getChildrenByUser, getUser, postChild, putChild, deleteChild } from "../services/api"; 
-  import { add, school } from 'ionicons/icons';
+  import { add } from 'ionicons/icons';
   import ErrorMessage from '@/components/ErrorMessage.vue';
   import InputWithMaps from '@/components/InputWithMaps.vue';
 import CustomButton from '@/components/CustomButton.vue';

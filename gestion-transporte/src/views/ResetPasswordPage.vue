@@ -1,6 +1,6 @@
 <template>
     <ion-page>
-      <ion-content class="ion-padding">
+      <ion-content :fullscreen="true" class="ion-padding">
         <div class="reset-password-box">
           <h2 class="title">Restablecer Contraseña</h2>
           <p>Ingresa tu nueva contraseña para continuar.</p>

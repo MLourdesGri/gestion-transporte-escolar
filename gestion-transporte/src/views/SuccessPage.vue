@@ -5,7 +5,7 @@
                 <ion-title>Pago Exitoso</ion-title>
             </ion-toolbar>
         </ion-header>
-        <ion-content class="ion-padding">
+        <ion-content :fullscreen="true" class="ion-padding">
             <div class="success-message">
                 <ion-icon :icon="checkmarkCircle" class="success-icon"></ion-icon>
                 <h2>¡Pago realizado con éxito!</h2>

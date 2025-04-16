@@ -9,60 +9,57 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true" class="ion-padding">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Habilitación #{{ id }}</ion-title>
-        </ion-toolbar>
-      </ion-header>
+    <ion-content :fullscreen="true">
+      <div class="page">
+        <div v-if="authorization">
+          <div class="detail-section">
+            <h2>Vehículo</h2>
+            <p><strong>Marca:</strong> {{ authorization.vehicle_make }}</p>
+            <p><strong>Modelo:</strong> {{ authorization.vehicle_model }}</p>
+            <p><strong>Año:</strong> {{ authorization.vehicle_year }}</p>
+            <p><strong>Patente:</strong> {{ authorization.vehicle_license_plate }}</p>
+            <p><strong>Capacidad:</strong> {{ authorization.vehicle_capacity }} pasajeros</p>
+            <p><strong>Habilitado hasta:</strong> {{ authorization.due_date_vehicle }}</p>
+          </div>
 
-      <div v-if="authorization">
-        <div class="detail-section">
-          <h2>Vehículo</h2>
-          <p><strong>Marca:</strong> {{ authorization.vehicle_make }}</p>
-          <p><strong>Modelo:</strong> {{ authorization.vehicle_model }}</p>
-          <p><strong>Año:</strong> {{ authorization.vehicle_year }}</p>
-          <p><strong>Patente:</strong> {{ authorization.vehicle_license_plate }}</p>
-          <p><strong>Capacidad:</strong> {{ authorization.vehicle_capacity }} pasajeros</p>
-          <p><strong>Habilitado hasta:</strong> {{ authorization.due_date_vehicle }}</p>
+          <CustomButton color="light" class="download-authorization-vehicle" @click="downloadVehiclePDF()">Descargar habilitación del vehículo</CustomButton>
+
+          <div class="detail-section">
+            <h2>Chofer</h2>
+            <p><strong>Nombre:</strong> {{ authorization.driver_name }}</p>
+            <p><strong>Dirección:</strong> {{ authorization.address }}</p>
+            <p><strong>Teléfono:</strong> {{ authorization.phone }}</p>
+            <p><strong>Habilitado hasta:</strong> {{ authorization.due_date_driver }}</p>
+          </div>
+
+          <CustomButton color="light" class="download-authorization-driver" @click="downloadDriverPDF()">Descargar habilitación del chofer</CustomButton>
+
+          <div class="detail-section">
+            <h2>Estado</h2>
+            <p v-if="authorization.state === 1">Pendiente</p>
+            <p v-else-if="authorization.state === 2">Aprobada</p>
+            <p v-else-if="authorization.state === 3">Rechazada</p>
+          </div>
         </div>
 
-        <CustomButton color="light" class="download-authorization-vehicle" @click="downloadVehiclePDF()">Descargar habilitación del vehículo</CustomButton>
+          <div class="error">
+            <ErrorMessage :message="errorMessage" duration="3000" />
+          </div>
 
-        <div class="detail-section">
-          <h2>Chofer</h2>
-          <p><strong>Nombre:</strong> {{ authorization.driver_name }}</p>
-          <p><strong>Dirección:</strong> {{ authorization.address }}</p>
-          <p><strong>Teléfono:</strong> {{ authorization.phone }}</p>
-          <p><strong>Habilitado hasta:</strong> {{ authorization.due_date_driver }}</p>
-        </div>
+          <ion-toast
+              v-model:isOpen="showToast"
+              :message="message"
+              position="bottom"
+              color="success"
+              duration="3000"
+          ></ion-toast>
 
-        <CustomButton color="light" class="download-authorization-driver" @click="downloadDriverPDF()">Descargar habilitación del chofer</CustomButton>
-
-        <div class="detail-section">
-          <h2>Estado</h2>
-          <p v-if="authorization.state === 1">Pendiente</p>
-          <p v-else-if="authorization.state === 2">Aprobada</p>
-          <p v-else-if="authorization.state === 3">Rechazada</p>
+        <div class="buttons" v-if="userStore.user?.role_id === 3 && authorization?.state === 1">
+          <CustomButton color="success" class="btnApprove" @click="approveAuthorization()">Aprobar</CustomButton>
+          <CustomButton color="danger" class="btnReject" @click="rejectAuthorization()">Rechazar</CustomButton>
         </div>
       </div>
-
-        <div class="error">
-          <ErrorMessage :message="errorMessage" duration="3000" />
-        </div>
-
-        <ion-toast
-            v-model:isOpen="showToast"
-            :message="message"
-            position="bottom"
-            color="success"
-            duration="3000"
-        ></ion-toast>
-
-      <div class="buttons" v-if="userStore.user?.role_id === 3 && authorization?.state === 1">
-        <CustomButton color="success" class="btnApprove" @click="approveAuthorization()">Aprobar</CustomButton>
-        <CustomButton color="danger" class="btnReject" @click="rejectAuthorization()">Rechazar</CustomButton>
-      </div>
+      
     </ion-content>
   </ion-page>
 </template>
@@ -252,6 +249,15 @@ const rejectAuthorization = async () => {
 </script>
 
 <style scoped>
+.page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  padding: 1rem;
+}
+
 .detail-section {
   margin-bottom: 2rem;
 }

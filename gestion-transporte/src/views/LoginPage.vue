@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <ion-content class="ion-padding">
+    <ion-content :fullscreen="true" class="ion-padding">
       <div class="login-box">
         <ion-icon :icon="busOutline" class="bus-icon"></ion-icon>
         <h2 class="title">Iniciar sesión</h2>
@@ -18,11 +18,9 @@
         <LinkButton class="forgot-password" @click="handleForgotPassword">¿Olvidaste tu contraseña?</LinkButton>
 
         <CustomButton color="light" :icon="logoGoogle" @click="handleLoginGoogle">Continuar con Google</CustomButton>
-
       
-      <p class="have-an-account">¿No tienes una cuenta?</p>
-      <LinkButton color="primary" class="register-link" @click="handleSignUp">Regístrate</LinkButton>
-        
+        <p class="have-an-account">¿No tienes una cuenta?</p>
+        <LinkButton color="primary" class="register-link" @click="handleSignUp">Regístrate</LinkButton> 
       </div>
     </ion-content>
   </ion-page>
@@ -103,8 +101,12 @@ const handleLoginGoogle = async () => {
 .login-box {
   text-align: center;
   padding: 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
-
 
 .bus-icon {
   font-size: 90px;
