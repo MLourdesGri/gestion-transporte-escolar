@@ -118,8 +118,8 @@ const allPages = [
   { title: "Hijos", url: "/children", iosIcon: accessibilityOutline, roles: [1] },
   { title: 'Habilitaciones', url: "/authorization", iosIcon: carOutline, roles: [2, 3] },
   { title: "Perfil", url: "/profile", iosIcon: personOutline, roles: [1, 2, 3] },
-  { title: "Configuracion", url: "/settings", iosIcon: settingsOutline, roles: [1, 2] },
   {title: "Tarifas", url: "/prices", iosIcon: pricetagOutline, roles: [2]},
+  { title: "Configuracion", url: "/settings", iosIcon: settingsOutline, roles: [1, 2] },
 ];
 
 const appPages = computed(() => {
