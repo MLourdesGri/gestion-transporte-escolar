@@ -292,4 +292,32 @@ export const createPayment = async (token: string, trip: any) => {
   }
 }
 
+export const getPricesByUser = async (token: string) => {
+  try {
+    const response = await api.get("/price", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }); 
+    return response.data;
+  } catch (error) {
+    console.error("Error obteniendo precios:", error);
+    return [];
+  }
+}
+
+export const postPrice = async (authorization: any, token: string) => {
+  try {
+    const response = await api.post("/price", authorization, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data; 
+  } catch (error) {
+    console.error("Error creando vehículo:", error);
+    return [];
+  }
+}
+
 export default api;

@@ -25,6 +25,8 @@ const routes: Array<RouteRecordRaw> = [
       { path: 'authorization/:id', component: () => import('../views/AuthorizationDetailsPage.vue') },
   
       { path: 'children', component: () => import('../views/ChildrenPage.vue') },
+
+      { path: 'prices', component: () => import('../views/PricesPage.vue')},
     ]
   },
   {
