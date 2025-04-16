@@ -50,10 +50,37 @@
                 </template>
             </div>
             
-            <!-- Paso 3: Eleccion de fecha -->
+            <!-- Paso 3: Elección de fecha -->
             <div v-if="step === 3">
               <ion-title size="large" class="title">Elige las fechas de transporte</ion-title>
-              <ion-datetime presentation="date" :multiple="true" v-model="selectedDates"></ion-datetime>
+
+              <!-- Selector -->
+              <ion-segment v-model="includeNextMonth" @ionChange="handleSegmentChange">
+                <ion-segment-button value="no">
+                  <ion-label>Solo este mes</ion-label>
+                </ion-segment-button>
+                <ion-segment-button value="yes">
+                  <ion-label>Incluir mes siguiente</ion-label>
+                </ion-segment-button>
+              </ion-segment>
+              <div class="calendar-container">
+              <ion-datetime
+                presentation="date"
+                :is-date-enabled="isWeekday"
+                :multiple="true"
+                :min="minDate"
+                :max="maxDate"
+                :highlighted-dates="highlightedNextMonth"
+                :value="selectedDates"
+                @ionChange="onDateChange"
+              />
+              </div>
+              <ion-toast
+                :is-open="showToast"
+                :message="toastMessage"
+                duration="5000"
+                @didDismiss="showToast = false"
+              />
             </div>
 
             <!-- Paso 4: Pago MP -->
@@ -78,8 +105,8 @@
   
 <script setup lang="ts">
 import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonContent, IonCard, IonCardHeader, 
-    IonCardSubtitle, IonCardTitle, IonCardContent, IonDatetime} from '@ionic/vue';
-import { ref, onMounted, toRaw } from 'vue';
+    IonCardSubtitle, IonCardTitle, IonCardContent, IonDatetime, IonSegment, IonSegmentButton, IonLabel, IonToast} from '@ionic/vue';
+import { ref, onMounted, toRaw, computed } from 'vue';
 import CustomButton from '@/components/CustomButton.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
 import { createPayment, getChildAuthorizations, getChildrenByUser, getUser } from '@/services/api';
@@ -124,17 +151,18 @@ const step = ref(1);
 const children = ref<Child[]>([]);
 const drivers = ref<Authorization[]>([]);
 const errorMessage = ref("");
-const showToast = ref(false);
 const currentChild = ref<Child | null>(null); 
 const currentDriver = ref<Authorization | null>(null);
 const trip_child = ref<Trip_Child | null>(null);
 const mercadopago = ref<any>(null);
 const token = userStore.token;
 const selectedDates = ref<string[]>([]);
-
-//const verFechas = () => {
-//    console.log(selectedDates.value);
-//};
+const includeNextMonth = ref("no");
+const showToast = ref(true);
+const toastMessage = ref("Seleccione días para transporte del mes corriente");
+const today = new Date();
+const year = today.getFullYear();
+const month = today.getMonth(); // 0-based
 
 const nextStep = () => {
 if (step.value < 4) step.value++;
@@ -183,6 +211,95 @@ if (token && currentChild.value) {
 }
 };
 
+const minDate = new Date(year, month, 1).toISOString().split("T")[0];
+const maxDate = computed(() => {
+  const limit = includeNextMonth.value === "yes" ? month + 2 : month + 1;
+  const max = new Date(year, limit, 0); // Último día del mes correspondiente
+  return max.toISOString().split("T")[0];
+});
+
+// Obtener días hábiles del mes siguiente
+const getNextMonthWeekdays = (): string[] => {
+  const nextMonth = month + 1;
+  const nextYear = nextMonth > 11 ? year + 1 : year;
+  const realMonth = nextMonth % 12;
+  const daysInMonth = new Date(nextYear, realMonth + 1, 0).getDate();
+
+  const weekdays: string[] = [];
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(nextYear, realMonth, day);
+    const dow = date.getDay();
+    if (dow >= 1 && dow <= 5) {
+      weekdays.push(date.toISOString().split("T")[0]);
+    }
+  }
+  return weekdays;
+};
+
+// Remarcar los días del mes siguiente (solo visual, si querés que se vean diferentes)
+const highlightedNextMonth = computed(() => {
+  return includeNextMonth.value === "yes"
+    ? getNextMonthWeekdays().map(date => ({
+        date,
+        textColor: 'var(--ion-color-medium)',
+        backgroundColor: 'transparent',
+      }))
+    : [];
+});
+
+const isWeekday = (dateString: string) => {
+        const date = new Date(dateString);
+        const utcDay = date.getUTCDay();
+
+        /**
+         * Date will be enabled if it is not
+         * Sunday or Saturday
+         */
+        return utcDay !== 0 && utcDay !== 6;
+      };
+
+// Al cambiar el toggle
+const handleSegmentChange = () => {
+  const nextMonthWeekdays = getNextMonthWeekdays();
+  const set = new Set(selectedDates.value);
+
+  if (includeNextMonth.value === "yes") {
+    nextMonthWeekdays.forEach(date => set.add(date));
+    toastMessage.value = "Se agregaron automáticamente los días hábiles del mes siguiente.";
+  } else {
+    nextMonthWeekdays.forEach(date => set.delete(date));
+    toastMessage.value = "Seleccione días para transporte del mes corriente";
+  }
+
+  selectedDates.value = Array.from(set).sort();
+  
+  // Mostrar el toast
+  showToast.value = true;
+  console.log("selectedDates", selectedDates.value);
+};
+
+// Interceptamos los cambios manuales en el calendario
+const onDateChange = (ev: any) => {
+  const value = ev.detail.value; // array de fechas seleccionadas
+  const nextMonthWeekdays = new Set(getNextMonthWeekdays());
+
+  const filtered = value.filter((date: string) => {
+    const isNextMonth = nextMonthWeekdays.has(date);
+    if (includeNextMonth.value === "no" && isNextMonth) return false;
+    if (includeNextMonth.value === "yes" && isNextMonth) return false; // el usuario no puede modificarlos
+    return true;
+  });
+
+  // Reagregamos los días hábiles automáticamente si corresponde
+  if (includeNextMonth.value === "yes") {
+    getNextMonthWeekdays().forEach(date => filtered.push(date));
+  }
+
+  // Eliminamos duplicados
+  selectedDates.value = Array.from(new Set(filtered)).sort() as string[];
+};
+
+
 const selectChild = (child: Child) => {
     currentChild.value = child;
     loadDriver();
@@ -198,6 +315,7 @@ declare global {
       MercadoPago: any;
   }
 }
+
 const payWithMercadoPago = async () => {
     const token = userStore.token;
     if (!token) {
@@ -266,6 +384,11 @@ const saveTrip = async () => {
   ion-toast {
     margin-bottom: 20px;
   }
+  .calendar-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
   .navigation-buttons {
     display: flex;
     justify-content: space-between;
