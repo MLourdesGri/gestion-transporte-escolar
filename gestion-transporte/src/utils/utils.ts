@@ -21,3 +21,14 @@ export const formatDateTime = (dateString: string) => {
     };
     return new Intl.DateTimeFormat('es-AR', options).format(date).replace(',', '');
   };
+
+  export const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      timeZone: 'America/Argentina/Buenos_Aires',
+    };
+    return new Intl.DateTimeFormat('es-AR', options).format(date);
+  };

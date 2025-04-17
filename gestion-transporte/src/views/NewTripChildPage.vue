@@ -55,14 +55,6 @@
               <ion-title size="large" class="title">Elige las fechas de transporte</ion-title>
 
               <!-- Selector -->
-              <ion-segment v-model="includeNextMonth" @ionChange="handleSegmentChange">
-                <ion-segment-button value="no">
-                  <ion-label>Solo este mes</ion-label>
-                </ion-segment-button>
-                <ion-segment-button value="yes">
-                  <ion-label>Incluir mes siguiente</ion-label>
-                </ion-segment-button>
-              </ion-segment>
               <div class="calendar-container">
               <ion-datetime
                 presentation="date"
@@ -75,6 +67,10 @@
                 @ionChange="onDateChange"
               />
               </div>
+              <ion-checkbox  v-model="includeNextMonth" @ionChange="handleCheckboxChange" label-placement="end" 
+              helper-text="Al seccionar se incluiran para transporte los días hábiles del mes siguiente">
+                Incluir días hábiles del mes siguiente
+              </ion-checkbox>
               <ion-toast
                 :is-open="showToast"
                 :message="toastMessage"
@@ -83,10 +79,33 @@
               />
             </div>
 
-            <!-- Paso 4: Pago MP -->
+            <!-- Paso 4: Resumen y Pago MP -->
             <div v-if="step === 4">
               <ion-title size="large" class="title">Realizar el pago</ion-title>
-              <CustomButton expand="full" @click="payWithMercadoPago">Pagar con Mercado Pago</CustomButton>
+              <ion-card>
+                <ion-card-header>
+                  <ion-card-title>Resumen de la reserva</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                  <p><strong>Hijo:</strong> {{ currentChild?.name }} {{ currentChild?.last_name }}</p>
+                  <p><strong>Turno:</strong> {{ currentChild?.school_shift }}</p>
+                  <p><strong>Escuela:</strong> {{ currentChild?.school }}</p>
+                  <p><strong>Chofer:</strong> {{ currentDriver?.driver_name}}</p>
+                  <p><strong>Días seleccionados:</strong></p>
+                  <ul>
+                    <li v-for="date in current_days" :key="date">{{ formatDate(date) }}</li>
+                  </ul>
+                  <p v-if="monthFee==1"><strong>Mes posterior:</strong> SI </p>
+                  <p v-if="monthFee==0"><strong>Mes posterior:</strong> NO </p>
+                </ion-card-content>
+              </ion-card>
+              
+              <CustomButton v-if="selectedDates.length !=0" expand="full" @click="payWithMercadoPago">Pagar con Mercado Pago</CustomButton>
+              <ion-toast v-if="selectedDates.length==0" 
+              is-open="true"
+              message="Debe seleccionar alguna fecha"
+              duration="5000"
+              color="danger"/>
             </div>
   
             <ErrorMessage :message="errorMessage" duration="3000" />
@@ -95,7 +114,6 @@
             <div class="navigation-buttons">
               <CustomButton v-if="step > 1" @click="prevStep" class="btnPrev">Anterior</CustomButton>
               <CustomButton v-if="step < 4" @click="nextStep" class="btnNext">Siguiente</CustomButton>
-              <CustomButton v-if="step === 4" @click="saveTrip" class="btnNext">Guardar</CustomButton>
             </div>
           </div>
         </div>
@@ -105,12 +123,13 @@
   
 <script setup lang="ts">
 import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonContent, IonCard, IonCardHeader, 
-    IonCardSubtitle, IonCardTitle, IonCardContent, IonDatetime, IonSegment, IonSegmentButton, IonLabel, IonToast} from '@ionic/vue';
-import { ref, onMounted, toRaw, computed } from 'vue';
+    IonCardSubtitle, IonCardTitle, IonCardContent, IonDatetime, IonCheckbox, IonToast} from '@ionic/vue';
+import { ref, onMounted, toRaw, computed, watch } from 'vue';
 import CustomButton from '@/components/CustomButton.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
 import { createPayment, getChildAuthorizations, getChildrenByUser, getUser } from '@/services/api';
 import { useUserStore } from '@/store/user';
+import { formatDate } from '@/utils/utils';
 
 interface Child {
     child_id: number;
@@ -118,10 +137,13 @@ interface Child {
     last_name: string;
     age: number;
     school: string;
+    school_shift: string;
 }
 
 interface Authorization {
     authorization_id: number;
+    user_id: User;
+    driver_name: string;
     vehicle_make: string;
     vehicle_model: string;
     vehicle_year: number;
@@ -134,6 +156,8 @@ interface Trip_Child{
     authorization_id: number;
     child_id: number;
     selected_dates: string[];
+    month_fee: number;
+    qty_days: number;
 }
 
 interface User{
@@ -162,7 +186,9 @@ const showToast = ref(true);
 const toastMessage = ref("Seleccione días para transporte del mes corriente");
 const today = new Date();
 const year = today.getFullYear();
-const month = today.getMonth(); // 0-based
+const month = today.getMonth();
+const current_days = ref<string[]>([]);
+
 
 const nextStep = () => {
 if (step.value < 4) step.value++;
@@ -173,9 +199,7 @@ if (step.value > 1) step.value--;
 };
 
 
-
 const loadChildren = async () => {
-const token = userStore.token;
 if (token) {
     try {
     const childResponse = await getChildrenByUser(token);
@@ -211,14 +235,9 @@ if (token && currentChild.value) {
 }
 };
 
-const minDate = new Date(year, month, 1).toISOString().split("T")[0];
-const maxDate = computed(() => {
-  const limit = includeNextMonth.value === "yes" ? month + 2 : month + 1;
-  const max = new Date(year, limit, 0); // Último día del mes correspondiente
-  return max.toISOString().split("T")[0];
-});
+const minDate = new Date(today.getFullYear(), today.getMonth(), 1).toISOString(); 
+const maxDate = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString();  
 
-// Obtener días hábiles del mes siguiente
 const getNextMonthWeekdays = (): string[] => {
   const nextMonth = month + 1;
   const nextYear = nextMonth > 11 ? year + 1 : year;
@@ -236,7 +255,6 @@ const getNextMonthWeekdays = (): string[] => {
   return weekdays;
 };
 
-// Remarcar los días del mes siguiente (solo visual, si querés que se vean diferentes)
 const highlightedNextMonth = computed(() => {
   return includeNextMonth.value === "yes"
     ? getNextMonthWeekdays().map(date => ({
@@ -250,52 +268,46 @@ const highlightedNextMonth = computed(() => {
 const isWeekday = (dateString: string) => {
         const date = new Date(dateString);
         const utcDay = date.getUTCDay();
-
-        /**
-         * Date will be enabled if it is not
-         * Sunday or Saturday
-         */
         return utcDay !== 0 && utcDay !== 6;
       };
 
-// Al cambiar el toggle
-const handleSegmentChange = () => {
+const monthFee = ref(0); 
+
+
+const handleCheckboxChange = () => {
   const nextMonthWeekdays = getNextMonthWeekdays();
   const set = new Set(selectedDates.value);
 
-  if (includeNextMonth.value === "yes") {
+  if (includeNextMonth.value) {
+    // Agregar fechas del mes siguiente
     nextMonthWeekdays.forEach(date => set.add(date));
+    monthFee.value = 1;
     toastMessage.value = "Se agregaron automáticamente los días hábiles del mes siguiente.";
   } else {
+    // Quitar fechas del mes siguiente
     nextMonthWeekdays.forEach(date => set.delete(date));
+    monthFee.value = 0;
     toastMessage.value = "Seleccione días para transporte del mes corriente";
   }
 
   selectedDates.value = Array.from(set).sort();
-  
-  // Mostrar el toast
   showToast.value = true;
-  console.log("selectedDates", selectedDates.value);
 };
 
-// Interceptamos los cambios manuales en el calendario
+
 const onDateChange = (ev: any) => {
-  const value = ev.detail.value; // array de fechas seleccionadas
+  const value = ev.detail.value; 
   const nextMonthWeekdays = new Set(getNextMonthWeekdays());
 
   const filtered = value.filter((date: string) => {
     const isNextMonth = nextMonthWeekdays.has(date);
     if (includeNextMonth.value === "no" && isNextMonth) return false;
-    if (includeNextMonth.value === "yes" && isNextMonth) return false; // el usuario no puede modificarlos
+    if (includeNextMonth.value === "yes" && isNextMonth) return false; 
     return true;
   });
-
-  // Reagregamos los días hábiles automáticamente si corresponde
   if (includeNextMonth.value === "yes") {
     getNextMonthWeekdays().forEach(date => filtered.push(date));
   }
-
-  // Eliminamos duplicados
   selectedDates.value = Array.from(new Set(filtered)).sort() as string[];
 };
 
@@ -316,6 +328,19 @@ declare global {
   }
 }
 
+watch([selectedDates, step], async ([dates, currentStep]) => {
+  if (currentStep === 4) {
+    current_days.value = dates.filter(dateStr => {
+      const [y, m] = dateStr.split("-").map(Number);
+      return y === year && m - 1 === month; 
+    })
+    console.log("selecteddates", selectedDates.value);
+  }
+});
+
+
+
+
 const payWithMercadoPago = async () => {
     const token = userStore.token;
     if (!token) {
@@ -323,11 +348,17 @@ const payWithMercadoPago = async () => {
     }
     const userResponse = await getUser(token) as { data: User };
     user.value = userResponse.data;
+    const qty_current_days = selectedDates.value.filter(dateStr => {
+    const [y, m] = dateStr.split("-").map(Number);
+    return y === year && m - 1 === month; 
+  }).length;
     trip_child.value= {
         user_id: userResponse.data.id,
         authorization_id: currentDriver.value?.authorization_id || 0,
         child_id: currentChild.value?.child_id || 0,
-        selected_dates: toRaw(selectedDates.value)
+        selected_dates: toRaw(selectedDates.value),
+        month_fee: monthFee.value,
+        qty_days: qty_current_days
     };
     console.log("trip_child", trip_child.value);
     const response = await createPayment(token, trip_child);
@@ -343,30 +374,6 @@ const payWithMercadoPago = async () => {
     }
 };
 
-const saveTrip = async () => {
-    errorMessage.value = "";
-    
-    if (!token) {
-    errorMessage.value = "No se encontró el token. Inicia sesión nuevamente.";
-    return;
-    }
-
-    try {
-    let response;
-
-    if (response && typeof response === 'object' && 'data' in response) {
-        showToast.value = true;
-        setTimeout(() => {
-        showToast.value = false;
-        }, 3000);
-    } else {
-        errorMessage.value = "Error al actualizar o crear el vehículo. Inténtalo nuevamente.";
-    }
-    } catch (error) {
-    console.error(error);
-    errorMessage.value = "Hubo un problema con la actualización o creación del vehículo. Inténtalo nuevamente.";
-    }
-}
 </script>
   
 <style scoped>
@@ -408,6 +415,10 @@ const saveTrip = async () => {
     }
   .title {
   margin-top: 20px;
+  }
+  ion-checkbox {
+    margin: 10px;
+
   }
 </style>
   

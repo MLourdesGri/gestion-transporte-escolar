@@ -53,6 +53,7 @@ import {  getTripChildByUserId, getUser } from "../services/api";
 import { add } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/store/user';
+import { formatDate } from '@/utils/utils';
 
 interface Trip_Child {
   trip_child_id: number;
@@ -154,11 +155,6 @@ onMounted(() => {
   loadUser();
 });
 
-const formatDate = (dateString: string) => {
-  if (!dateString) return "Fecha desconocida";
-  const [year, month, day] = dateString.split("-");
-  return `${day}-${month}-${year}`;
-};
 
 const translateStatus = (status: string) => {
   switch (status) {
