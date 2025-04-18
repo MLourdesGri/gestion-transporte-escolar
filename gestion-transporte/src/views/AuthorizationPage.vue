@@ -188,11 +188,14 @@ const navigateToAddAuthorization = () => {
 }
 
 .card-green {
-  --background: #07912791;
+  --background: #d4f5d4; /* verde pastel */
+  color: #333; /* texto oscuro/gris */
 }
 
 .card-red {
-  --background: #58050c;
+  --background: #f8d6d6; /* rojo pastel */
+  color: #333;
 }
+
 
 </style>
