@@ -91,6 +91,7 @@ interface Authorization {
   vehicle_capacity: number;
   due_date_vehicle: string;
   due_date_driver: string;
+  updated_at: string;
   state: number;
 }
 
@@ -112,6 +113,11 @@ const loadAuthorizations = async () => {
       if (authorizationResponse && typeof authorizationResponse === "object" && "data" in authorizationResponse) {
         const authorizationData = authorizationResponse.data;
         authorizations.value = Array.isArray(authorizationData) ? authorizationData : (authorizationData ? [authorizationData] : []);
+        authorizations.value.sort((a, b) => {
+          const dateA = new Date(a.updated_at); 
+          const dateB = new Date(b.updated_at);
+          return dateB.getTime() - dateA.getTime(); 
+        });
       } else {
         authorizations.value = [];
       }
