@@ -74,7 +74,7 @@
               <ion-toast
                 :is-open="showToast"
                 :message="toastMessage"
-                duration="5000"
+                duration="3000"
                 @didDismiss="showToast = false"
               />
             </div>
@@ -95,17 +95,17 @@
                   <ul>
                     <li v-for="date in current_days" :key="date">{{ formatDate(date) }}</li>
                   </ul>
+                  <p v-if="current_days.length > 0 && price?.weekly_price"><strong>Subtotal:</strong> {{ (price?.weekly_price ?? 0) * current_days.length }} </p>
                   <p v-if="monthFee==1"><strong>Mes posterior:</strong> SI </p>
+                  <p v-if="monthFee==1"><strong>Subtotal:</strong> {{ price?.monthly_price }} </p>
                   <p v-if="monthFee==0"><strong>Mes posterior:</strong> NO </p>
+                  <p v-if="monthFee==1 && price" style="text-align: end;"><strong>Total:</strong> {{ price.monthly_price + ((price.weekly_price || 0) * current_days.length) }}</p>
+                  <p v-if="monthFee==0" style="text-align: end;"><strong>Total:</strong> {{ (price?.weekly_price ?? 0) * current_days.length}}</p>
+
                 </ion-card-content>
               </ion-card>
               
-              <CustomButton v-if="selectedDates.length !=0" expand="full" @click="payWithMercadoPago">Pagar con Mercado Pago</CustomButton>
-              <ion-toast v-if="selectedDates.length==0" 
-              is-open="true"
-              message="Debe seleccionar alguna fecha"
-              duration="5000"
-              color="danger"/>
+              
             </div>
   
             <ErrorMessage :message="errorMessage" duration="3000" />
@@ -114,6 +114,12 @@
             <div class="navigation-buttons">
               <CustomButton v-if="step > 1" @click="prevStep" class="btnPrev">Anterior</CustomButton>
               <CustomButton v-if="step < 4" @click="nextStep" class="btnNext">Siguiente</CustomButton>
+              <CustomButton v-if="selectedDates.length !=0 && step==4" @click="payWithMercadoPago" class="btnNext">Pagar con Mercado Pago</CustomButton>
+              <ion-toast v-if="selectedDates.length==0 || selectChild==null || selectDriver==null" 
+              is-open="true"
+              message="Debe completar todos los pasos"
+              duration="5000"
+              color="danger"/>
             </div>
           </div>
         </div>
@@ -127,7 +133,7 @@ import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, Io
 import { ref, onMounted, toRaw, computed, watch } from 'vue';
 import CustomButton from '@/components/CustomButton.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
-import { createPayment, getChildAuthorizations, getChildrenByUser, getUser } from '@/services/api';
+import { createPayment, getChildAuthorizations, getChildrenByUser, getPriceByUserAuthorization, getUser } from '@/services/api';
 import { useUserStore } from '@/store/user';
 import { formatDate } from '@/utils/utils';
 
@@ -142,7 +148,7 @@ interface Child {
 
 interface Authorization {
     authorization_id: number;
-    user_id: User;
+    user: User;
     driver_name: string;
     vehicle_make: string;
     vehicle_model: string;
@@ -164,6 +170,11 @@ interface User{
   id: number;
 }
 
+interface Price{
+  monthly_price : number;
+  weekly_price : number;
+}
+
 const userStore = useUserStore();
 
 onMounted(() => {
@@ -174,6 +185,7 @@ mercadopago.value = new window.MercadoPago("TEST-eadd1652-39b2-45fb-a417-b7731d1
 const step = ref(1); 
 const children = ref<Child[]>([]);
 const drivers = ref<Authorization[]>([]);
+const price = ref<Price | null>(null);
 const errorMessage = ref("");
 const currentChild = ref<Child | null>(null); 
 const currentDriver = ref<Authorization | null>(null);
@@ -181,7 +193,7 @@ const trip_child = ref<Trip_Child | null>(null);
 const mercadopago = ref<any>(null);
 const token = userStore.token;
 const selectedDates = ref<string[]>([]);
-const includeNextMonth = ref("no");
+const includeNextMonth = ref(false);
 const showToast = ref(true);
 const toastMessage = ref("Seleccione días para transporte del mes corriente");
 const today = new Date();
@@ -256,7 +268,7 @@ const getNextMonthWeekdays = (): string[] => {
 };
 
 const highlightedNextMonth = computed(() => {
-  return includeNextMonth.value === "yes"
+  return includeNextMonth.value === true
     ? getNextMonthWeekdays().map(date => ({
         date,
         textColor: 'var(--ion-color-medium)',
@@ -279,12 +291,10 @@ const handleCheckboxChange = () => {
   const set = new Set(selectedDates.value);
 
   if (includeNextMonth.value) {
-    // Agregar fechas del mes siguiente
     nextMonthWeekdays.forEach(date => set.add(date));
     monthFee.value = 1;
     toastMessage.value = "Se agregaron automáticamente los días hábiles del mes siguiente.";
   } else {
-    // Quitar fechas del mes siguiente
     nextMonthWeekdays.forEach(date => set.delete(date));
     monthFee.value = 0;
     toastMessage.value = "Seleccione días para transporte del mes corriente";
@@ -301,11 +311,11 @@ const onDateChange = (ev: any) => {
 
   const filtered = value.filter((date: string) => {
     const isNextMonth = nextMonthWeekdays.has(date);
-    if (includeNextMonth.value === "no" && isNextMonth) return false;
-    if (includeNextMonth.value === "yes" && isNextMonth) return false; 
+    if (includeNextMonth.value === false && isNextMonth) return false;
+    if (includeNextMonth.value === true && isNextMonth) return false; 
     return true;
   });
-  if (includeNextMonth.value === "yes") {
+  if (includeNextMonth.value === true) {
     getNextMonthWeekdays().forEach(date => filtered.push(date));
   }
   selectedDates.value = Array.from(new Set(filtered)).sort() as string[];
@@ -317,8 +327,14 @@ const selectChild = (child: Child) => {
     loadDriver();
 };
 
-const selectDriver = (driver: Authorization) => {
+const selectDriver = async (driver: Authorization) => {
     currentDriver.value = driver;
+    if (token) {
+        const priceResponse = await getPriceByUserAuthorization(token, currentDriver.value?.user.id || 0) as {data: Price};
+        price.value = priceResponse.data;
+    } else {
+        console.error("Token is null");
+    }
 };
 const user = ref<User | null>(null);
 
@@ -333,15 +349,19 @@ watch([selectedDates, step], async ([dates, currentStep]) => {
     current_days.value = dates.filter(dateStr => {
       const [y, m] = dateStr.split("-").map(Number);
       return y === year && m - 1 === month; 
-    })
-    console.log("selecteddates", selectedDates.value);
+    })    
   }
 });
 
-
-
-
 const payWithMercadoPago = async () => {
+    if (!currentChild.value || !currentDriver.value) {
+        errorMessage.value = "Por favor, selecciona un hijo y un chofer antes de proceder al pago.";
+        return;
+    }
+    if (!selectedDates.value.length) {
+        errorMessage.value = "Por favor, selecciona al menos una fecha.";
+        return;
+    }
     const token = userStore.token;
     if (!token) {
         throw new Error('Token is missing');
@@ -360,7 +380,6 @@ const payWithMercadoPago = async () => {
         month_fee: monthFee.value,
         qty_days: qty_current_days
     };
-    console.log("trip_child", trip_child.value);
     const response = await createPayment(token, trip_child);
     if (response && typeof response === "object" && "data" in response) {
         const responseData = response.data as { preferenceId: string };
@@ -408,6 +427,12 @@ const payWithMercadoPago = async () => {
     margin-bottom: 20px;
   }
   .btnNext {
+    margin-left: auto;
+  }
+  .btnPay {
+    display: flex;
+    position: absolute;
+    bottom: 10px;
     margin-left: auto;
   }
   .selected {
