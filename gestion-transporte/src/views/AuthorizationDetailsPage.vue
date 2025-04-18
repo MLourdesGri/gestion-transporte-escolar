@@ -39,6 +39,9 @@
             <p v-if="authorization.state === 1">Pendiente</p>
             <p v-else-if="authorization.state === 2">Aprobada</p>
             <p v-else-if="authorization.state === 3">Rechazada</p>
+            <p v-if="authorization.state === 3 && authorization.rejection_reason">
+            <strong>Motivo del rechazo:</strong> {{ authorization.rejection_reason }}
+            </p>
           </div>
         </div>
 
@@ -47,25 +50,66 @@
           </div>
 
           <ion-toast
-              v-model:isOpen="showToast"
-              :message="message"
-              position="bottom"
-              color="success"
-              duration="3000"
-          ></ion-toast>
+            v-model:isOpen="showToast"
+            :message="message"
+            position="bottom"
+            :color="toastColor"
+            duration="3000"
+          />
+
 
         <div class="buttons" v-if="userStore.user?.role_id === 3 && authorization?.state === 1">
-          <CustomButton color="success" class="btnApprove" @click="approveAuthorization()">Aprobar</CustomButton>
-          <CustomButton color="danger" class="btnReject" @click="rejectAuthorization()">Rechazar</CustomButton>
+          <CustomButton color="success" class="btnApprove" @click="showApproveAlert = true">Aprobar</CustomButton>
+          <CustomButton color="danger" class="btnReject" @click="showRejectAlert = true">Rechazar</CustomButton>
         </div>
       </div>
-      
+      <IonAlert
+      :is-open="showApproveAlert"
+      header="Confirmación"
+      message="¿Estás seguro que deseas aprobar la habilitación?"
+      :buttons="[
+        {
+          text: 'Sí',
+          handler: approveAuthorization,
+        },
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: () => (showApproveAlert = false),
+        },
+      ]"
+    />
+    <IonAlert
+    :is-open="showRejectAlert"
+    header="Motivo del rechazo"
+    message="Por favor, ingrese el motivo del rechazo:"
+    :inputs="[
+      {
+        name: 'reason',
+        type: 'textarea',
+        placeholder: 'Escriba el motivo aquí...',
+      },
+    ]"
+    :buttons="[
+      {
+        text: 'Cancelar',
+        role: 'cancel',
+        handler: () => (showRejectAlert = false),
+      },
+      {
+        text: 'Rechazar',
+        handler: handleReject,
+      }
+    ]"
+
+  />
+
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonTitle, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonToast } from '@ionic/vue';
+import { IonPage, IonTitle, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonToast, IonAlert } from '@ionic/vue';
 import { useRoute } from 'vue-router';
 import { ref, watchEffect } from 'vue';
 import { getAuthorizationById, getUser, putAuthorization, postTrip } from '@/services/api';
@@ -78,6 +122,10 @@ const id = ref<number>(Number(route.params.id));
 const errorMessage = ref<string | undefined>(undefined);
 const showToast = ref(false);
 const message = ref<string | null>(null);
+const showApproveAlert = ref(false);
+const showRejectAlert = ref(false);
+const rejectionReason = ref('');
+const toastColor = ref<'success' | 'danger'>('success');
 
 interface User {
   full_name: string;
@@ -99,6 +147,18 @@ const loadUser = async () => {
   }
 };
 
+function handleReject(data: any) {
+  if (!data.reason || data.reason.trim() === '') {
+    toastColor.value = 'danger';
+    message.value = 'Debe ingresar un motivo para rechazar.';
+    showToast.value = true;
+    return false;
+  }
+  rejectionReason.value = data.reason;
+  rejectAuthorization();
+}
+
+
 interface Authorization {
   authorization_id: number;
   vehicle_make: string;
@@ -114,6 +174,7 @@ interface Authorization {
   vehicle_authorization_pdf: string;
   driver_authorization_pdf: string;
   state: number;
+  rejection_reason?: string;
 }
 
 const authorization = ref<Authorization | null>(null);
@@ -168,6 +229,7 @@ const approveAuthorization = async () => {
     const authorizationResponse = await putAuthorization(editedAuthorization, id.value, token);
 
     if (authorizationResponse) {
+      toastColor.value = 'success';
       showToast.value = true;
       message.value = "Habilitación aprobada correctamente.";
 
@@ -230,11 +292,13 @@ const rejectAuthorization = async () => {
 
     const editedAuthorization = {
       state: 3,
-    }
+      rejection_reason: rejectionReason.value, 
+    };
 
     const authorizationResponse = await putAuthorization(editedAuthorization, id.value, token);
 
     if (authorizationResponse) {
+      toastColor.value = 'success';
       showToast.value = true;
       message.value = "Habilitación rechazada correctamente.";
     } else {
@@ -243,9 +307,12 @@ const rejectAuthorization = async () => {
   } catch (error) {
     console.error("Error al rechazar la habilitación", error);
   } finally {
+    rejectionReason.value = ''; 
+    showRejectAlert.value = false;
     loadAuthorization();
   }
-}
+};
+
 </script>
 
 <style scoped>

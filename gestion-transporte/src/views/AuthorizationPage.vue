@@ -25,6 +25,10 @@
       </template>
 
       <template v-else>
+        <template v-if="showNewAuthorizationButton">
+          <CustomButton class="new-hab" @click="navigateToAddAuthorization">Nueva habilitación</CustomButton>
+        </template>
+
         <ion-card v-for="authorization in authorizations" :key="authorization.authorization_id" :button="true" @click="authorizationDetail(authorization.authorization_id)"
         :class="getCardClass(authorization.state)"
         >
@@ -117,6 +121,22 @@ const loadAuthorizations = async () => {
     }
   }
 };
+
+import { computed } from 'vue';
+
+const showNewAuthorizationButton = computed(() => {
+  if (userStore.user?.role_id !== 2 || authorizations.value.length === 0) {
+    return false;
+  }
+
+  const sorted = [...authorizations.value].sort((a, b) => {
+    return new Date(b.due_date_driver).getTime() - new Date(a.due_date_driver).getTime();
+  });
+
+  const latest = sorted[0];
+  return latest?.state === 3; // estado 3 = Rechazada
+});
+
 
 const authorizationDetail = (authorizationId: number) => {
   router.push(`/authorization/${authorizationId}`);
