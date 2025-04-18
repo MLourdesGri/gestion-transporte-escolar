@@ -93,7 +93,7 @@
   
   <script setup lang="ts">
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, 
-IonCardSubtitle, IonCardTitle, IonAlert, IonFab, IonFabButton, IonIcon, IonModal, IonButton, IonToast, IonItem, IonCardContent, IonText} from '@ionic/vue';
+IonCardSubtitle, IonCardTitle, IonAlert, IonFab, IonFabButton, IonIcon, IonModal,  IonToast, IonCardContent, IonText} from '@ionic/vue';
 import InputField from '@/components/InputField.vue';
 import { getPricesByUser, postPrice } from "../services/api"; 
 import { add } from 'ionicons/icons';
@@ -119,7 +119,6 @@ import { formatDateTime } from '@/utils/utils';
   });
   
   const prices = ref<Price[]>([]);
-  const showAlert = ref(false); 
   const errorMessage = ref("");
   const showToast = ref(false);
   const currentPrice = ref<Price | null>(null); 

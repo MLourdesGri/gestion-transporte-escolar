@@ -319,6 +319,20 @@ export const getPricesByUser = async (token: string) => {
   }
 }
 
+export const getPriceByUserAuthorization = async (token: string, id: number) => {
+  try {
+    const response = await api.get(`/price/authorization/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }); 
+    return response.data;
+  } catch (error) {
+    console.error("Error obteniendo precios:", error);
+    return [];
+  }
+}
+
 export const postPrice = async (authorization: any, token: string) => {
   try {
     const response = await api.post("/price", authorization, {
