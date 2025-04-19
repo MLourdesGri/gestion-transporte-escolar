@@ -9,13 +9,12 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true" class="ion-padding">
+    <ion-content class="ion-padding">
       <template v-if="authorizations.length == 0">
         <div v-if="userStore.user?.role_id == 2">
           <div class="no-authorization">
             <p>Aún no has registrado ninguna habilitación de chofer y vehículo.</p>
           </div>
-          <CustomButton class="new-hab" @click="navigateToAddAuthorization">Nueva habilitación</CustomButton>
         </div>
         <div v-else>
           <div class="no-authorization">
@@ -25,9 +24,6 @@
       </template>
 
       <template v-else>
-        <template v-if="showNewAuthorizationButton">
-          <CustomButton class="new-hab" @click="navigateToAddAuthorization">Nueva habilitación</CustomButton>
-        </template>
 
         <ion-card v-for="authorization in authorizations" :key="authorization.authorization_id" :button="true" @click="authorizationDetail(authorization.authorization_id)"
         :class="getCardClass(authorization.state)"
@@ -39,10 +35,13 @@
           <ion-card-content>
             <p><strong>Patente:</strong> {{ authorization.vehicle_license_plate }}</p>
             <p><strong>Capacidad:</strong> {{ authorization.vehicle_capacity }} pasajeros</p>
-            <p><strong>Vehículo habilitado hasta:</strong> {{ authorization.due_date_vehicle }}</p>
-            <p><strong>Chofer habilitado hasta:</strong> {{ authorization.due_date_driver }}</p>
+            <p><strong>Vehículo habilitado hasta:</strong> {{ formatDate (authorization.due_date_vehicle) }}</p>
+            <p><strong>Chofer habilitado hasta:</strong> {{ formatDate(authorization.due_date_driver) }}</p>
           </ion-card-content>
         </ion-card>
+        <template v-if="showNewAuthorizationButton">
+          <CustomButton class="new-hab" @click="navigateToAddAuthorization">Nueva habilitación</CustomButton>
+        </template>
 
       </template>
     </ion-content>
@@ -60,6 +59,7 @@ import { getAllAuthorizations, getUser } from "@/services/api";
 import { getAuthorizationByUser } from "@/services/api";
 import CustomButton from "@/components/CustomButton.vue";
 import { useUserStore } from "@/store/user";
+import { formatDate } from "@/utils/utils";
 
 interface User {
   full_name: string;
@@ -181,8 +181,6 @@ const navigateToAddAuthorization = () => {
 }
 
 .new-hab {
-  bottom: 10px;
-  position: absolute;
   left: 0;
   right: 0;
   margin-left: 20px;

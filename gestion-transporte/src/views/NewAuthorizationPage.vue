@@ -1,4 +1,4 @@
-<template>
+<template  :fullscreen="true">
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
@@ -9,7 +9,7 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true" class="ion-padding">
+    <ion-content class="ion-padding">
       <div class="authorization-box">
         <div class="input-fields">
           <div v-if="step === 1">
@@ -28,7 +28,6 @@
               :options="workShifts" 
               v-model="form.work_shift" 
             />
-            <!-- <InputField label="Institución educativa" type="text" placeholder="Colegio Maria Auxiliadora" name="school" v-model="form.school" /> -->
             <InputWithMaps label="Institución educativa" type="text" placeholder="Colegio Maria Auxiliadora" name="school" v-model="form.school" />
           </div>
 
@@ -283,12 +282,9 @@ const saveAuthorization = async () => {
     const response = await postAuthorization(authorizationData, token); 
 
     if (response && typeof response === 'object' && 'data' in response) {
-      router.push("/authorization");
       showToast.value = true;
       showNoAuthorizationToast.value = false; 
-      setTimeout(() => {
-        showToast.value = false;
-      }, 3000);
+      router.push("/authorization");
     } else {
       errorMessage.value = "Error al actualizar o crear el vehículo. Inténtalo nuevamente.";
     }

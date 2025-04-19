@@ -1,4 +1,4 @@
-<template>
+<template :fullscreen="true">
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
@@ -9,7 +9,7 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
+    <ion-content>
       <div class="page">
         <div v-if="authorization">
           <div class="detail-section">
@@ -29,7 +29,7 @@
             <p><strong>Nombre:</strong> {{ authorization.driver_name }}</p>
             <p><strong>Dirección:</strong> {{ authorization.address }}</p>
             <p><strong>Teléfono:</strong> {{ authorization.phone }}</p>
-            <p><strong>Habilitado hasta:</strong> {{ authorization.due_date_driver }}</p>
+            <p><strong>Habilitado hasta:</strong> {{ formatDate(authorization.due_date_driver) }}</p>
           </div>
 
           <CustomButton color="light" class="download-authorization-driver" @click="downloadDriverPDF()">Descargar habilitación del chofer</CustomButton>
@@ -116,6 +116,7 @@ import { getAuthorizationById, getUser, putAuthorization, postTrip } from '@/ser
 import CustomButton from '@/components/CustomButton.vue';
 import { useUserStore } from '@/store/user';
 import ErrorMessage from '@/components/ErrorMessage.vue';
+import { formatDate } from '@/utils/utils';
 
 const route = useRoute();
 const id = ref<number>(Number(route.params.id));
@@ -317,22 +318,18 @@ const rejectAuthorization = async () => {
 
 <style scoped>
 .page {
-  position: absolute;
-  top: 0;
   left: 0;
   bottom: 0;
   right: 0;
   padding: 1rem;
 }
 
-.detail-section {
-  margin-bottom: 2rem;
-}
+
 
 .detail-section h2 {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 1.2rem;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
   color: #003388;
 }
 

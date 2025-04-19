@@ -1,4 +1,4 @@
-<template>
+<template :fullscreen="true">
     <ion-page>
       <ion-header :translucent="true">
         <ion-toolbar>
@@ -9,7 +9,7 @@
         </ion-toolbar>
       </ion-header>
   
-      <ion-content :fullscreen="true" >
+      <ion-content  >
         <ion-header collapse="condense">
           <ion-toolbar>
             <ion-title size="large">Nuevo transporte</ion-title>
@@ -58,7 +58,7 @@
               <div class="calendar-container">
               <ion-datetime
                 presentation="date"
-                :is-date-enabled="isWeekday"
+                :is-date-enabled="isEnabledDate"
                 :multiple="true"
                 :min="minDate"
                 :max="maxDate"
@@ -149,12 +149,20 @@ interface Child {
 interface Authorization {
     authorization_id: number;
     user: User;
+    trips: Trip[];
     driver_name: string;
     vehicle_make: string;
     vehicle_model: string;
     vehicle_year: number;
     vehicle_license_plate: string;
     vehicle_capacity: number;
+}
+
+interface Trip {
+    trip_id: number;
+    date: string;
+    available_capacity: number;
+    status: string;
 }
 
 interface Trip_Child{
@@ -200,7 +208,7 @@ const today = new Date();
 const year = today.getFullYear();
 const month = today.getMonth();
 const current_days = ref<string[]>([]);
-
+const enabledDates = ref<string[]>([]);
 
 const nextStep = () => {
 if (step.value < 4) step.value++;
@@ -241,7 +249,7 @@ if (token && currentChild.value) {
         drivers.value = [];
     }
     } catch (error) {
-    console.error("Error cargando alumnos", error);
+    console.error("Error cargando choferes", error);
     drivers.value = [];
     }
 }
@@ -277,11 +285,7 @@ const highlightedNextMonth = computed(() => {
     : [];
 });
 
-const isWeekday = (dateString: string) => {
-        const date = new Date(dateString);
-        const utcDay = date.getUTCDay();
-        return utcDay !== 0 && utcDay !== 6;
-      };
+
 
 const monthFee = ref(0); 
 
@@ -329,6 +333,7 @@ const selectChild = (child: Child) => {
 
 const selectDriver = async (driver: Authorization) => {
     currentDriver.value = driver;
+    console.log("Choferes disponibles:", currentDriver.value);
     if (token) {
         const priceResponse = await getPriceByUserAuthorization(token, currentDriver.value?.user.id || 0) as {data: Price};
         price.value = priceResponse.data;
@@ -343,6 +348,19 @@ declare global {
       MercadoPago: any;
   }
 }
+
+watch(currentDriver, (newDriver) => {
+  if (newDriver && newDriver.trips) {
+    const tripDates = newDriver.trips.map((trip: any) => trip.date);
+    enabledDates.value = tripDates;
+  }
+});
+
+const isEnabledDate = (dateString: string) => {
+  const formatted = new Date(dateString).toISOString().split("T")[0];
+  return enabledDates.value.includes(formatted);
+};
+
 
 watch([selectedDates, step], async ([dates, currentStep]) => {
   if (currentStep === 4) {
