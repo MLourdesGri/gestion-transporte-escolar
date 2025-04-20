@@ -53,30 +53,19 @@
             <!-- Paso 3: Elección de fecha -->
             <div v-if="step === 3">
               <ion-title size="large" class="title">Elige las fechas de transporte</ion-title>
-
               <!-- Selector -->
               <div class="calendar-container">
               <ion-datetime
                 presentation="date"
+                preferWheel="false"
+                :value="selectedDates"
                 :is-date-enabled="isEnabledDate"
-                :multiple="true"
+                multiple="true"
                 :min="minDate"
                 :max="maxDate"
-                :highlighted-dates="highlightedNextMonth"
-                :value="selectedDates"
-                @ionChange="onDateChange"
+                @ionChange="handleChange"
               />
               </div>
-              <ion-checkbox  v-model="includeNextMonth" @ionChange="handleCheckboxChange" label-placement="end" 
-              helper-text="Al seccionar se incluiran para transporte los días hábiles del mes siguiente">
-                Incluir días hábiles del mes siguiente
-              </ion-checkbox>
-              <ion-toast
-                :is-open="showToast"
-                :message="toastMessage"
-                duration="3000"
-                @didDismiss="showToast = false"
-              />
             </div>
 
             <!-- Paso 4: Resumen y Pago MP -->
@@ -93,15 +82,9 @@
                   <p><strong>Chofer:</strong> {{ currentDriver?.driver_name}}</p>
                   <p><strong>Días seleccionados:</strong></p>
                   <ul>
-                    <li v-for="date in current_days" :key="date">{{ formatDate(date) }}</li>
+                    <li v-for="date in selectedDates" :key="date">{{ formatDate(date) }}</li>
                   </ul>
-                  <p v-if="current_days.length > 0 && price?.weekly_price"><strong>Subtotal:</strong> {{ (price?.weekly_price ?? 0) * current_days.length }} </p>
-                  <p v-if="monthFee==1"><strong>Mes posterior:</strong> SI </p>
-                  <p v-if="monthFee==1"><strong>Subtotal:</strong> {{ price?.monthly_price }} </p>
-                  <p v-if="monthFee==0"><strong>Mes posterior:</strong> NO </p>
-                  <p v-if="monthFee==1 && price" style="text-align: end;"><strong>Total:</strong> {{ price.monthly_price + ((price.weekly_price || 0) * current_days.length) }}</p>
-                  <p v-if="monthFee==0" style="text-align: end;"><strong>Total:</strong> {{ (price?.weekly_price ?? 0) * current_days.length}}</p>
-
+                  <p><strong>Total:</strong> ${{ totalPrice }}</p>
                 </ion-card-content>
               </ion-card>
               
@@ -116,7 +99,7 @@
               <CustomButton v-if="step < 4" @click="nextStep" class="btnNext">Siguiente</CustomButton>
               <CustomButton v-if="selectedDates.length !=0 && step==4" @click="payWithMercadoPago" class="btnNext">Pagar con Mercado Pago</CustomButton>
               <ion-toast v-if="selectedDates.length==0 || selectChild==null || selectDriver==null" 
-              is-open="true"
+              is-open="false"
               message="Debe completar todos los pasos"
               duration="5000"
               color="danger"/>
@@ -129,7 +112,7 @@
   
 <script setup lang="ts">
 import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonContent, IonCard, IonCardHeader, 
-    IonCardSubtitle, IonCardTitle, IonCardContent, IonDatetime, IonCheckbox, IonToast} from '@ionic/vue';
+    IonCardSubtitle, IonCardTitle, IonCardContent, IonDatetime, IonToast} from '@ionic/vue';
 import { ref, onMounted, toRaw, computed, watch } from 'vue';
 import CustomButton from '@/components/CustomButton.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
@@ -170,8 +153,6 @@ interface Trip_Child{
     authorization_id: number;
     child_id: number;
     selected_dates: string[];
-    month_fee: number;
-    qty_days: number;
 }
 
 interface User{
@@ -201,13 +182,7 @@ const trip_child = ref<Trip_Child | null>(null);
 const mercadopago = ref<any>(null);
 const token = userStore.token;
 const selectedDates = ref<string[]>([]);
-const includeNextMonth = ref(false);
-const showToast = ref(true);
-const toastMessage = ref("Seleccione días para transporte del mes corriente");
 const today = new Date();
-const year = today.getFullYear();
-const month = today.getMonth();
-const current_days = ref<string[]>([]);
 const enabledDates = ref<string[]>([]);
 
 const nextStep = () => {
@@ -256,74 +231,7 @@ if (token && currentChild.value) {
 };
 
 const minDate = new Date(today.getFullYear(), today.getMonth(), 1).toISOString(); 
-const maxDate = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString();  
-
-const getNextMonthWeekdays = (): string[] => {
-  const nextMonth = month + 1;
-  const nextYear = nextMonth > 11 ? year + 1 : year;
-  const realMonth = nextMonth % 12;
-  const daysInMonth = new Date(nextYear, realMonth + 1, 0).getDate();
-
-  const weekdays: string[] = [];
-  for (let day = 1; day <= daysInMonth; day++) {
-    const date = new Date(nextYear, realMonth, day);
-    const dow = date.getDay();
-    if (dow >= 1 && dow <= 5) {
-      weekdays.push(date.toISOString().split("T")[0]);
-    }
-  }
-  return weekdays;
-};
-
-const highlightedNextMonth = computed(() => {
-  return includeNextMonth.value === true
-    ? getNextMonthWeekdays().map(date => ({
-        date,
-        textColor: 'var(--ion-color-medium)',
-        backgroundColor: 'transparent',
-      }))
-    : [];
-});
-
-
-
-const monthFee = ref(0); 
-
-
-const handleCheckboxChange = () => {
-  const nextMonthWeekdays = getNextMonthWeekdays();
-  const set = new Set(selectedDates.value);
-
-  if (includeNextMonth.value) {
-    nextMonthWeekdays.forEach(date => set.add(date));
-    monthFee.value = 1;
-    toastMessage.value = "Se agregaron automáticamente los días hábiles del mes siguiente.";
-  } else {
-    nextMonthWeekdays.forEach(date => set.delete(date));
-    monthFee.value = 0;
-    toastMessage.value = "Seleccione días para transporte del mes corriente";
-  }
-
-  selectedDates.value = Array.from(set).sort();
-  showToast.value = true;
-};
-
-
-const onDateChange = (ev: any) => {
-  const value = ev.detail.value; 
-  const nextMonthWeekdays = new Set(getNextMonthWeekdays());
-
-  const filtered = value.filter((date: string) => {
-    const isNextMonth = nextMonthWeekdays.has(date);
-    if (includeNextMonth.value === false && isNextMonth) return false;
-    if (includeNextMonth.value === true && isNextMonth) return false; 
-    return true;
-  });
-  if (includeNextMonth.value === true) {
-    getNextMonthWeekdays().forEach(date => filtered.push(date));
-  }
-  selectedDates.value = Array.from(new Set(filtered)).sort() as string[];
-};
+const maxDate = new Date(today.getFullYear(), today.getMonth() + 2, 0).toISOString() ; 
 
 
 const selectChild = (child: Child) => {
@@ -356,20 +264,30 @@ watch(currentDriver, (newDriver) => {
   }
 });
 
+const handleChange = (event : any) => {
+      const fechasNuevas = event.detail.value;
+      selectedDates.value = fechasNuevas.filter((date: any) => enabledDates.value.includes(date));
+      console.log(minDate, maxDate, selectedDates.value);
+    };
+
 const isEnabledDate = (dateString: string) => {
   const formatted = new Date(dateString).toISOString().split("T")[0];
   return enabledDates.value.includes(formatted);
 };
 
+const totalPrice = computed(() => {
+  const numDates = selectedDates.value.length
+  const weekly = price.value?.weekly_price || 0
+  const monthly = price.value?.monthly_price || 0
 
-watch([selectedDates, step], async ([dates, currentStep]) => {
-  if (currentStep === 4) {
-    current_days.value = dates.filter(dateStr => {
-      const [y, m] = dateStr.split("-").map(Number);
-      return y === year && m - 1 === month; 
-    })    
+  if (numDates < 20) {
+    return numDates * weekly
+  } else if (numDates === 20) {
+    return monthly
+  } else {
+    return monthly + (numDates - 20) * weekly
   }
-});
+})
 
 const payWithMercadoPago = async () => {
     if (!currentChild.value || !currentDriver.value) {
@@ -384,19 +302,15 @@ const payWithMercadoPago = async () => {
     if (!token) {
         throw new Error('Token is missing');
     }
+    const tripDates = currentDriver.value.trips.map((trip: any) => trip.date);
+    enabledDates.value = tripDates;
     const userResponse = await getUser(token) as { data: User };
     user.value = userResponse.data;
-    const qty_current_days = selectedDates.value.filter(dateStr => {
-    const [y, m] = dateStr.split("-").map(Number);
-    return y === year && m - 1 === month; 
-  }).length;
     trip_child.value= {
         user_id: userResponse.data.id,
         authorization_id: currentDriver.value?.authorization_id || 0,
         child_id: currentChild.value?.child_id || 0,
-        selected_dates: toRaw(selectedDates.value),
-        month_fee: monthFee.value,
-        qty_days: qty_current_days
+        selected_dates: toRaw(selectedDates.value)
     };
     const response = await createPayment(token, trip_child);
     if (response && typeof response === "object" && "data" in response) {

@@ -8,8 +8,9 @@ export const isValidPassword = (password: string): boolean => {
     return passwordPattern.test(password);
   }
 
-export const formatDateTime = (dateString: string) => {
+  export const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
+    date.setTime(date.getTime() +  + (3 * 60 * 60 * 1000));
     const options: Intl.DateTimeFormatOptions = {
       day: '2-digit',
       month: '2-digit',
@@ -22,13 +23,9 @@ export const formatDateTime = (dateString: string) => {
     return new Intl.DateTimeFormat('es-AR', options).format(date).replace(',', '');
   };
 
-  export const formatDate = (dateString: string) => {
+  export const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      timeZone: 'America/Argentina/Buenos_Aires',
-    };
-    return new Intl.DateTimeFormat('es-AR', options).format(date);
+    date.setTime(date.getTime() +  + (3 * 60 * 60 * 1000));
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString(undefined, options);
   };
