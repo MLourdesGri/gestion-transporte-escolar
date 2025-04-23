@@ -30,7 +30,7 @@
               </ion-card-header>
               <ion-card-content>
                 <p>Precio mensual: ${{ prices[0].monthly_price }}</p>
-                <p>Precio semanal: ${{ prices[0].weekly_price }}</p>
+                <p>Precio semanal: ${{ prices[0].daily_price }}</p>
               </ion-card-content>
             </ion-card>
 
@@ -45,7 +45,7 @@
                 </ion-card-header>
                 <ion-card-content>
                 <p>Precio mensual: ${{ price.monthly_price }}</p>
-                <p>Precio semanal: ${{ price.weekly_price }}</p>
+                <p>Precio semanal: ${{ price.daily_price }}</p>
               </ion-card-content>
               </ion-card>
             </div>
@@ -67,7 +67,7 @@
           </ion-header>
         <ion-content class="ion-padding">
           <InputField label="Monto mensual:" type="number" v-model="form.monthly_price" :disabled="!isEditing" />
-          <InputField label="Monto diario:" type="number" v-model="form.weekly_price" :disabled="!isEditing" />
+          <InputField label="Monto diario:" type="number" v-model="form.daily_price" :disabled="!isEditing" />
           <ErrorMessage :message="errorMessage" duration="3000" />
           <div class="button-group">
             <CustomButton expand="block" color="medium" @click="cancel">Volver</CustomButton>
@@ -105,14 +105,14 @@ import { formatDateTime } from '@/utils/utils';
   
   interface Price {
     price_id: number;
-    weekly_price: number;
+    daily_price: number;
     monthly_price: number;
     user_id: number;
     date_from: string;
   }
   
   const form = ref({
-    weekly_price: '',
+    daily_price: '',
     monthly_price: '',
     user_id: '',
     date_from: '',
@@ -165,7 +165,7 @@ import { formatDateTime } from '@/utils/utils';
   };
 
   const confirm = async () => {
-    if(!form.value.monthly_price || !form.value.weekly_price) {
+    if(!form.value.monthly_price || !form.value.daily_price) {
       errorMessage.value = "Todos los campos son obligatorios";
       return;
     }
@@ -177,7 +177,7 @@ import { formatDateTime } from '@/utils/utils';
   const openModal = () => {
     currentPrice.value = null; 
     isEditing.value = true;
-    form.value = { weekly_price: '', monthly_price: '', user_id: '', date_from: '' }; 
+    form.value = { daily_price: '', monthly_price: '', user_id: '', date_from: '' }; 
     isModalOpen.value = true; 
   };
 
@@ -191,11 +191,11 @@ import { formatDateTime } from '@/utils/utils';
 
     const priceData = {
       monthly_price: form.value.monthly_price,
-      weekly_price: form.value.weekly_price,
+      daily_price: form.value.daily_price,
       date_from: formattedDate
     };
   
-    if (!priceData.monthly_price || !priceData.weekly_price) {
+    if (!priceData.monthly_price || !priceData.daily_price) {
       return;
     }
   

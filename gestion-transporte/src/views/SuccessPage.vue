@@ -38,4 +38,12 @@ const goHome = () => {
     font-size: 100px;
     color: green;
 }
+
+ion-button {
+  --border-radius: 10px;
+  --background: #003366;
+  --color: white;
+  text-transform: none;
+  margin-top: 10px;
+}
 </style>

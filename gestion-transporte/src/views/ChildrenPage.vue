@@ -292,11 +292,8 @@ const schoolShifts = [
   left: 0;
   width: 100%;
   padding: 10px;
-  background: white;
   display: flex;
-  gap: 10px;
   justify-content: space-between;
-  box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
 }
 
   .no-children {

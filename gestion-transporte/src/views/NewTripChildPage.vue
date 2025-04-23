@@ -66,6 +66,8 @@
                 @ionChange="handleChange"
               />
               </div>
+              <p class="text_cal">Selecciona las fechas en las que necesitas el transporte.</p>
+              <p class="text_cal">Solo aparecen las fechas disponiibles para el chofer seleccionado, y las fechas para las que el alumno seleccionado no tiene viaje</p>
             </div>
 
             <!-- Paso 4: Resumen y Pago MP -->
@@ -116,7 +118,7 @@ import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, Io
 import { ref, onMounted, toRaw, computed, watch } from 'vue';
 import CustomButton from '@/components/CustomButton.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
-import { createPayment, getChildAuthorizations, getChildrenByUser, getPriceByUserAuthorization, getUser } from '@/services/api';
+import { createPayment, getChildAuthorizations, getChildrenByUser, getPriceByUserAuthorization, getTripChildByChildId, getUser } from '@/services/api';
 import { useUserStore } from '@/store/user';
 import { formatDate } from '@/utils/utils';
 
@@ -151,6 +153,7 @@ interface Trip {
 interface Trip_Child{
     user_id: number;
     authorization_id: number;
+    trip_id: Trip;
     child_id: number;
     selected_dates: string[];
 }
@@ -161,7 +164,7 @@ interface User{
 
 interface Price{
   monthly_price : number;
-  weekly_price : number;
+  daily_price : number;
 }
 
 const userStore = useUserStore();
@@ -184,6 +187,7 @@ const token = userStore.token;
 const selectedDates = ref<string[]>([]);
 const today = new Date();
 const enabledDates = ref<string[]>([]);
+const occupiedDates = ref<string[]>([]);
 
 const nextStep = () => {
 if (step.value < 4) step.value++;
@@ -234,9 +238,20 @@ const minDate = new Date(today.getFullYear(), today.getMonth(), 1).toISOString()
 const maxDate = new Date(today.getFullYear(), today.getMonth() + 2, 0).toISOString() ; 
 
 
-const selectChild = (child: Child) => {
-    currentChild.value = child;
-    loadDriver();
+const selectChild = async (child: Child) => {
+  currentChild.value = child;
+  await loadDriver();
+  try {
+    const response = await getTripChildByChildId(child.child_id) as {data: Trip_Child[]};
+    if (response && response.data) {
+      const trips = response.data;
+      const allDates = trips.flatMap(trip => trip.trip_id.date);
+      occupiedDates.value = allDates.map(date => new Date(date).toISOString().split("T")[0]);
+    }
+  } catch (error) {
+    console.error("Error cargando trips del hijo", error);
+    occupiedDates.value = [];
+  }
 };
 
 const selectDriver = async (driver: Authorization) => {
@@ -260,24 +275,23 @@ declare global {
 watch(currentDriver, (newDriver) => {
   if (newDriver && newDriver.trips) {
     const tripDates = newDriver.trips.map((trip: any) => trip.date);
-    enabledDates.value = tripDates;
+    enabledDates.value.push(...tripDates);
   }
 });
 
 const handleChange = (event : any) => {
       const fechasNuevas = event.detail.value;
       selectedDates.value = fechasNuevas.filter((date: any) => enabledDates.value.includes(date));
-      console.log(minDate, maxDate, selectedDates.value);
     };
 
 const isEnabledDate = (dateString: string) => {
   const formatted = new Date(dateString).toISOString().split("T")[0];
-  return enabledDates.value.includes(formatted);
+  return enabledDates.value.includes(formatted) && !occupiedDates.value.includes(formatted);
 };
 
 const totalPrice = computed(() => {
   const numDates = selectedDates.value.length
-  const weekly = price.value?.weekly_price || 0
+  const weekly = price.value?.daily_price || 0
   const monthly = price.value?.monthly_price || 0
 
   if (numDates < 20) {
@@ -309,6 +323,7 @@ const payWithMercadoPago = async () => {
     trip_child.value= {
         user_id: userResponse.data.id,
         authorization_id: currentDriver.value?.authorization_id || 0,
+        trip_id: { trip_id: 0, date: "", available_capacity: 0, status: "" },
         child_id: currentChild.value?.child_id || 0,
         selected_dates: toRaw(selectedDates.value)
     };
@@ -376,6 +391,12 @@ const payWithMercadoPago = async () => {
   ion-checkbox {
     margin: 10px;
 
+  }
+  .text_cal {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
   }
 </style>
   
