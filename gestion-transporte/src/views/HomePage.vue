@@ -11,7 +11,7 @@
 
     <ion-content :fullscreen="true" class="ion-padding">
       <template v-if="trips.length > 0">
-        <ion-card v-for="trip in trips" :key="trip.trip_id" :button="true" @click="getMapTrip(trip.trip_id)">
+        <ion-card v-for="trip in trips" :key="trip.trip_id" :button="true" @click="getTripChildDetails(trip.trip_child_id)">
           <ion-card-header>
             <ion-card-title>Transporte {{ trip.school }} </ion-card-title>
             <ion-card-subtitle>Alumno: {{ trip.name }} {{ trip.last_name }}</ion-card-subtitle>
@@ -80,6 +80,7 @@ interface Child {
   }
 
   interface TripAndChildren{
+    trip_child_id: number;
     trip_id: number;
     date: string;
     status: string;
@@ -116,6 +117,7 @@ const loadTrips = async () => {
       : [tripChildData];
     for (const tripChild of tripChildArray) {
         trips.value.push({
+          trip_child_id: tripChild.trip_child_id,
           trip_id: tripChild.trip_id.trip_id,
           date: tripChild.trip_id.date,
           status: tripChild.trip_id.status,
@@ -174,8 +176,8 @@ const navigateToPage = () => {
   router.push("/home/new-trip"); 
 };
 
-const getMapTrip = (tripId: number) => {
-  router.push(`/home/map/${tripId}`); 
+const getTripChildDetails = (trip_child_id: number) => {
+  router.push(`home/trip/${trip_child_id}`); 
 };
 </script>
 

@@ -47,6 +47,16 @@ export const getTripChildByChildId = async (child_id: number) => {
   }
 }
 
+export const getTripChildById = async (trip_child_id: number) => {
+  try {
+    const response = await api.get(`/tripchild/trip/${trip_child_id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error obteniendo viaje hijo:", error);
+    return null;
+  }
+}
+
 export const getTripChildByUserId = async (token: string) => {
   try {
     const response = await api.get("/tripchild", {
@@ -58,6 +68,19 @@ export const getTripChildByUserId = async (token: string) => {
   } catch (error) {
     console.error("Error obteniendo los viajes:", error);
     return [];
+  }
+};
+
+export const deleteTripChild = async (trip_child_id: number, token: string) => {
+  try {
+    const response = await api.delete(`/tripchild/${trip_child_id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    return { error: "Error al eliminar el viaje hijo. Intenta nuevamente." };
   }
 };
 
