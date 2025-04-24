@@ -44,6 +44,9 @@
             </p>
           </div>
         </div>
+        <div class="bottom-button">
+            <CustomButton expand="block" color="medium" @click="cancel">Volver</CustomButton>
+          </div>
 
           <div class="error">
             <ErrorMessage :message="errorMessage" duration="3000" />
@@ -126,6 +129,9 @@ const message = ref<string | null>(null);
 const showApproveAlert = ref(false);
 const showRejectAlert = ref(false);
 const rejectionReason = ref('');
+const cancel = () => {
+  window.location.href = '/authorization';
+};
 const toastColor = ref<'success' | 'danger'>('success');
 
 interface User {
@@ -211,8 +217,6 @@ function downloadDriverPDF() {
   if (!authorization.value) return;
   window.open(authorization.value.driver_authorization_pdf, '_blank');
 }
-
-console.log("ID de la habilitación:", id.value);
 
 const approveAuthorization = async () => {
   try {
@@ -342,6 +346,14 @@ const rejectAuthorization = async () => {
   justify-content: flex-end;
   gap: 0.75rem;
   margin-top: 1.5rem;
+}
+
+.bottom-button {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px;
 }
 
 .btnApprove,

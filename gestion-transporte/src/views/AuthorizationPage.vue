@@ -39,9 +39,11 @@
             <p><strong>Chofer habilitado hasta:</strong> {{ formatDate(authorization.due_date_driver) }}</p>
           </ion-card-content>
         </ion-card>
-        <template v-if="showNewAuthorizationButton">
-          <CustomButton class="new-hab" @click="navigateToAddAuthorization">Nueva habilitación</CustomButton>
-        </template>
+        <ion-fab slot="fixed" vertical="bottom" horizontal="end" v-if="showNewAuthorizationButton">
+        <ion-fab-button @click="navigateToAddAuthorization" class="custom-fab">
+          <ion-icon :icon="add" />
+        </ion-fab-button>
+      </ion-fab>
 
       </template>
     </ion-content>
@@ -52,12 +54,12 @@
 
 <script setup lang="ts">
 import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonContent, IonCard, IonCardContent, IonCardHeader,
-  IonCardSubtitle, IonCardTitle} from "@ionic/vue";
+  IonCardSubtitle, IonCardTitle, IonIcon} from "@ionic/vue";
 import { ref, onMounted } from "vue";
+import { add } from "ionicons/icons";
 import { useRouter } from "vue-router";
 import { getAllAuthorizations, getUser } from "@/services/api";
 import { getAuthorizationByUser } from "@/services/api";
-import CustomButton from "@/components/CustomButton.vue";
 import { useUserStore } from "@/store/user";
 import { formatDate } from "@/utils/utils";
 
@@ -199,6 +201,11 @@ const navigateToAddAuthorization = () => {
 .card-red {
   --background: #f8d6d6; /* rojo pastel */
   color: #333;
+}
+.custom-fab {
+  --background: #003366;
+  --background-hover: #002244;
+  --color: white; 
 }
 
 

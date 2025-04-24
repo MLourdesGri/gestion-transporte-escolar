@@ -96,7 +96,6 @@ import CustomButton from '@/components/CustomButton.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
 import InputFile from '@/components/InputFile.vue';
 import { getAuthorizationByUser, postAuthorization} from '@/services/api';
-import router from '@/router';
 import DropdownField from '@/components/DropdownField.vue';
 import InputWithMaps from '@/components/InputWithMaps.vue';
 import { useUserStore } from '@/store/user';
@@ -228,6 +227,7 @@ const handleFileUploadDriver = (url: string) => {
     isLoadingDriver.value = false;
   }, 3000);
 };
+
 const saveAuthorization = async () => {
   errorMessage.value = "";
   const token = userStore.token;
@@ -284,7 +284,7 @@ const saveAuthorization = async () => {
     if (response && typeof response === 'object' && 'data' in response) {
       showToast.value = true;
       showNoAuthorizationToast.value = false; 
-      router.push("/authorization");
+      window.location.href = '/authorization';
     } else {
       errorMessage.value = "Error al actualizar o crear el vehículo. Inténtalo nuevamente.";
     }

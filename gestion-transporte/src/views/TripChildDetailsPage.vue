@@ -59,6 +59,7 @@
             />
   
           <div class="bottom-buttons">
+            <CustomButton expand="block" color="medium" @click="cancel">Volver</CustomButton>
             <CustomButton color="danger" class="btnDelete" @click="showAlert = true">Eliminar</CustomButton>
             <CustomButton class="btnMap" @click="trip_child?.trip_id.trip_id !== undefined && getMapTrip(trip_child.trip_id.trip_id)">Ver en mapa</CustomButton>
           </div>
@@ -88,6 +89,9 @@
   const showToast = ref(false);
   const message = ref<string | null>(null);
   const showAlert = ref(false);
+    const cancel = () => {
+        window.location.href = '/home';
+    };
   const toastColor = ref<'success' | 'danger'>('success');
   const trip_child = ref<TripChild | null>(null);
   const userStore = useUserStore();
