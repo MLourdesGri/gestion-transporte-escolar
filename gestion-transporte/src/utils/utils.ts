@@ -29,3 +29,25 @@ export const isValidPassword = (password: string): boolean => {
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
     return date.toLocaleDateString(undefined, options);
   };
+
+  export const formatShift = (shift : string): string => {
+    switch (shift) {
+      case "1":
+        return "Mañana";
+      case "2":
+        return 'Tarde';
+      default:
+        return 'Desconocido';
+    }
+  }
+
+  export const formatAuthorizationState = (state: number): string => {
+    switch (state) {
+      case 1:
+        return "Pendiente";
+      case 2:
+        return 'Aprobado';
+      default:
+        return 'Rechazado';
+    }
+  }

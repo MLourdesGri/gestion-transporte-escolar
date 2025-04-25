@@ -10,14 +10,25 @@
     </ion-header>
 
     <ion-content :fullscreen="true" class="ion-padding">
-      <template v-if="trips.length > 0">
-        <ion-card v-for="trip in trips" :key="trip.trip_id" :button="true" @click="getTripChildDetails(trip.trip_child_id)">
+      <template v-if="tripandchildren.length > 0 && userStore.user?.role_id === 1">
+        <ion-card v-for="trip in tripandchildren" :key="trip.trip_id" :button="true" @click="getTripChildDetails(trip.trip_child_id)">
           <ion-card-header>
             <ion-card-title>Transporte {{ trip.school }} </ion-card-title>
             <ion-card-subtitle>Alumno: {{ trip.name }} {{ trip.last_name }}</ion-card-subtitle>
             <ion-card-subtitle>Fecha: {{ formatDate(trip.date) }}</ion-card-subtitle>
-            <ion-card-subtitle>Turno: {{ trip.school_shift }}</ion-card-subtitle>
+            <ion-card-subtitle>Turno: {{ formatShift(trip.school_shift) }}</ion-card-subtitle>
             <ion-card-subtitle>Estado: {{ translateStatus(trip.status) }}</ion-card-subtitle>
+          </ion-card-header>
+        </ion-card>
+      </template>
+
+      <template v-if="trips.length > 0 && userStore.user?.role_id === 2">
+        <ion-card v-for="trip in trips" :key="trip.trip_id" :button="true">
+          <ion-card-header>
+            <ion-card-title>Transporte a {{ trip.authorization.school}} </ion-card-title>
+            <ion-card-subtitle>Fecha: {{ formatDate(trip.date) }}</ion-card-subtitle>
+            <ion-card-subtitle>Turno: {{ formatShift(trip.authorization.work_shift) }}</ion-card-subtitle>
+            <ion-card-subtitle>Estado de vehiculo: {{ formatAuthorizationState(trip.authorization.state) }}</ion-card-subtitle>
           </ion-card-header>
         </ion-card>
       </template>
@@ -49,11 +60,11 @@
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, 
   IonCardSubtitle, IonCardTitle, IonAlert, IonFab, IonFabButton, IonIcon} from '@ionic/vue';
 import { onMounted, ref } from "vue";
-import {  getTripChildByUserId, getUser } from "../services/api"; 
+import {  getTripByUser, getTripChildByUserId, getUser } from "../services/api"; 
 import { add } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/store/user';
-import { formatDate } from '@/utils/utils';
+import { formatDate, formatShift, formatAuthorizationState } from '@/utils/utils';
 
 interface Trip_Child {
   trip_child_id: number;
@@ -64,11 +75,17 @@ interface Trip_Child {
 interface Trip{
     trip_id: number;
     date: string;
-    time: string;
     status: string;
-    school: string;
-    school_shift: string;
+    authorization: Authorization;
   }
+
+interface Authorization{
+  authorization_id: number;
+  school:string;
+  work_shift: string;
+  state: number;
+  user_id: number;
+}
 
 interface Child {
     child_id: number;
@@ -98,16 +115,16 @@ interface User {
 }
 
 const showAlert = ref(false); 
-const trips = ref<TripAndChildren[]>([]);
-
+const tripandchildren = ref<TripAndChildren[]>([]);
+const trips = ref<Trip[]>([]);
 const userStore = useUserStore();
 
-const loadTrips = async () => {
+const loadTripAndChildren = async () => {
   const token = userStore.token;
   if (!token) return;
 
   try {
-    trips.value = []; // Limpiar lista antes de cargar
+    tripandchildren.value = []; // Limpiar lista antes de cargar
 
     const tripChildResponse = await getTripChildByUserId(token) as { data: Trip_Child[] };
     const tripChildData = tripChildResponse.data ?? [];
@@ -116,7 +133,7 @@ const loadTrips = async () => {
       ? tripChildData
       : [tripChildData];
     for (const tripChild of tripChildArray) {
-        trips.value.push({
+        tripandchildren.value.push({
           trip_child_id: tripChild.trip_child_id,
           trip_id: tripChild.trip_id.trip_id,
           date: tripChild.trip_id.date,
@@ -131,7 +148,36 @@ const loadTrips = async () => {
     }
  catch (error) {
     console.error("Error cargando viajes", error);
-    trips.value = [];
+    tripandchildren.value = [];
+  }
+};
+
+const loadTrips = async () => {
+  const token = userStore.token;
+  if (!token) return;
+
+  try {
+    trips.value = []; // Limpiar lista antes de cargar
+
+    const tripResponse = await getTripByUser(token) as { data: Trip[] };
+    const tripData = tripResponse.data ?? [];
+
+    const tripArray = Array.isArray(tripData)
+      ? tripData
+      : [tripData];
+      console.log(tripData);
+    for (const trip of tripArray) {
+        trips.value.push({
+          trip_id: trip.trip_id,
+          date: trip.date,
+          status: trip.status,
+          authorization: trip.authorization
+        });
+      }
+    }
+ catch (error) {
+    console.error("Error cargando viajes", error);
+    tripandchildren.value = [];
   }
 };
 
@@ -153,18 +199,20 @@ const loadUser = async () => {
 };
 
 onMounted(() => {
-  loadTrips();
   loadUser();
+  if (userStore.user?.role_id === 1){loadTripAndChildren()}
+  if (userStore.user?.role_id === 2){loadTrips()}
+  
 });
 
 
 const translateStatus = (status: string) => {
   switch (status) {
-    case 'pending':
+    case '1':
       return 'Pendiente';
-    case 'completed':
+    case '2':
       return 'Completado';
-    case 'cancelled':
+    case '3':
       return 'Cancelado';
     default:
       return 'Desconocido';

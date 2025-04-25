@@ -84,6 +84,20 @@ export const deleteTripChild = async (trip_child_id: number, token: string) => {
   }
 };
 
+export const getTripByUser = async (token: string) => {
+  try {
+    const response = await api.get("/trips", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error obteniendo viajes:", error);
+    return [];
+  }
+}
+
 export const postUser = async (user: User) => {
   try {
     const response = await api.post<{ token: string, user:User, error:Error }>("/users/signup", user);
