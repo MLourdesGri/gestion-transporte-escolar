@@ -21,7 +21,7 @@
             <ion-card-header>
               <ion-card-title>{{ child.name }} {{ child.last_name }}</ion-card-title>
               <ion-card-subtitle>Edad: {{ child.age }}</ion-card-subtitle>
-              <ion-card-subtitle>Escuela: {{ child.school }}</ion-card-subtitle>
+              <ion-card-subtitle>Escuela: {{ child.school_name }}</ion-card-subtitle>
             </ion-card-header>
           </ion-card>
         </template>
@@ -53,7 +53,7 @@
               :options="schoolShifts" 
               v-model="form.school_shift" 
             />
-          <InputWithMaps label="Institución educativa" type="text" placeholder="Colegio Maria Auxiliadora" name="school" v-model="form.school" :disabled="!isEditing" />
+          <InputWithMaps label="Institución educativa" type="text" placeholder="Colegio Maria Auxiliadora" name="school" v-model="form.school" :disabled="!isEditing" :multiple-fields="true"/>
           <div class="error">
           <ErrorMessage :message="errorMessage" duration="3000" />
          </div>
@@ -111,7 +111,8 @@ const schoolShifts = [
     name: string;
     last_name: string;
     age: number;
-    school: string;
+    school_name: string;
+    school_address: string;
     school_shift: string;
   }
   
@@ -125,7 +126,10 @@ const schoolShifts = [
     name: '',
     last_name: '',
     age: '',
-    school: '',
+    school: {
+      school_name: "",
+      school_address: ""
+    },
     school_shift: null as number | null,
   });
   
@@ -193,7 +197,7 @@ const schoolShifts = [
   };
 
   const confirm = async () => {
-    if(!form.value.name || !form.value.last_name || !form.value.age || !form.value.school || !form.value.school_shift) {
+    if(!form.value.name || !form.value.last_name || !form.value.age || !form.value.school.school_name || !form.value.school.school_address || !form.value.school_shift) {
       errorMessage.value = "Todos los campos son obligatorios";
       return;
     }
@@ -205,7 +209,15 @@ const schoolShifts = [
   const openModal = () => {
     currentChild.value = null; 
     isEditing.value = true;
-    form.value = { name: '', last_name: '', age: '', school: '', school_shift: null as number | null }; 
+    form.value = { 
+      name: '', 
+      last_name: '', 
+      age: '', 
+      school: {
+        school_name: '',
+        school_address: '',
+      }, 
+      school_shift: null as number | null }; 
     isModalOpen.value = true; 
   };
   
@@ -214,11 +226,12 @@ const schoolShifts = [
       name: form.value.name,
       last_name: form.value.last_name,
       age: form.value.age,
-      school: form.value.school,
+      school_name: form.value.school.school_name,
+      school_address: form.value.school.school_address,
       school_shift: form.value.school_shift
     };
   
-    if (!childData.name || !childData.last_name || !childData.age || !childData.school) {
+    if (!childData.name || !childData.last_name || !childData.age || !childData.school_name || !childData.school_address) {
       return;
     }
   
@@ -250,7 +263,16 @@ const schoolShifts = [
   
   const editChild = (child: Child) => {
     currentChild.value = child;
-    form.value = { ...child, age: child.age.toString(), school_shift: Number(child.school_shift)};
+    form.value = { 
+      name: child.name, 
+      last_name: child.last_name, 
+      age: child.age.toString(), 
+      school: {
+        school_name: child.school_name,
+        school_address: child.school_address
+      },
+      school_shift: Number(child.school_shift) 
+    };
     isModalOpen.value = true; 
     isEditing.value = true;
   };

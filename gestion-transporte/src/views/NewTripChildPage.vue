@@ -26,7 +26,7 @@
                         <ion-card-header>
                         <ion-card-title>{{ child.name }} {{ child.last_name }}</ion-card-title>
                         <ion-card-subtitle>Edad: {{ child.age }}</ion-card-subtitle>
-                        <ion-card-subtitle>Escuela: {{ child.school }}</ion-card-subtitle>
+                        <ion-card-subtitle>Escuela: {{ child.school_name }}</ion-card-subtitle>
                         </ion-card-header>
                     </ion-card>
                 </template>
@@ -80,7 +80,7 @@
                 <ion-card-content>
                   <p><strong>Hijo:</strong> {{ currentChild?.name }} {{ currentChild?.last_name }}</p>
                   <p><strong>Turno:</strong> {{ currentChild?.school_shift }}</p>
-                  <p><strong>Escuela:</strong> {{ currentChild?.school }}</p>
+                  <p><strong>Escuela:</strong> {{ currentChild?.school_name }}</p>
                   <p><strong>Chofer:</strong> {{ currentDriver?.driver_name}}</p>
                   <p><strong>Días seleccionados:</strong></p>
                   <ul>
@@ -127,7 +127,8 @@ interface Child {
     name: string;
     last_name: string;
     age: number;
-    school: string;
+    school_name: string;
+    school_address: string;
     school_shift: string;
 }
 

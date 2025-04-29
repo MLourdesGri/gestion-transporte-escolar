@@ -28,7 +28,7 @@
               :options="workShifts" 
               v-model="form.work_shift" 
             />
-            <InputWithMaps label="Institución educativa" type="text" placeholder="Colegio Maria Auxiliadora" name="school" v-model="form.school" />
+            <InputWithMaps label="Institución educativa" type="text" placeholder="Colegio Maria Auxiliadora" name="school" v-model="form.school" :multipleFields="true"/>
           </div>
 
           <div v-if="step === 2">
@@ -129,7 +129,8 @@ interface Authorization {
   address: string;
   phone: string;
   gender: string;
-  school: string;
+  school_name: string;
+  school_address: string;
   work_shift: string;  
   vehicle_make: string;
   vehicle_model: string;
@@ -153,7 +154,10 @@ const form = ref({
   address: "",
   phone: "",
   gender: "",
-  school: "",
+  school: {
+    school_name: "",
+    school_address: ""
+  },
   work_shift: "",  
   vehicle_make: "",
   vehicle_model: "",
@@ -242,7 +246,8 @@ const saveAuthorization = async () => {
     address: form.value.address,
     phone: form.value.phone,
     gender: form.value.gender,
-    school: form.value.school,
+    school_name: form.value.school.school_name,
+    school_address: form.value.school.school_address,
     work_shift: form.value.work_shift,
     vehicle_make: form.value.vehicle_make,
     vehicle_model: form.value.vehicle_model,

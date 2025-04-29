@@ -13,7 +13,7 @@
       <template v-if="tripandchildren.length > 0 && userStore.user?.role_id === 1">
         <ion-card v-for="trip in tripandchildren" :key="trip.trip_id" :button="true" @click="getTripChildDetails(trip.trip_child_id)">
           <ion-card-header>
-            <ion-card-title>Transporte {{ trip.school }} </ion-card-title>
+            <ion-card-title>Transporte a {{ trip.school_name }} </ion-card-title>
             <ion-card-subtitle>Alumno: {{ trip.name }} {{ trip.last_name }}</ion-card-subtitle>
             <ion-card-subtitle>Fecha: {{ formatDate(trip.date) }}</ion-card-subtitle>
             <ion-card-subtitle>Turno: {{ formatShift(trip.school_shift) }}</ion-card-subtitle>
@@ -22,10 +22,10 @@
         </ion-card>
       </template>
 
-      <template v-if="trips.length > 0 && userStore.user?.role_id === 2">
+      <template v-else-if="trips.length > 0 && userStore.user?.role_id === 2">
         <ion-card v-for="trip in trips" :key="trip.trip_id" :button="true">
           <ion-card-header>
-            <ion-card-title>Transporte a {{ trip.authorization.school}} </ion-card-title>
+            <ion-card-title>Transporte a {{ trip.authorization.school_name}} </ion-card-title>
             <ion-card-subtitle>Fecha: {{ formatDate(trip.date) }}</ion-card-subtitle>
             <ion-card-subtitle>Turno: {{ formatShift(trip.authorization.work_shift) }}</ion-card-subtitle>
             <ion-card-subtitle>Estado de vehiculo: {{ formatAuthorizationState(trip.authorization.state) }}</ion-card-subtitle>
@@ -68,8 +68,8 @@ import { formatDate, formatShift, formatAuthorizationState } from '@/utils/utils
 
 interface Trip_Child {
   trip_child_id: number;
-  trip_id: Trip;
-  child_id: Child;
+  trip: Trip;
+  child: Child;
 }
 
 interface Trip{
@@ -81,7 +81,8 @@ interface Trip{
 
 interface Authorization{
   authorization_id: number;
-  school:string;
+  school_name:string;
+  school_address: string;
   work_shift: string;
   state: number;
   user_id: number;
@@ -92,7 +93,8 @@ interface Child {
     name: string;
     last_name: string;
     age: number;
-    school: string;
+    school_name: string;
+    school_address: string;
     school_shift: string;
   }
 
@@ -104,7 +106,8 @@ interface Child {
     child_id: number;
     name: string;
     last_name: string;
-    school: string;
+    school_name: string;
+    school_address: string;
     school_shift: string;
   }
 
@@ -124,7 +127,7 @@ const loadTripAndChildren = async () => {
   if (!token) return;
 
   try {
-    tripandchildren.value = []; // Limpiar lista antes de cargar
+    tripandchildren.value = [];
 
     const tripChildResponse = await getTripChildByUserId(token) as { data: Trip_Child[] };
     const tripChildData = tripChildResponse.data ?? [];
@@ -133,20 +136,20 @@ const loadTripAndChildren = async () => {
       ? tripChildData
       : [tripChildData];
     for (const tripChild of tripChildArray) {
-        tripandchildren.value.push({
-          trip_child_id: tripChild.trip_child_id,
-          trip_id: tripChild.trip_id.trip_id,
-          date: tripChild.trip_id.date,
-          status: tripChild.trip_id.status,
-          child_id: tripChild.child_id.child_id,
-          name: tripChild.child_id.name,
-          last_name: tripChild.child_id.last_name,
-          school: tripChild.child_id.school,
-          school_shift: tripChild.child_id.school_shift
-        });
-      }
+      tripandchildren.value.push({
+        trip_child_id: tripChild.trip_child_id,
+        trip_id: tripChild.trip.trip_id,
+        date: tripChild.trip.date,
+        status: tripChild.trip.status,
+        child_id: tripChild.child.child_id,
+        name: tripChild.child.name,
+        last_name: tripChild.child.last_name,
+        school_name: tripChild.child.school_name,
+        school_address: tripChild.child.school_address,
+        school_shift: tripChild.child.school_shift
+      });
     }
- catch (error) {
+  } catch (error) {
     console.error("Error cargando viajes", error);
     tripandchildren.value = [];
   }
@@ -171,7 +174,7 @@ const loadTrips = async () => {
           trip_id: trip.trip_id,
           date: trip.date,
           status: trip.status,
-          authorization: trip.authorization
+          authorization: trip.authorization,
         });
       }
     }
