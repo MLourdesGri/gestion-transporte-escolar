@@ -5,7 +5,7 @@
           <ion-buttons slot="start">
             <ion-menu-button class="custom-menu"></ion-menu-button>
           </ion-buttons>
-          <ion-title v-if="trip_child">Transporte de {{ trip_child.child_id.name }}  {{ trip_child.child_id.last_name }}</ion-title>
+          <ion-title v-if="trip_child">Transporte de {{ trip_child.child.name }}  {{ trip_child.child.last_name }}</ion-title>
           <ion-title v-else>Transporte</ion-title>
         </ion-toolbar>
       </ion-header>
@@ -14,35 +14,35 @@
         <div class="page">
           <div v-if="trip_child">
             <div class="detail-section">
-              <h2 style="color: black;"><strong>Fecha:</strong> {{ formatDate(trip_child.trip_id.date) }}</h2>
+              <h2 style="color: black;"><strong>Fecha:</strong> {{ formatDate(trip_child.trip.date) }}</h2>
               <h2><strong>Alumno</strong></h2>
-              <p><strong>Nombre:</strong> {{ trip_child.child_id.name }}  {{ trip_child.child_id.last_name }}</p>
-              <p><strong>Edad:</strong> {{ trip_child.child_id.age }}</p>
-              <p><strong>Dirección de escuela:</strong> {{ trip_child.child_id.school }}</p>
-              <p><strong>Turno:</strong> {{ trip_child.child_id.school_shift }}</p>
+              <p><strong>Nombre:</strong> {{ trip_child.child.name }}  {{ trip_child.child.last_name }}</p>
+              <p><strong>Edad:</strong> {{ trip_child.child.age }}</p>
+              <p><strong>Escuela:</strong> {{ trip_child.child.school_name }}</p>
+              <p><strong>Turno:</strong> {{ trip_child.child.school_shift }}</p>
             </div>
 
             <div class="detail-section">
               <h2><strong>Vehículo</strong></h2>
-              <p><strong>Marca:</strong> {{ trip_child.trip_id.authorization.vehicle_make }}</p>
-              <p><strong>Modelo:</strong> {{ trip_child.trip_id.authorization.vehicle_model }}</p>
-              <p><strong>Año:</strong> {{ trip_child.trip_id.authorization.vehicle_year }}</p>
-              <p><strong>Patente:</strong> {{ trip_child.trip_id.authorization.vehicle_license_plate }}</p>
-              <p><strong>Capacidad:</strong> {{ trip_child.trip_id.authorization.vehicle_capacity }} pasajeros</p>
+              <p><strong>Marca:</strong> {{ trip_child.trip.authorization.vehicle_make }}</p>
+              <p><strong>Modelo:</strong> {{ trip_child.trip.authorization.vehicle_model }}</p>
+              <p><strong>Año:</strong> {{ trip_child.trip.authorization.vehicle_year }}</p>
+              <p><strong>Patente:</strong> {{ trip_child.trip.authorization.vehicle_license_plate }}</p>
+              <p><strong>Capacidad:</strong> {{ trip_child.trip.authorization.vehicle_capacity }} pasajeros</p>
             </div>
     
             <div class="detail-section">
               <h2><strong>Chofer</strong></h2>
-              <p><strong>Nombre:</strong> {{ trip_child.trip_id.authorization.driver_name }}</p>
-              <p><strong>Dirección:</strong> {{ trip_child.trip_id.authorization.address }}</p>
-              <p><strong>Teléfono:</strong> {{ trip_child.trip_id.authorization.phone }}</p>
+              <p><strong>Nombre:</strong> {{ trip_child.trip.authorization.driver_name }}</p>
+              <p><strong>Dirección:</strong> {{ trip_child.trip.authorization.address }}</p>
+              <p><strong>Teléfono:</strong> {{ trip_child.trip.authorization.phone }}</p>
             </div>
     
             <div class="detail-section">
               <h2><strong>Estado</strong></h2>
-              <p v-if="trip_child.trip_id.authorization.state === 1">Pendiente</p>
-              <p v-else-if="trip_child.trip_id.authorization.state === 2">Aprobada</p>
-              <p v-else-if="trip_child.trip_id.authorization.state === 3">Rechazada</p>
+              <p v-if="trip_child.trip.authorization.state === 1">Pendiente</p>
+              <p v-else-if="trip_child.trip.authorization.state === 2">Aprobada</p>
+              <p v-else-if="trip_child.trip.authorization.state === 3">Rechazada</p>
             </div>
           </div>
   
@@ -61,7 +61,7 @@
           <div class="bottom-buttons">
             <CustomButton expand="block" color="medium" @click="cancel">Volver</CustomButton>
             <CustomButton color="danger" class="btnDelete" @click="showAlert = true">Eliminar</CustomButton>
-            <CustomButton class="btnMap" @click="trip_child?.trip_id.trip_id !== undefined && getMapTrip(trip_child.trip_id.trip_id)">Ver en mapa</CustomButton>
+            <CustomButton class="btnMap" @click="trip_child?.trip.trip_id !== undefined && getMapTrip(trip_child.trip.trip_id)">Ver en mapa</CustomButton>
           </div>
         </div>
         <IonAlert
@@ -104,8 +104,8 @@
 
   interface TripChild{
     trip_child_id: number;
-    trip_id: Trip;
-    child_id: Child;
+    trip: Trip;
+    child: Child;
   }
 
   interface Trip {
@@ -120,7 +120,8 @@ interface Child {
     name: string;
     last_name: string;
     age: number;
-    school: string;
+    school_name: string;
+    school_address: string;
     school_shift: string;
 }
 
