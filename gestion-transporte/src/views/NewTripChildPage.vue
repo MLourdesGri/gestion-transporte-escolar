@@ -30,6 +30,7 @@
                         </ion-card-header>
                     </ion-card>
                 </template>
+                <p v-else class="text_cal">No hay tienes hijos registrados.</p>
             </div>
   
             <!-- Paso 2: Choferes disponibles-->
@@ -48,6 +49,7 @@
                         </ion-card-content>
                     </ion-card>
                 </template>
+                <p v-else class="text_cal">No hay choferes disponibles para este hijo.</p>
             </div>
             
             <!-- Paso 3: Elección de fecha -->
@@ -89,22 +91,20 @@
                   <p><strong>Total:</strong> ${{ totalPrice }}</p>
                 </ion-card-content>
               </ion-card>
-              
-              
             </div>
-  
-            <ErrorMessage :message="errorMessage" duration="3000" />
             
             <!-- Botones de navegación -->
             <div class="navigation-buttons">
               <CustomButton v-if="step > 1" @click="prevStep" class="btnPrev">Anterior</CustomButton>
               <CustomButton v-if="step < 4" @click="nextStep" class="btnNext">Siguiente</CustomButton>
               <CustomButton v-if="selectedDates.length !=0 && step==4" @click="payWithMercadoPago" class="btnNext">Pagar con Mercado Pago</CustomButton>
-              <ion-toast v-if="selectedDates.length==0 || selectChild==null || selectDriver==null" 
-              is-open="false"
-              message="Debe completar todos los pasos"
-              duration="5000"
-              color="danger"/>
+              <ion-toast
+                :is-open="showToast"
+                :message="errorMessage"
+                duration="3000"
+                color="danger"
+                @didDismiss="showToast = false"
+              />
             </div>
           </div>
         </div>
@@ -117,10 +117,9 @@ import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, Io
     IonCardSubtitle, IonCardTitle, IonCardContent, IonDatetime, IonToast} from '@ionic/vue';
 import { ref, onMounted, toRaw, computed, watch } from 'vue';
 import CustomButton from '@/components/CustomButton.vue';
-import ErrorMessage from '@/components/ErrorMessage.vue';
 import { createPayment, getChildAuthorizations, getChildrenByUser, getPriceByUserAuthorization, getTripChildByChildId, getUser } from '@/services/api';
 import { useUserStore } from '@/store/user';
-import { formatDate } from '@/utils/utils';
+import { formatDate, redirectIfNoToken } from '@/utils/utils';
 
 interface Child {
     child_id: number;
@@ -154,8 +153,8 @@ interface Trip {
 interface Trip_Child{
     user_id: number;
     authorization_id: number;
-    trip_id: Trip;
-    child_id: number;
+    trip: Trip;
+    child: number;
     selected_dates: string[];
 }
 
@@ -171,8 +170,9 @@ interface Price{
 const userStore = useUserStore();
 
 onMounted(() => {
-loadChildren();
-mercadopago.value = new window.MercadoPago("TEST-eadd1652-39b2-45fb-a417-b7731d105195", { locale: "es-AR" });
+  if (redirectIfNoToken()) return;
+  loadChildren();
+  mercadopago.value = new window.MercadoPago("TEST-eadd1652-39b2-45fb-a417-b7731d105195", { locale: "es-AR" });
 });
 
 const step = ref(1); 
@@ -189,9 +189,25 @@ const selectedDates = ref<string[]>([]);
 const today = new Date();
 const enabledDates = ref<string[]>([]);
 const occupiedDates = ref<string[]>([]);
+const showToast = ref(false);
 
 const nextStep = () => {
-if (step.value < 4) step.value++;
+  if (step.value === 1 && !currentChild.value) {
+    errorMessage.value = "Debe seleccionar un hijo.";
+    showToast.value = true;
+    return;
+  }
+  if (step.value === 2 && !currentDriver.value) {
+    errorMessage.value = "Debe seleccionar un chofer.";
+    showToast.value = true;
+    return;
+  }
+  if (step.value === 3 && selectedDates.value.length === 0) {
+    errorMessage.value = "Debe seleccionar al menos una fecha.";
+    showToast.value = true;
+    return;
+  }
+  if (step.value < 4) step.value++;
 };
 
 const prevStep = () => {
@@ -244,9 +260,10 @@ const selectChild = async (child: Child) => {
   await loadDriver();
   try {
     const response = await getTripChildByChildId(child.child_id) as {data: Trip_Child[]};
+    console.log("Viajes del hijo:", response.data);
     if (response && response.data) {
       const trips = response.data;
-      const allDates = trips.flatMap(trip => trip.trip_id.date);
+      const allDates = trips.flatMap(trip => trip.trip.date);
       occupiedDates.value = allDates.map(date => new Date(date).toISOString().split("T")[0]);
     }
   } catch (error) {
@@ -324,8 +341,8 @@ const payWithMercadoPago = async () => {
     trip_child.value= {
         user_id: userResponse.data.id,
         authorization_id: currentDriver.value?.authorization_id || 0,
-        trip_id: { trip_id: 0, date: "", available_capacity: 0, status: "" },
-        child_id: currentChild.value?.child_id || 0,
+        trip: { trip_id: 0, date: "", available_capacity: 0, status: "" },
+        child: currentChild.value?.child_id || 0,
         selected_dates: toRaw(selectedDates.value)
     };
     const response = await createPayment(token, trip_child);

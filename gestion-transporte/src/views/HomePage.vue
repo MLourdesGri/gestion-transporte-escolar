@@ -59,12 +59,12 @@
 <script setup lang="ts">
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, 
   IonCardSubtitle, IonCardTitle, IonAlert, IonFab, IonFabButton, IonIcon} from '@ionic/vue';
-import { onMounted, ref } from "vue";
-import {  getTripByUser, getTripChildByUserId, getUser } from "../services/api"; 
+import { onMounted, ref, watch } from "vue";
+import {  getTripByUser, getTripChildByUserId } from "../services/api"; 
 import { add } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/store/user';
-import { formatDate, formatShift, formatAuthorizationState } from '@/utils/utils';
+import { formatDate, formatShift, formatAuthorizationState, redirectIfNoToken } from '@/utils/utils';
 
 interface Trip_Child {
   trip_child_id: number;
@@ -111,11 +111,6 @@ interface Child {
     school_shift: string;
   }
 
-interface User {
-  full_name: string;
-  role_id: number;
-  is_confirmed: boolean; 
-}
 
 const showAlert = ref(false); 
 const tripandchildren = ref<TripAndChildren[]>([]);
@@ -184,29 +179,19 @@ const loadTrips = async () => {
   }
 };
 
-const loadUser = async () => { 
-  const token = userStore.token;
-  if (token) {
-    try {
-      const userResponse = await getUser(token) as { data: User };
-      userStore.setUser(userResponse.data);
 
-      if (userResponse.data && !userResponse.data.is_confirmed) {
-        showAlert.value = true; 
-      }
-    } catch (error) {
-      console.error("Error cargando usuario", error);
-      userStore.setUser(null);
-    }
-  }
-};
 
 onMounted(() => {
-  loadUser();
-  if (userStore.user?.role_id === 1){loadTripAndChildren()}
-  if (userStore.user?.role_id === 2){loadTrips()}
-  
+  if (redirectIfNoToken()) return;
 });
+
+watch(() => userStore.user, (newUser) => {
+  if (newUser?.role_id === 1) {
+    loadTripAndChildren();
+  } else if (newUser?.role_id === 2) {
+    loadTrips();
+  }
+}, { immediate: true }); 
 
 
 const translateStatus = (status: string) => {

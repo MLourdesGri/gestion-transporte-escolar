@@ -99,6 +99,7 @@ import { getAuthorizationByUser, postAuthorization} from '@/services/api';
 import DropdownField from '@/components/DropdownField.vue';
 import InputWithMaps from '@/components/InputWithMaps.vue';
 import { useUserStore } from '@/store/user';
+import { redirectIfNoToken } from '@/utils/utils';
 
 
 enum WorkShift {
@@ -199,7 +200,10 @@ const getAuthorizationData = async () => {
   }
 };
 
-onMounted(getAuthorizationData);
+onMounted(() => {
+  if (redirectIfNoToken()) return;
+  getAuthorizationData();
+});
 
 const nextStep = () => {
   if (step.value < 3) step.value++;

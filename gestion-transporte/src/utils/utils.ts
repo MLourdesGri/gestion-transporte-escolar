@@ -1,3 +1,6 @@
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/store/user';
+
 export const isValidEmail = (email: string): boolean => {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailPattern.test(email);
@@ -6,6 +9,18 @@ export const isValidEmail = (email: string): boolean => {
 export const isValidPassword = (password: string): boolean => {
     const passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
     return passwordPattern.test(password);
+  }
+
+export function redirectIfNoToken() {
+    const userStore = useUserStore();
+    const router = useRouter();
+  
+    if (!userStore.token) {
+      router.push('/login');
+      return true;
+    }
+  
+    return false;
   }
 
   export const formatDateTime = (dateString: string) => {

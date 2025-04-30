@@ -55,6 +55,7 @@ import DatePicker from '@/components/DatePicker.vue';
 import InputFile from '@/components/InputFile.vue';
 import { getUser, putUser } from '@/services/api';
 import { useUserStore } from '@/store/user';
+import { redirectIfNoToken } from '@/utils/utils';
 
 interface User {
   email: string;
@@ -104,7 +105,10 @@ const getProfileData = async () => {
   }
 };
 
-onMounted(getProfileData);
+onMounted(() => {
+  if (redirectIfNoToken()) return;
+  getProfileData;
+});
 
 const previewProfilePicture = ref("");
 const isEditing = ref(false);

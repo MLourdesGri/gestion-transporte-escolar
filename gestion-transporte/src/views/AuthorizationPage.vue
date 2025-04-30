@@ -61,7 +61,7 @@ import { useRouter } from "vue-router";
 import { getAllAuthorizations, getUser } from "@/services/api";
 import { getAuthorizationByUser } from "@/services/api";
 import { useUserStore } from "@/store/user";
-import { formatDate } from "@/utils/utils";
+import { formatDate, redirectIfNoToken } from "@/utils/utils";
 
 interface User {
   full_name: string;
@@ -151,6 +151,7 @@ const authorizationDetail = (authorizationId: number) => {
 };
 
 onMounted( () => {
+  if (redirectIfNoToken()) return;
   loadUser();
   loadAuthorizations();
 });

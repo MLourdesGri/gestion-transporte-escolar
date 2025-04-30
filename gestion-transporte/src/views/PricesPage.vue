@@ -101,7 +101,7 @@ import ErrorMessage from '@/components/ErrorMessage.vue';
 import CustomButton from '@/components/CustomButton.vue';
 import { useUserStore } from '@/store/user';
 import { onMounted, ref } from 'vue';
-import { formatDateTime } from '@/utils/utils';
+import { formatDateTime, redirectIfNoToken } from '@/utils/utils';
   
   interface Price {
     price_id: number;
@@ -150,6 +150,7 @@ import { formatDateTime } from '@/utils/utils';
   };
   
   onMounted(() => {
+    if (redirectIfNoToken()) return;
     loadPrice();
   });
   

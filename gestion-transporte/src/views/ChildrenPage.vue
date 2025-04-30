@@ -105,6 +105,7 @@ const schoolShifts = [
 
 
   import { useUserStore } from '@/store/user';
+import { redirectIfNoToken } from '@/utils/utils';
   
   interface Child {
     child_id: number;
@@ -181,6 +182,7 @@ const schoolShifts = [
   };
   
   onMounted(() => {
+    if (redirectIfNoToken()) return;
     loadChildren();
     loadUser();
   });
