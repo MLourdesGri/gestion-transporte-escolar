@@ -54,7 +54,7 @@
 
 <script setup lang="ts">
 import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonContent, IonCard, IonCardContent, IonCardHeader,
-  IonCardSubtitle, IonCardTitle, IonIcon} from "@ionic/vue";
+  IonCardSubtitle, IonCardTitle, IonIcon, IonFab, IonFabButton} from "@ionic/vue";
 import { ref, onMounted } from "vue";
 import { add } from "ionicons/icons";
 import { useRouter } from "vue-router";
