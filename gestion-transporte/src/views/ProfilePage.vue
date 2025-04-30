@@ -95,7 +95,7 @@ const getProfileData = async () => {
       form.value.address = user.value.address;
       form.value.email = user.value.email;
       form.value.profile_picture = user.value.profile_picture;
-      form.value.birth_date = user.value.birth_date;
+      form.value.birth_date = user.value.birth_date || "";
       form.value.dni = user.value.dni;
     }
     catch (error) {
@@ -107,7 +107,7 @@ const getProfileData = async () => {
 
 onMounted(() => {
   if (redirectIfNoToken()) return;
-  getProfileData;
+  getProfileData();
 });
 
 const previewProfilePicture = ref("");

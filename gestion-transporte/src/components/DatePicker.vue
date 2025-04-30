@@ -1,6 +1,6 @@
 <template>
     <ion-item>
-      <ion-label position="stacked">{{ label }}</ion-label>
+      <ion-label position="stacked" class="label">{{ label }}</ion-label>
       <ion-datetime-button datetime="date" :disabled="disabled"></ion-datetime-button>
 
       <ion-modal :keep-contents-mounted="true">
@@ -33,5 +33,8 @@ const model = defineModel<string>();
 ion-datetime-button {
     margin: 10px 0px;
 
+}
+.label {
+  font-size: 20px;
 }
 </style>

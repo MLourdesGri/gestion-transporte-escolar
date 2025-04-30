@@ -48,12 +48,12 @@
           <InputField label="Nombre" type="text" v-model="form.name" :disabled="!isEditing" />
           <InputField label="Apellido" type="text" v-model="form.last_name" :disabled="!isEditing" />
           <InputField label="Edad" type="number" v-model="form.age" :disabled="!isEditing" />
+          <InputWithMaps label="Escuela" type="text" placeholder="Colegio Maria Auxiliadora" name="school" v-model="form.school" :disabled="!isEditing" :multiple-fields="true"/>
           <DropdownField 
               label="Turno" 
               :options="schoolShifts" 
               v-model="form.school_shift" 
             />
-          <InputWithMaps label="Institución educativa" type="text" placeholder="Colegio Maria Auxiliadora" name="school" v-model="form.school" :disabled="!isEditing" :multiple-fields="true"/>
           <div class="error">
           <ErrorMessage :message="errorMessage" duration="3000" />
          </div>

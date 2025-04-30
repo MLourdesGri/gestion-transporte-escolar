@@ -120,6 +120,9 @@ ion-list {
   max-height: 200px;
   overflow-y: auto;
 }
+.label {
+  font-size: 20px;
+}
 
 ion-item {
   cursor: pointer;
