@@ -24,7 +24,21 @@
           <div class="input-fields">
             <InputField label="Nombre y apellido" type="text" name="full_name" v-model="form.full_name" :disabled="!isEditing"/>
             <InputField label="Número de telefono" type="text" name="phone_number" v-model="form.phone_number" :disabled="!isEditing"/>
-            <InputField label="Dirección" type="text" name="address" v-model="form.address" :disabled="!isEditing"/>
+            <InputWithMaps
+              v-if="isEditing"
+              label="Dirección"
+              type="text"
+              name="address"
+              v-model="form.address"
+            />
+            <InputField
+              v-else
+              label="Dirección"
+              type="text"
+              name="address"
+              v-model="form.address"
+              :disabled="!isEditing"
+            />
             <InputField label="Dni" type="text" name="dni" v-model="form.dni" :disabled="!isEditing"/>
             <DatePicker label="Fecha de nacimiento" name="birth_date" v-model="form.birth_date" :disabled="!isEditing"/>
           </div>
@@ -56,6 +70,7 @@ import InputFile from '@/components/InputFile.vue';
 import { getUser, putUser } from '@/services/api';
 import { useUserStore } from '@/store/user';
 import { redirectIfNoToken } from '@/utils/utils';
+import InputWithMaps from '@/components/InputWithMaps.vue';
 
 interface User {
   email: string;

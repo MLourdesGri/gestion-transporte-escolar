@@ -16,7 +16,7 @@
             <ion-title size="large" class="title">Datos del chofer</ion-title>
             <InputField label="Documento" type="text" placeholder="43403067" name="dni" v-model="form.dni" />
             <InputField label="Nombre y Apellido" type="text" placeholder="Juan" name="driver_name" v-model="form.driver_name" />
-            <InputField label="Domicilio" type="text" placeholder="Cordoba 1256" name="address" v-model="form.address" />
+            <InputWithMaps label="Domicilio" type="text" placeholder="Cordoba 1256" v-model="form.address"/>
             <InputField label="Teléfono" type="text" placeholder="3413456677" name="phone" v-model="form.phone"/>
             <DropdownField 
               label="Género" 

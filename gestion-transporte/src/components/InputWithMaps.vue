@@ -14,7 +14,12 @@
         v-for="place in suggestions" 
         :key="place.place_id"
         @click="selectPlace(place)">
-        {{ place.name }} - {{ place.address }}
+        <span v-if="props.name === 'school'">
+          {{ place.name }} - {{ place.address }}
+        </span>
+        <span v-else>
+          {{ place.address }}
+        </span>
       </ion-item>
     </ion-list>
   </ion-item>
