@@ -243,7 +243,27 @@ const approveAuthorization = async () => {
 
       let allTripsCreated = true;
 
-      for (let i = 0; i < 5; i++) {
+      const dueDateVehicle = new Date(authorization.value?.due_date_vehicle || '');
+      const dueDateDriver = new Date(authorization.value?.due_date_driver || '');
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+
+      // Elegir la fecha más próxima
+      const endDate = dueDateVehicle < dueDateDriver ? dueDateVehicle : dueDateDriver;
+
+      // Normalizar horas para evitar errores de comparación
+      tomorrow.setHours(0, 0, 0, 0);
+      endDate.setHours(0, 0, 0, 0);
+
+      const daysDiff = Math.ceil((endDate.getTime() - tomorrow.getTime()) / (1000 * 60 * 60 * 24));
+      
+      if (daysDiff < 0) {
+        errorMessage.value = "La habilitación vence antes de mañana. No se pueden crear viajes.";
+        return;
+      }
+
+      for (let i = 0; i <= daysDiff; i++) {
         const tripDate = new Date(baseDate);
         tripDate.setDate(baseDate.getDate() + i);
         const formattedDate = tripDate.toISOString().split("T")[0]; // yyyy-mm-dd
@@ -369,24 +389,3 @@ const rejectAuthorization = async () => {
   justify-content: center;
 }
 </style>
-
-<!-- Para crear viajes hasta la fecha mas cercana de vencimiento -->
-<!-- const dueDateVehicle = new Date(authorization.value?.due_date_vehicle);
-      const dueDateDriver = new Date(authorization.value?.due_date_driver);
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(today.getDate() + 1);
-
-      // Elegir la fecha más próxima
-      const endDate = dueDateVehicle < dueDateDriver ? dueDateVehicle : dueDateDriver;
-
-      // Normalizar horas para evitar errores de comparación
-      tomorrow.setHours(0, 0, 0, 0);
-      endDate.setHours(0, 0, 0, 0);
-
-      const daysDiff = Math.ceil((endDate.getTime() - tomorrow.getTime()) / (1000 * 60 * 60 * 24));
-      
-      if (daysDiff < 0) {
-        errorMessage.value = "La habilitación vence antes de mañana. No se pueden crear viajes.";
-        return;
-      } -->
