@@ -23,7 +23,7 @@
       </template>
 
       <template v-else-if="trips.length > 0 && userStore.user?.role_id === 2">
-        <ion-card v-for="trip in trips" :key="trip.trip_id" :button="true">
+        <ion-card v-for="trip in upcomingTrips" :key="trip.trip_id" :button="true">
           <ion-card-header>
             <ion-card-title>Transporte a {{ trip.authorization.school_name}} </ion-card-title>
             <ion-card-subtitle>Fecha: {{ formatDate(trip.date) }}</ion-card-subtitle>
@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, 
   IonCardSubtitle, IonCardTitle, IonAlert, IonFab, IonFabButton, IonIcon} from '@ionic/vue';
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, computed } from "vue";
 import {  getTripByUser, getTripChildByUserId } from "../services/api"; 
 import { add } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
@@ -180,6 +180,13 @@ const loadTrips = async () => {
 };
 
 
+const upcomingTrips = computed(() => {
+  const today = new Date().toISOString().split('T')[0];
+  return trips.value
+    .filter((trip) => trip.date >= today)
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(0, 10);
+});
 
 onMounted(() => {
   if (redirectIfNoToken()) return;

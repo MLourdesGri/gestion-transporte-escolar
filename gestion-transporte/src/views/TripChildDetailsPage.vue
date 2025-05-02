@@ -225,13 +225,11 @@ const getMapTrip = (tripId: number) => {
   }
   
   .bottom-buttons {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    bottom: 0;
+    left: 0;
 }
   
   .error {

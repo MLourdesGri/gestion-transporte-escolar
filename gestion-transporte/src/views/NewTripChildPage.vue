@@ -59,17 +59,17 @@
               <div class="calendar-container">
               <ion-datetime
                 presentation="date"
-                preferWheel="false"
+                :preferWheel="false"
                 :value="selectedDates"
                 :is-date-enabled="isEnabledDate"
-                multiple="true"
+                :multiple= "true"
                 :min="minDate"
                 :max="maxDate"
                 @ionChange="handleChange"
               />
               </div>
               <p class="text_cal">Selecciona las fechas en las que necesitas el transporte.</p>
-              <p class="text_cal">Solo aparecen las fechas disponiibles para el chofer seleccionado, y las fechas para las que el alumno seleccionado no tiene viaje</p>
+              <p class="text_cal">Solo aparecen las fechas disponibles para el chofer seleccionado, y las fechas para las que el alumno seleccionado no tiene viaje</p>
             </div>
 
             <!-- Paso 4: Resumen y Pago MP -->
@@ -86,7 +86,7 @@
                   <p><strong>Chofer:</strong> {{ currentDriver?.driver_name}}</p>
                   <p><strong>Días seleccionados:</strong></p>
                   <ul>
-                    <li v-for="date in selectedDates" :key="date">{{ formatDate(date) }}</li>
+                    <li v-for="date in sortedSelectedDates" :key="date">{{ formatDate(date) }}</li>
                   </ul>
                   <p><strong>Total:</strong> ${{ totalPrice }}</p>
                 </ion-card-content>
@@ -95,9 +95,9 @@
             
             <!-- Botones de navegación -->
             <div class="navigation-buttons">
-              <CustomButton v-if="step > 1" @click="prevStep" class="btnPrev">Anterior</CustomButton>
-              <CustomButton v-if="step < 4" @click="nextStep" class="btnNext">Siguiente</CustomButton>
-              <CustomButton v-if="selectedDates.length !=0 && step==4" @click="payWithMercadoPago" class="btnNext">Pagar con Mercado Pago</CustomButton>
+              <CustomButton v-if="step > 1" @click="prevStep" class="btnPrev" expand="block">Anterior</CustomButton>
+              <CustomButton v-if="step < 4" @click="nextStep" class="btnNext" expand="block">Siguiente</CustomButton>
+              <CustomButton v-if="selectedDates.length !=0 && step==4" @click="payWithMercadoPago" class="btnNext" expand="block">Pagar con Mercado Pago</CustomButton>
               <ion-toast
                 :is-open="showToast"
                 :message="errorMessage"
@@ -290,6 +290,10 @@ declare global {
   }
 }
 
+const sortedSelectedDates = computed(() => {
+  return selectedDates.value.slice().sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+});
+
 watch(currentDriver, (newDriver) => {
   if (newDriver && newDriver.trips) {
     const tripDates = newDriver.trips.map((trip: any) => trip.date);
@@ -303,8 +307,15 @@ const handleChange = (event : any) => {
     };
 
 const isEnabledDate = (dateString: string) => {
-  const formatted = new Date(dateString).toISOString().split("T")[0];
-  return enabledDates.value.includes(formatted) && !occupiedDates.value.includes(formatted);
+  const date = new Date(dateString);
+  const formatted = date.toISOString().split("T")[0];
+
+  const dayOfWeek = date.getDay();
+  const isWeekend = dayOfWeek === 5 || dayOfWeek === 6;
+
+  return (
+    enabledDates.value.includes(formatted) && !occupiedDates.value.includes(formatted) && !isWeekend
+  );
 };
 
 const totalPrice = computed(() => {
@@ -384,8 +395,7 @@ const payWithMercadoPago = async () => {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    position: absolute;
-    bottom: 10px;
+    bottom: 0;
     left: 0;
   }
   .title {
@@ -393,12 +403,8 @@ const payWithMercadoPago = async () => {
   }
   .btnNext {
     margin-left: auto;
-  }
-  .btnPay {
-    display: flex;
-    position: absolute;
-    bottom: 10px;
-    margin-left: auto;
+    background: white;
+    
   }
   .selected {
   border: 2px solid #003366; 

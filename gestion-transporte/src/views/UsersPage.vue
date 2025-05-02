@@ -28,12 +28,12 @@
   try {
     const token = userStore.token;
     const response = await getUser(token? token : "");
-    if (response && response.data) {
-      users.value = response.data; 
-    } else {
-      console.error("No users found or invalid response");
-      users.value = [];  
-    }
+    // if (response && response.data) {
+    //   users.value = response.data; 
+    // } else {
+    //  console.error("No users found or invalid response");
+    //  users.value = [];  
+    // }
   } catch (error) {
     console.error("Error loading users", error);
     users.value = []; 

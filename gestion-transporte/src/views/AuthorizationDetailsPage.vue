@@ -19,7 +19,7 @@
             <p><strong>Año:</strong> {{ authorization.vehicle_year }}</p>
             <p><strong>Patente:</strong> {{ authorization.vehicle_license_plate }}</p>
             <p><strong>Capacidad:</strong> {{ authorization.vehicle_capacity }} pasajeros</p>
-            <p><strong>Habilitado hasta:</strong> {{ authorization.due_date_vehicle }}</p>
+            <p><strong>Habilitado hasta:</strong> {{ formatDate(authorization.due_date_vehicle) }}</p>
           </div>
 
           <CustomButton color="light" class="download-authorization-vehicle" @click="downloadVehiclePDF()">Descargar habilitación del vehículo</CustomButton>
@@ -44,7 +44,7 @@
             </p>
           </div>
         </div>
-        <div class="bottom-button">
+        <div class="bottom-button" v-if="userStore.user?.role_id != 3">
             <CustomButton expand="block" color="medium" @click="cancel">Volver</CustomButton>
           </div>
 
@@ -62,6 +62,7 @@
 
 
         <div class="buttons" v-if="userStore.user?.role_id === 3 && authorization?.state === 1">
+          <CustomButton expand="block" color="medium" @click="cancel">Volver</CustomButton>
           <CustomButton color="success" class="btnApprove" @click="showApproveAlert = true">Aprobar</CustomButton>
           <CustomButton color="danger" class="btnReject" @click="showRejectAlert = true">Rechazar</CustomButton>
         </div>
@@ -238,10 +239,8 @@ const approveAuthorization = async () => {
       showToast.value = true;
       message.value = "Habilitación aprobada correctamente.";
 
-      const baseDate = new Date(); // today
-      baseDate.setDate(baseDate.getDate() + 1); // tomorrow
-
-      let allTripsCreated = true;
+      const baseDate = new Date();
+      baseDate.setDate(baseDate.getDate() + 1); 
 
       const dueDateVehicle = new Date(authorization.value?.due_date_vehicle || '');
       const dueDateDriver = new Date(authorization.value?.due_date_driver || '');
@@ -249,10 +248,8 @@ const approveAuthorization = async () => {
       const tomorrow = new Date(today);
       tomorrow.setDate(today.getDate() + 1);
 
-      // Elegir la fecha más próxima
       const endDate = dueDateVehicle < dueDateDriver ? dueDateVehicle : dueDateDriver;
 
-      // Normalizar horas para evitar errores de comparación
       tomorrow.setHours(0, 0, 0, 0);
       endDate.setHours(0, 0, 0, 0);
 
@@ -276,25 +273,18 @@ const approveAuthorization = async () => {
 
         try {
           const tripResponse = await postTrip(trip, token);
-          if (tripResponse) {
-            console.log(`Viaje para ${formattedDate} creado correctamente.`);
-          } else {
+          if (!tripResponse){
             console.error(`Error al crear el viaje para ${formattedDate}`);
             errorMessage.value = "Error al crear uno de los viajes. Inténtalo nuevamente.";
-            allTripsCreated = false;
             break;
           }
         } catch (e) {
           console.error(`Error al crear viaje para ${formattedDate}`, e);
           errorMessage.value = "Ocurrió un error al crear uno de los viajes.";
-          allTripsCreated = false;
           break;
         }
       }
-
-      if (allTripsCreated) {
-        console.log("Todos los viajes creados correctamente.");
-      }
+      window.location.href = '/authorization';
 
     } else {
       errorMessage.value = "Error al aprobar la habilitación. Inténtalo nuevamente.";
