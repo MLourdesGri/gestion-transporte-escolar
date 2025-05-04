@@ -94,9 +94,9 @@
             </div>
             
             <!-- Botones de navegación -->
-            <div class="navigation-buttons">
-              <CustomButton v-if="step > 1" @click="prevStep" class="btnPrev" expand="block">Anterior</CustomButton>
-              <CustomButton v-if="step < 4" @click="nextStep" class="btnNext" expand="block">Siguiente</CustomButton>
+            <div slot="fixed" class="navigation-buttons">
+              <CustomButton vertical="bottom" horizontal="start" v-if="step > 1" @click="prevStep" class="btnPrev" expand="block">Anterior</CustomButton>
+              <CustomButton vertical="bottom" horizontal="end" v-if="step < 4" @click="nextStep" class="btnNext" expand="block">Siguiente</CustomButton>
               <CustomButton v-if="selectedDates.length !=0 && step==4" @click="payWithMercadoPago" class="btnNext" expand="block">Pagar con Mercado Pago</CustomButton>
               <ion-toast
                 :is-open="showToast"
@@ -391,13 +391,15 @@ const payWithMercadoPago = async () => {
   justify-content: center;
   margin-top: 10px;
 }
-  .navigation-buttons {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    bottom: 0;
-    left: 0;
-  }
+.navigation-buttons {
+  position: fixed;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  padding: 10px;
+}
   .title {
     margin-bottom: 20px;
   }
