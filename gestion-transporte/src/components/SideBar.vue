@@ -72,7 +72,18 @@ import {
 } from '@ionic/vue';
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter, useRoute, RouterLink } from 'vue-router';
-import { homeOutline, personOutline, logOutOutline, carOutline, accessibilityOutline, pricetagOutline } from 'ionicons/icons';
+import { 
+  homeOutline, 
+  personOutline, 
+  logOutOutline, 
+  carOutline, 
+  accessibilityOutline, 
+  pricetagOutline, 
+  notificationsOutline,
+  barChartOutline,
+  bookOutline 
+} from 'ionicons/icons';
+
 import { getUser } from '@/services/api';
 import { useUserStore } from '@/store/user';
 
@@ -118,8 +129,10 @@ const allPages = [
   { title: "Perfil", url: "/profile", iosIcon: personOutline, roles: [1, 2, 3] },
   { title: "Hijos", url: "/children", iosIcon: accessibilityOutline, roles: [1] },
   { title: 'Habilitaciones', url: "/authorization", iosIcon: carOutline, roles: [2, 3] },
-  {title: "Tarifas", url: "/prices", iosIcon: pricetagOutline, roles: [2]},
-  { title: "Reportes", url: "/analytics", roles: [1, 2] },
+  { title: "Tarifas", url: "/prices", iosIcon: pricetagOutline, roles: [2]},
+  { title: "Notificaciones", url: "/notifications", iosIcon: notificationsOutline, roles: [1, 2, 3] },
+  { title: "Reportes", url: "/analytics", iosIcon: barChartOutline, roles: [1, 2, 3] },
+  { title: "Manual de usuario", url: "/user-manual", iosIcon: bookOutline, roles: [1, 2, 3] }
 ];
 
 const appPages = computed(() => {
