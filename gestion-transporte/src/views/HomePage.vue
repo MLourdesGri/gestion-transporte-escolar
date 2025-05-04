@@ -193,12 +193,17 @@ onMounted(() => {
 });
 
 watch(() => userStore.user, (newUser) => {
+  if (newUser && newUser.is_confirmed == 0) {
+    showAlert.value = true;
+  }
+
   if (newUser?.role_id === 1) {
     loadTripAndChildren();
   } else if (newUser?.role_id === 2) {
     loadTrips();
   }
-}, { immediate: true }); 
+}, { immediate: true });
+
 
 
 const translateStatus = (status: string) => {
