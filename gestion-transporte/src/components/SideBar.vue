@@ -72,7 +72,7 @@ import {
 } from '@ionic/vue';
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter, useRoute, RouterLink } from 'vue-router';
-import { homeOutline, personOutline, settingsOutline, logOutOutline, carOutline, accessibilityOutline, pricetagOutline } from 'ionicons/icons';
+import { homeOutline, personOutline, logOutOutline, carOutline, accessibilityOutline, pricetagOutline } from 'ionicons/icons';
 import { getUser } from '@/services/api';
 import { useUserStore } from '@/store/user';
 
@@ -119,7 +119,7 @@ const allPages = [
   { title: "Hijos", url: "/children", iosIcon: accessibilityOutline, roles: [1] },
   { title: 'Habilitaciones', url: "/authorization", iosIcon: carOutline, roles: [2, 3] },
   {title: "Tarifas", url: "/prices", iosIcon: pricetagOutline, roles: [2]},
-  { title: "Configuracion", url: "/settings", iosIcon: settingsOutline, roles: [1, 2] },
+  { title: "Reportes", url: "/analytics", roles: [1, 2] },
 ];
 
 const appPages = computed(() => {

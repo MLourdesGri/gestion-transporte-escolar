@@ -5,7 +5,7 @@
             <ion-buttons slot="start">
                 <ion-menu-button class="custom-menu"></ion-menu-button>
             </ion-buttons>
-            <ion-title>Configuraciones</ion-title>
+            <ion-title>Reportes</ion-title>
             </ion-toolbar>
         </ion-header>
   

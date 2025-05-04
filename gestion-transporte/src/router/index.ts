@@ -20,7 +20,7 @@ const routes: Array<RouteRecordRaw> = [
       { path: 'home/trip/:id', component: () => import('../views/TripChildDetailsPage.vue') },
   
       { path: 'profile', component: () => import('../views/ProfilePage.vue') },
-      { path: 'settings', component: () => import('../views/SettingsPage.vue') },
+      { path: 'analytics', component: () => import('../views/AnalyticsPage.vue') },
   
       { path: 'authorization', component: () => import('../views/AuthorizationPage.vue') },
       { path: 'authorization/new-authorization', component: () => import('../views/NewAuthorizationPage.vue') },
