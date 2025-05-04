@@ -39,13 +39,12 @@
             <p><strong>Chofer habilitado hasta:</strong> {{ formatDate(authorization.due_date_driver) }}</p>
           </ion-card-content>
         </ion-card>
-        <ion-fab slot="fixed" vertical="bottom" horizontal="end" v-if="showNewAuthorizationButton">
-        <ion-fab-button @click="navigateToAddAuthorization" class="custom-fab">
+      </template>
+      <ion-fab slot="fixed" vertical="bottom" horizontal="end" v-if="showNewAuthorizationButton">
+        <ion-fab-button @click="navigateToAddAuthorization()" class="custom-fab">
           <ion-icon :icon="add" />
         </ion-fab-button>
       </ion-fab>
-
-      </template>
     </ion-content>
 
   </ion-page>
@@ -69,6 +68,7 @@ interface User {
 }
 
 const userStore = useUserStore();
+console.log(userStore.user?.role_id);
 
 const loadUser = async () => { 
   const token = userStore.token;
@@ -133,8 +133,12 @@ const loadAuthorizations = async () => {
 import { computed } from 'vue';
 
 const showNewAuthorizationButton = computed(() => {
-  if (userStore.user?.role_id !== 2 || authorizations.value.length === 0) {
+  if (userStore.user?.role_id !== 2 || authorizations.value.length !== 0) {
     return false;
+  }
+
+  if (authorizations.value.length === 0) {
+    return true;
   }
 
   const sorted = [...authorizations.value].sort((a, b) => {
