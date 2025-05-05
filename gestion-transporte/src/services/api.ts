@@ -404,4 +404,18 @@ export const postPrice = async (authorization: any, token: string) => {
   }
 }
 
+export const getNotificationsByUser = async (token: string) => {
+  try {
+    const response = await api.get("/notification", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }); 
+    return response.data;
+  } catch (error) {
+    console.error("Error obteniendo notificaciones:", error);
+    return [];
+  }
+}
+
 export default api;

@@ -23,6 +23,8 @@ const routes: Array<RouteRecordRaw> = [
       { path: 'profile', component: () => import('../views/ProfilePage.vue') },
       { path: 'analytics', component: () => import('../views/AnalyticsPage.vue') },
   
+      { path: 'notifications', component: () => import('../views/NotificationsPage.vue') },
+  
       { path: 'authorization', component: () => import('../views/AuthorizationPage.vue') },
       { path: 'authorization/new-authorization', component: () => import('../views/NewAuthorizationPage.vue') },
       { path: 'authorization/:id', component: () => import('../views/AuthorizationDetailsPage.vue') },

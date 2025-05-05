@@ -8,20 +8,35 @@
             <ion-note>Hola, {{ userStore.user?.full_name || "Invitado" }}!</ion-note>
 
             <ion-menu-toggle :auto-hide="false" v-for="(p, i) in appPages" :key="i">
-              <router-link :to="p.url" class="menu-link">
-                <ion-item 
-                  @click="selectedIndex = i" 
-                  router-direction="root"
-                  lines="none"
-                  :detail="false"
-                  class="hydrated" 
-                  :class="{ selected: selectedIndex === i }"
-                >
-                  <ion-icon aria-hidden="true" slot="start" :ios="p.iosIcon" :md="p.iosIcon"></ion-icon>
-                  <ion-label>{{ p.title }}</ion-label>
-                </ion-item>
-              </router-link>
-            </ion-menu-toggle>
+  <router-link :to="p.url" class="menu-link">
+    <ion-item 
+      @click="selectedIndex = i" 
+      router-direction="root"
+      lines="none"
+      :detail="false"
+      class="hydrated" 
+      :class="{ selected: selectedIndex === i }"
+    >
+      <ion-icon 
+        aria-hidden="true" 
+        slot="start" 
+        :ios="p.iosIcon" 
+        :md="p.iosIcon"
+        class="menu-icon"
+      >
+      </ion-icon>
+
+      <!-- Circulito rojo si hay notificaciones no leídas -->
+      <div 
+        v-if="p.title === 'Notificaciones' && hasUnreadNotifications" 
+        class="notification-badge"
+      ></div>
+
+      <ion-label>{{ p.title }}</ion-label>
+    </ion-item>
+  </router-link>
+</ion-menu-toggle>
+
 
             <ion-menu-toggle :auto-hide="false">
               <ion-item @click="showLogoutAlert = true" lines="none" class="hydrated logout-btn">
@@ -84,7 +99,7 @@ import {
   bookOutline 
 } from 'ionicons/icons';
 
-import { getUser } from '@/services/api';
+import { getUser, getNotificationsByUser } from '@/services/api';
 import { useUserStore } from '@/store/user';
 
 const router = useRouter();
@@ -95,6 +110,13 @@ const showLogoutAlert = ref(false);
 interface User {
   full_name: string;
   role_id: number;
+}
+
+interface Notification {
+  id: number;
+  title: string;
+  detail: string;
+  is_read: boolean; 
 }
 
 const userStore = useUserStore();
@@ -114,13 +136,30 @@ const loadUser = async () => {
   } 
 }
 
+const hasUnreadNotifications = ref(false);
+
+const loadNotifications = async () => {
+  if(userStore.token){
+    try {
+      const response = await getNotificationsByUser(userStore.token) as { data: Notification[] };
+      console.log("Notificaciones", response.data);
+      hasUnreadNotifications.value = response.data.some(n => !n.is_read);
+    } catch (error) {
+      console.error("Error al cargar notificaciones", error);
+    }
+  }
+};
+
 onMounted(() => {
   loadUser();
+  loadNotifications();
 });
 
 watch(() => route.path, () => {
   loadUser();
+  loadNotifications();
 });
+
 
 // Aca hay q poner las rutas y roles
 // Roles: 1- padre, 2- chofer, 3- admin
@@ -268,5 +307,17 @@ ion-item.selected {
 .logout-btn {
   margin-top: 20px;
 }
+
+.notification-badge {
+  position: absolute;
+  top: 10px;
+  left: 30px;
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%;
+  z-index: 10;
+}
+
 
 </style>
