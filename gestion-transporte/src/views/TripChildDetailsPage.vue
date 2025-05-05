@@ -58,10 +58,10 @@
               duration="3000"
             />
   
-          <div class="bottom-buttons">
-            <CustomButton expand="block" color="medium" @click="cancel">Volver</CustomButton>
-            <CustomButton color="danger" class="btnDelete" @click="showAlert = true">Eliminar</CustomButton>
-            <CustomButton class="btnMap" @click="trip_child?.trip.trip_id !== undefined && getMapTrip(trip_child.trip.trip_id)">Ver en mapa</CustomButton>
+          <div slot="fixed" class="bottom-buttons">
+            <CustomButton vertical="bottom" horizontal="start" expand="block" color="medium" @click="cancel">Volver</CustomButton>
+            <CustomButton vertical="bottom" horizontal="center" color="danger" class="btnDelete" @click="showAlert = true">Eliminar</CustomButton>
+            <CustomButton vertical="bottom" horizontal="end" class="btnMap" @click="trip_child?.trip.trip_id !== undefined && getMapTrip(trip_child.trip.trip_id)">Ver en mapa</CustomButton>
           </div>
         </div>
         <IonAlert
@@ -225,11 +225,13 @@ const getMapTrip = (tripId: number) => {
   }
   
   .bottom-buttons {
+    position: fixed;
     display: flex;
     justify-content: space-between;
     width: 100%;
     bottom: 0;
     left: 0;
+    padding: 10px;
 }
   
   .error {

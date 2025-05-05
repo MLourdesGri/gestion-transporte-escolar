@@ -17,7 +17,8 @@ const routes: Array<RouteRecordRaw> = [
       { path: 'home', component: () => import('../views/HomePage.vue') },
       { path: 'home/new-trip', component: () => import('../views/NewTripChildPage.vue') },
       { path: 'home/map/:id', component: () => import('../views/MapPage.vue') },
-      { path: 'home/trip/:id', component: () => import('../views/TripChildDetailsPage.vue') },
+      { path: 'home/childtrip/:id', component: () => import('../views/TripChildDetailsPage.vue') },
+      { path: 'home/trip/:id', component: () => import('../views/TripDetailsPage.vue') },
   
       { path: 'profile', component: () => import('../views/ProfilePage.vue') },
       { path: 'analytics', component: () => import('../views/AnalyticsPage.vue') },

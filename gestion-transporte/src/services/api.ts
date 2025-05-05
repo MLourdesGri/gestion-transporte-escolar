@@ -57,6 +57,16 @@ export const getTripChildById = async (trip_child_id: number) => {
   }
 }
 
+export const getTripChildByTripId = async (trip_id: number) => {
+  try {
+    const response = await api.get(`/tripchild/trips/${trip_id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error obteniendo los viajes:", error);
+    return [];
+  }
+};
+
 export const getTripChildByUserId = async (token: string) => {
   try {
     const response = await api.get("/tripchild", {

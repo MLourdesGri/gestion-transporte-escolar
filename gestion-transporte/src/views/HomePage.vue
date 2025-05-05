@@ -23,7 +23,7 @@
       </template>
 
       <template v-else-if="trips.length > 0 && userStore.user?.role_id === 2">
-        <ion-card v-for="trip in upcomingTrips" :key="trip.trip_id" :button="true">
+        <ion-card v-for="trip in upcomingTrips" :key="trip.trip_id" :button="true" @click="getTripDetails(trip.trip_id)">
           <ion-card-header>
             <ion-card-title>Transporte a {{ trip.authorization.school_name}} </ion-card-title>
             <ion-card-subtitle>Fecha: {{ formatDate(trip.date) }}</ion-card-subtitle>
@@ -225,7 +225,11 @@ const navigateToPage = () => {
 };
 
 const getTripChildDetails = (trip_child_id: number) => {
-  router.push(`home/trip/${trip_child_id}`); 
+  router.push(`home/childtrip/${trip_child_id}`); 
+};
+
+const getTripDetails = (trip_id: number) => {
+  router.push(`home/trip/${trip_id}`); 
 };
 </script>
 

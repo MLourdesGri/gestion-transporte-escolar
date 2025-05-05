@@ -400,14 +400,12 @@ const payWithMercadoPago = async () => {
   left: 0;
   padding: 10px;
 }
-  .title {
-    margin-bottom: 20px;
-  }
-  .btnNext {
-    margin-left: auto;
-    background: white;
-    
-  }
+.title {
+  margin-bottom: 20px;
+}
+.btnNext {
+  margin-left: auto;  
+}
   .selected {
   border: 2px solid #003366; 
     }
