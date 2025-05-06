@@ -122,7 +122,7 @@ ion-card {
 }
 
 .unread {
-  border-left: 5px solid #3880ff; /* Azul Ionico */
+  border-left: 5px solid #003366; 
   background-color: #f0f8ff;
 }
 
