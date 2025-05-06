@@ -418,4 +418,19 @@ export const getNotificationsByUser = async (token: string) => {
   }
 }
 
+export const markNotificationAsRead = async (notificationId: number, token: string) => {
+  try {
+    console.log("ID de la notificación:", notificationId);
+    const response = await api.put(`/notification/${notificationId}`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error marcando notificación como leída:", error);
+    return { error: "Error al marcar la notificación como leída. Intenta nuevamente." };
+  }
+}
+
 export default api;
