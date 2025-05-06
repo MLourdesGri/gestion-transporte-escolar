@@ -17,20 +17,22 @@
       class="hydrated" 
       :class="{ selected: selectedIndex === i }"
     >
-      <ion-icon 
-        aria-hidden="true" 
-        slot="start" 
-        :ios="p.iosIcon" 
-        :md="p.iosIcon"
-        class="menu-icon"
-      >
-      </ion-icon>
 
-      <!-- Circulito rojo si hay notificaciones no leídas -->
-      <div 
-        v-if="p.title === 'Notificaciones' && hasUnreadNotifications" 
-        class="notification-badge"
-      ></div>
+                    <ion-icon
+                      aria-hidden="true"
+                      slot="start"
+                      :ios="p.iosIcon"
+                      :md="p.iosIcon"
+                      class="menu-icon"
+                    />
+                    <div
+                      v-if="p.title === 'Notificaciones' && unreadCount > 0"
+                      class="notification-badge"
+                    >
+                      {{ unreadCount > 9 ? '9+' : unreadCount }}
+                    </div>
+
+     
 
       <ion-label>{{ p.title }}</ion-label>
     </ion-item>
@@ -136,14 +138,14 @@ const loadUser = async () => {
   } 
 }
 
-const hasUnreadNotifications = ref(false);
+const unreadCount = ref(0);
 
 const loadNotifications = async () => {
-  if(userStore.token){
+  if (userStore.token) {
     try {
       const response = await getNotificationsByUser(userStore.token) as { data: Notification[] };
-      console.log("Notificaciones", response.data);
-      hasUnreadNotifications.value = response.data.some(n => !n.is_read);
+      const unread = response.data.filter(n => !n.is_read);
+      unreadCount.value = unread.length;
     } catch (error) {
       console.error("Error al cargar notificaciones", error);
     }
@@ -310,13 +312,18 @@ ion-item.selected {
 
 .notification-badge {
   position: absolute;
-  top: 10px;
-  left: 30px;
-  width: 10px;
-  height: 10px;
+  right: -0.5px;
   background-color: red;
+  color: white;
   border-radius: 50%;
-  z-index: 10;
+  width: 16px;
+  height: 16px;
+  font-size: 10px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
 }
 
 
