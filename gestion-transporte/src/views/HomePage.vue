@@ -163,7 +163,6 @@ const loadTrips = async () => {
     const tripArray = Array.isArray(tripData)
       ? tripData
       : [tripData];
-      console.log(tripData);
     for (const trip of tripArray) {
         trips.value.push({
           trip_id: trip.trip_id,

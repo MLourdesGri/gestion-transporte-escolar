@@ -208,7 +208,6 @@ import { formatDateTime, redirectIfNoToken } from '@/utils/utils';
         return;
       }
      {
-      console.log(token);
         response = await postPrice(priceData, token);
       }
       if (response && typeof response === 'object' && 'data' in response) {

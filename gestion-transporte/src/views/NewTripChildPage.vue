@@ -81,8 +81,8 @@
                 </ion-card-header>
                 <ion-card-content>
                   <p><strong>Hijo:</strong> {{ currentChild?.name }} {{ currentChild?.last_name }}</p>
-                  <p><strong>Turno:</strong> {{ currentChild?.school_shift }}</p>
-                  <p><strong>Escuela:</strong> {{ currentChild?.school_name }}</p>
+                  <p><strong>Turno:</strong> {{ formatShift(currentChild?.school_shift || '') }}</p>
+                  <p><strong>{{ currentChild?.school_name }}</strong></p>
                   <p><strong>Chofer:</strong> {{ currentDriver?.driver_name}}</p>
                   <p><strong>Días seleccionados:</strong></p>
                   <ul>
@@ -119,7 +119,7 @@ import { ref, onMounted, toRaw, computed, watch } from 'vue';
 import CustomButton from '@/components/CustomButton.vue';
 import { createPayment, getChildAuthorizations, getChildrenByUser, getPriceByUserAuthorization, getTripChildByChildId, getUser } from '@/services/api';
 import { useUserStore } from '@/store/user';
-import { formatDate, redirectIfNoToken } from '@/utils/utils';
+import { formatDate, formatShift, redirectIfNoToken } from '@/utils/utils';
 
 interface Child {
     child_id: number;
@@ -260,7 +260,6 @@ const selectChild = async (child: Child) => {
   await loadDriver();
   try {
     const response = await getTripChildByChildId(child.child_id) as {data: Trip_Child[]};
-    console.log("Viajes del hijo:", response.data);
     if (response && response.data) {
       const trips = response.data;
       const allDates = trips.flatMap(trip => trip.trip.date);
@@ -274,7 +273,6 @@ const selectChild = async (child: Child) => {
 
 const selectDriver = async (driver: Authorization) => {
     currentDriver.value = driver;
-    console.log("Choferes disponibles:", currentDriver.value);
     if (token) {
         const priceResponse = await getPriceByUserAuthorization(token, currentDriver.value?.user.id || 0) as {data: Price};
         price.value = priceResponse.data;

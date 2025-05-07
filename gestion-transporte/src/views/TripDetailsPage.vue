@@ -19,6 +19,9 @@
                     <p><strong>Edad:</strong> {{ trip_child.child.age }}</p>
                     <br />
                 </div>
+                <div v-if="trip_children?.length === 0">
+                    <p>No hay alumnos asignados a este viaje.</p>
+                </div>
             </div>
   
             <div class="error">

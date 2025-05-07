@@ -63,8 +63,8 @@
 
         <div class="buttons" v-if="userStore.user?.role_id === 3 && authorization?.state === 1">
           <CustomButton expand="block" color="medium" @click="cancel">Volver</CustomButton>
-          <CustomButton color="success" class="btnApprove" @click="showApproveAlert = true">Aprobar</CustomButton>
           <CustomButton color="danger" class="btnReject" @click="showRejectAlert = true">Rechazar</CustomButton>
+          <CustomButton color="success" class="btnApprove" @click="showApproveAlert = true">Aprobar</CustomButton>
         </div>
       </div>
       <IonAlert
@@ -353,9 +353,10 @@ const rejectAuthorization = async () => {
 
 .buttons {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 0.75rem;
   margin-top: 1.5rem;
+  bottom: 0;
 }
 
 .bottom-button {
