@@ -22,6 +22,8 @@ const routes: Array<RouteRecordRaw> = [
   
       { path: 'profile', component: () => import('../views/ProfilePage.vue') },
       { path: 'analytics', component: () => import('../views/AnalyticsPage.vue') },
+      
+      { path: 'payments', component: () => import('../views/PaymentsPage.vue') },
   
       { path: 'notifications', component: () => import('../views/NotificationsPage.vue') },
   
