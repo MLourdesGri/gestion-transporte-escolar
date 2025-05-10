@@ -66,3 +66,18 @@ export function redirectIfNoToken() {
         return 'Rechazado';
     }
   }
+
+  export function formatMonthName(dateStr: string): string {
+  const months = [
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+  ];
+
+  const [year, month] = dateStr.split("-").map(Number);
+
+  if (!year || !month || month < 1 || month > 12) {
+    throw new Error("Fecha inválida");
+  }
+
+  return `${months[month - 1]} ${year}`;
+  }

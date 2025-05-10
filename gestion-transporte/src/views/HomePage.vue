@@ -207,11 +207,11 @@ watch(() => userStore.user, (newUser) => {
 
 const translateStatus = (status: string) => {
   switch (status) {
-    case '1':
+    case 'pending':
       return 'Pendiente';
-    case '2':
+    case 'completed':
       return 'Completado';
-    case '3':
+    case 'cancelled':
       return 'Cancelado';
     default:
       return 'Desconocido';

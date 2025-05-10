@@ -81,6 +81,20 @@ export const getTripChildByUserId = async (token: string) => {
   }
 };
 
+export const getPaymentsByDriver = async (token: string) => {
+  try {
+    const response = await api.get("/trips/price", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error obteniendo pagos:", error);
+    return [];
+  }
+}
+
 export const deleteTripChild = async (trip_child_id: number, token: string) => {
   try {
     const response = await api.delete(`/tripchild/${trip_child_id}`, {
