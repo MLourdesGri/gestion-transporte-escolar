@@ -95,6 +95,20 @@ export const getPaymentsByDriver = async (token: string) => {
   }
 }
 
+export const markTripsAsPaid = async (userId: number, month:string, token: string) => {
+  try {
+    const response = await api.put(`/trips/pay`, { userId, month }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error marcando viajes como pagados:", error);
+    return { error: "Error al marcar los viajes como pagados. Intenta nuevamente." };
+  }
+}
+
 export const deleteTripChild = async (trip_child_id: number, token: string) => {
   try {
     const response = await api.delete(`/tripchild/${trip_child_id}`, {
