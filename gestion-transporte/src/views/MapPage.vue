@@ -22,11 +22,15 @@
 
 <script lang="ts" setup>
 import { IonPage, IonHeader,IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent } from '@ionic/vue';
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { Loader } from '@googlemaps/js-api-loader';
 import { geocodeAddresses } from '@/services/externalApi';
 import { useRoute } from 'vue-router';
 import { useUserStore } from '@/store/user';
+import { io } from "socket.io-client";
+import { Socket } from "socket.io-client";
+
+const socket: Socket = io("http://localhost:3000");
 
 const route = useRoute();
 const tripId = Number(route.params.id);
@@ -36,13 +40,17 @@ const token = userStore.token || '';
 
 const mapContainer = ref<HTMLElement | null>(null);
 const totalDurationText = ref<string>('');
+let userMarker: google.maps.Marker | null = null;
+let userCircle: google.maps.Circle | null = null;
+let choferMarker: google.maps.Marker | null = null;
+let watchId: number | null = null;
 
 onMounted(async () => {
   try {
     const apiResult = await geocodeAddresses(tripId, token);
   if (!apiResult?.success || !Array.isArray(apiResult.data.locations)) {
     console.error("Error en la respuesta de la API:", apiResult);
-    console.error("No se pudieron obtener las ubicaciones");
+    console.error("No se pudieron obtener las ubicaciones.");
     return;
   }
 
@@ -50,6 +58,8 @@ onMounted(async () => {
     lat: loc.lat,
     lng: loc.lng,
   }));
+
+  console.log("Ubicaciones geocodificadas:", locations);
 
   totalDurationText.value = apiResult.data.routeSummary.totalDurationText;
 
@@ -62,12 +72,172 @@ onMounted(async () => {
 
   const map = new google.maps.Map(mapContainer.value as HTMLElement, {
     center: locations[0],
-    zoom: 10,
+    zoom: 5,
     mapId: '68d29ea0afcc7282',
   });
 
+  if (userStore.user?.role_id !== 2) {
+    socket.emit("pedir-ultima-ubicacion", tripId);
+
+    socket.on("ultima-ubicacion", (data) => {
+      const choferLocation = new google.maps.LatLng(data.lat, data.lng);
+      if (!choferMarker) {
+        choferMarker = new google.maps.Marker({
+          position: choferLocation,
+          map,
+          title: "Ubicación del chofer",
+          icon: {
+            url: "https://maps.gstatic.com/mapfiles/ms2/micons/bus.png",
+            scaledSize: new google.maps.Size(40, 40),
+          },
+        });
+      } else {
+        choferMarker.setPosition(choferLocation);
+      }
+    });
+
+    socket.on("nueva-ubicacion", (data) => {
+      const choferLocation = new google.maps.LatLng(data.lat, data.lng);
+      if (!choferMarker) {
+        choferMarker = new google.maps.Marker({
+          position: choferLocation,
+          map,
+          title: "Ubicación del chofer",
+          icon: {
+            url: "https://maps.gstatic.com/mapfiles/ms2/micons/bus.png",
+            scaledSize: new google.maps.Size(40, 40),
+          },
+        });
+      } else {
+        choferMarker.setPosition(choferLocation);
+      }
+    });
+  }
+
+  new google.maps.Marker({
+    position: locations[0],
+    map,
+    title: "Chofer",
+    icon: {
+      url: "https://cdn-icons-png.flaticon.com/512/2922/2922522.png",
+      scaledSize: new google.maps.Size(40, 40),
+    },
+    label: {
+      text: "Chofer",
+      color: "#000",
+      fontWeight: "bold",
+      fontSize: "12px",
+    },
+  });
+
+  new google.maps.Marker({
+    position: locations[locations.length - 1],
+    map,
+    title: "Escuela",
+    icon: {
+      url: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+      scaledSize: new google.maps.Size(40, 40),
+    },
+    label: {
+      text: "Escuela",
+      color: "#000",
+      fontWeight: "bold",
+      fontSize: "12px",
+    },
+  });
+
+  const houseIconUrl = "https://cdn-icons-png.flaticon.com/512/25/25694.png"; // Icono de casa
+
+  locations.slice(1, -1).forEach((loc, index) => {
+    new google.maps.Marker({
+      position: loc,
+      map,
+      title: ``,
+      icon: {
+        url: houseIconUrl,
+        scaledSize: new google.maps.Size(40, 40),
+      },
+      label: {
+        text: `Casa ${index + 1}`,
+        color: "#000",
+        fontSize: "11px",
+      },
+    });
+  });
+
+  const userRole = userStore.user?.role_id;
+
+  if (userRole == 2 && navigator.geolocation) {
+    watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const userLocation = new google.maps.LatLng(
+          position.coords.latitude,
+          position.coords.longitude
+        );
+
+        socket.emit("chofer-ubicacion", {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+          tripId: tripId,
+          accuracy: position.coords.accuracy,
+          timestamp: Date.now(),
+        });
+
+        // Centrar mapa solo la primera vez
+        if (!userMarker) {
+          map.setCenter(userLocation);
+        }
+
+        // Crear o mover el marcador
+        if (!userMarker) {
+          userMarker = new google.maps.Marker({
+            position: userLocation,
+            map,
+            title: "Mi ubicación",
+            icon: {
+              url: "data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><circle cx='20' cy='20' r='16' fill='%23007bff' stroke='%23ffffff' stroke-width='4' /></svg>",
+              scaledSize: new google.maps.Size(40, 40),
+            },
+          });
+        } else {
+          userMarker.setPosition(userLocation);
+        }
+
+        // Crear o mover el círculo de precisión
+        if (!userCircle) {
+          userCircle = new google.maps.Circle({
+            strokeColor: "#4285F4",
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: "#4285F4",
+            fillOpacity: 0.35,
+            map,
+            center: userLocation,
+            radius: position.coords.accuracy,
+          });
+        } else {
+          userCircle.setCenter(userLocation);
+          userCircle.setRadius(position.coords.accuracy);
+        }
+      },
+      (error) => {
+        console.error("No se pudo obtener la ubicación:", error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  } else {
+    console.error("Geolocalización no está soportada en este navegador");
+  }
+
   const directionsService = new google.maps.DirectionsService();
-  const directionsRenderer = new google.maps.DirectionsRenderer({ map });
+  const directionsRenderer = new google.maps.DirectionsRenderer({
+    map,
+    suppressMarkers: true,
+  });
 
   const waypoints = locations.slice(1, -1).map(loc => ({
     location: loc,
@@ -115,6 +285,12 @@ onMounted(async () => {
   );
   } catch (error) {
     console.error('Error al cargar el mapa:', error);
+  }
+});
+
+onUnmounted(() => {
+  if (watchId !== null) {
+    navigator.geolocation.clearWatch(watchId);
   }
 });
 </script>
