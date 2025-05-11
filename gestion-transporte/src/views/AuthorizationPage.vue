@@ -133,21 +133,36 @@ const loadAuthorizations = async () => {
 import { computed } from 'vue';
 
 const showNewAuthorizationButton = computed(() => {
-  if (userStore.user?.role_id !== 2 || authorizations.value.length !== 0) {
-    return false;
-  }
+  // Solo para usuarios con rol chofer
+  if (userStore.user?.role_id !== 2) return false;
 
-  if (authorizations.value.length === 0) {
-    return true;
-  }
+  // Si no hay autorizaciones, mostrar botón
+  if (authorizations.value.length === 0) return true;
 
+  // Ordenamos las autorizaciones por fecha de actualización descendente
   const sorted = [...authorizations.value].sort((a, b) => {
-    return new Date(b.due_date_driver).getTime() - new Date(a.due_date_driver).getTime();
+    return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
   });
 
   const latest = sorted[0];
-  return latest?.state === 3; // estado 3 = Rechazada
+  if (!latest) return true;
+
+  const now = new Date();
+  const dueDateDriver = new Date(latest.due_date_driver);
+
+  // Si fue rechazada
+  if (latest.state === 3) return true;
+
+  // Si está vencida
+  if (dueDateDriver.getTime() < now.getTime()) return true;
+
+  // Si faltan 15 días o menos
+  const diffInDays = (dueDateDriver.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+  if (diffInDays <= 15) return true;
+
+  return false;
 });
+
 
 
 const authorizationDetail = (authorizationId: number) => {
