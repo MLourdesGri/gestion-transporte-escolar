@@ -11,7 +11,7 @@
 
     <ion-content :fullscreen="true" class="ion-padding">
       <template v-if="tripandchildren.length > 0 && userStore.user?.role_id === 1">
-        <ion-card v-for="trip in tripandchildren" :key="trip.trip_id" :button="true" @click="getTripChildDetails(trip.trip_child_id)">
+        <ion-card v-for="trip in upcomingTripChildren" :key="trip.trip_id" :button="true" @click="getTripChildDetails(trip.trip_child_id)">
           <ion-card-header>
             <ion-card-title>Transporte a {{ trip.school_name }} </ion-card-title>
             <ion-card-subtitle>Alumno: {{ trip.name }} {{ trip.last_name }}</ion-card-subtitle>
@@ -174,10 +174,17 @@ const loadTrips = async () => {
     }
  catch (error) {
     console.error("Error cargando viajes", error);
-    tripandchildren.value = [];
+    trips.value = [];
   }
 };
 
+const upcomingTripChildren = computed(() => {
+  const today = new Date().toISOString().split('T')[0];
+  return tripandchildren.value
+    .filter((trip) => trip.date >= today)
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(0, 10);
+});
 
 const upcomingTrips = computed(() => {
   const today = new Date().toISOString().split('T')[0];
@@ -192,9 +199,9 @@ onMounted(() => {
 });
 
 watch(() => userStore.user, (newUser) => {
-  if (newUser && newUser.is_confirmed == 0) {
-    showAlert.value = true;
-  }
+  // if (newUser && newUser.is_confirmed == 0) {
+  //   showAlert.value = true;
+  // }
 
   if (newUser?.role_id === 1) {
     loadTripAndChildren();

@@ -173,7 +173,7 @@ const allPages = [
   { title: "Tarifas", url: "/prices", iosIcon: pricetagOutline, roles: [2]},
   { title: "Notificaciones", url: "/notifications", iosIcon: notificationsOutline, roles: [1, 2, 3] },
   { title: "Pagos", url: "/payments", iosIcon: pricetagOutline, roles: [3] },
-  { title: "Reportes", url: "/analytics", iosIcon: barChartOutline, roles: [1, 2, 3] },
+  { title: "Reportes", url: "/analytics", iosIcon: barChartOutline, roles: [2, 3] },
   { title: "Manual de usuario", url: "/user-manual", iosIcon: bookOutline, roles: [1, 2, 3] }
 ];
 
