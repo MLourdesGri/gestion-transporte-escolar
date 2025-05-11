@@ -39,6 +39,7 @@
             <p v-if="authorization.state === 1">Pendiente</p>
             <p v-else-if="authorization.state === 2">Aprobada</p>
             <p v-else-if="authorization.state === 3">Rechazada</p>
+            <p v-else-if="authorization.state === 4">Vencida</p>
             <p v-if="authorization.state === 3 && authorization.rejection_reason">
             <strong>Motivo del rechazo:</strong> {{ authorization.rejection_reason }}
             </p>

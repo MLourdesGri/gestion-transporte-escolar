@@ -166,6 +166,8 @@ const getCardClass = (state: number) => {
       return 'card-green';
     case 3:
       return 'card-red';
+    case 4:
+      return 'card-blue';
     default:
       return 'card-gray';
   }
@@ -205,6 +207,10 @@ const navigateToAddAuthorization = () => {
 
 .card-red {
   --background: #f8d6d6; /* rojo pastel */
+  color: #333;
+}
+.card-blue {
+  --background: #d6e8f8; /* azul pastel */
   color: #333;
 }
 .custom-fab {
