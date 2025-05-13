@@ -15,12 +15,12 @@
       </div>
 
       <ion-card
-  v-for="(notif, index) in notifications"
-  :key="index"
-  :class="{ 'unread': !notif.is_read }"
-  @click="openNotification(notif)"
-  style="cursor: pointer;"
->
+          v-for="(notif, index) in notifications"
+          :key="index"
+          :class="{ 'unread': !notif.is_read }"
+          @click="openNotification(notif)"
+          style="cursor: pointer;"
+        >
 
         <ion-card-header>
           <ion-card-title>{{ notif.title }}</ion-card-title>
@@ -98,7 +98,7 @@ const openNotification = async (notif: any) => {
   selectedNotification.value = notif;
   if (!notif.is_read && userStore.token) {
     try {
-      const response = await markNotificationAsRead(notif.notification_id, userStore.token) as { data: Notification[] };
+      await markNotificationAsRead(notif.notification_id, userStore.token);
       notif.is_read = true;
     } catch (error) {
       console.error("Error al cargar notificaciones", error);

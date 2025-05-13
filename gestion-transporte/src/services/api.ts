@@ -136,6 +136,32 @@ export const getTripByUser = async (token: string) => {
   }
 }
 
+export const startTrip = async (tripId: number, token: string) => {
+  try {
+    const response = await api.post(`/trips/start/${tripId}`,{},  {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return { error: "Error al iniciar el viaje. Intenta nuevamente." };
+  }
+}
+
+export const finishTrip = async (tripId: number, token: string) => {
+  try {
+    const response = await api.post(`/trips/finish/${tripId}`,{},  {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    return { error: "Error al iniciar el viaje. Intenta nuevamente." };
+  }
+}
+
 export const postUser = async (user: User) => {
   try {
     const response = await api.post<{ token: string, user:User, error:Error }>("/users/signup", user);
@@ -251,6 +277,21 @@ export const getAllAuthorizations = async () => {
 export const getAllTrips = async () => {
   try {
     const response = await api.get("/trips");
+    return response.data;
+  }
+  catch (error) {
+    console.error("Error obteniendo viajes:", error);
+    return [];
+  }
+}
+
+export const getTripById = async (tripId: number, token: string) => {
+  try {
+    const response = await api.get(`/trips/${tripId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }); 
     return response.data;
   }
   catch (error) {
