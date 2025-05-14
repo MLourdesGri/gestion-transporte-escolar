@@ -16,7 +16,7 @@
             <span>Tiempo total de viaje: {{ totalDurationText }}</span>
             <ion-button v-if="trip?.status === 'pending'" size="medium" @click="initializeTrip">Iniciar viaje</ion-button>
             <ion-button v-else-if="trip?.status === 'in progress'" size="medium" @click="terminateTrip">Finalizar viaje</ion-button>
-            <ion-button v-else size="medium" disabled>Viaje {{ translateStatus(trip?.status || 'unknown') }}</ion-button>
+            <ion-button v-else size="medium" disabled>Viaje {{ formatTripStatus(trip?.status || 'unknown') }}</ion-button>
           </div>
         </div>
         <div ref="mapContainer" class="map"></div>
@@ -35,19 +35,7 @@ import { useUserStore } from '@/store/user';
 import { io } from "socket.io-client";
 import { Socket } from "socket.io-client";
 import { finishTrip, getTripById, startTrip } from '@/services/api';
-
-const translateStatus = (status: string) => {
-  switch (status) {
-    case 'pending':
-      return 'Pendiente';
-    case 'completed':
-      return 'Completado';
-    case 'cancelled':
-      return 'Cancelado';
-    default:
-      return 'Desconocido';
-  }
-};
+import { formatTripStatus } from '@/utils/utils';
 
 interface Trip {
   trip_id: number;

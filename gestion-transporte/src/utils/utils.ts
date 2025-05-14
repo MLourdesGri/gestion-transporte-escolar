@@ -81,3 +81,16 @@ export function redirectIfNoToken() {
 
   return `${months[month - 1]} ${year}`;
   }
+
+  export function formatTripStatus(status: string): string {
+    switch (status) {
+    case 'pending':
+      return 'Pendiente';
+    case 'completed':
+      return 'Completado';
+    case 'cancelled':
+      return 'Cancelado';
+    default:
+      return 'Desconocido';
+  }
+  }

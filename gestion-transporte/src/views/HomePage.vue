@@ -11,13 +11,13 @@
 
     <ion-content :fullscreen="true" class="ion-padding">
       <template v-if="tripandchildren.length > 0 && userStore.user?.role_id === 1">
-        <ion-card v-for="trip in upcomingTripChildren" :key="trip.trip_id" :button="true" @click="getTripChildDetails(trip.trip_child_id)">
+        <ion-card v-for="trip in upcomingTripChildren" :key="trip.trip_child_id" :button="true" @click="getTripChildDetails(trip.trip_child_id)">
           <ion-card-header>
             <ion-card-title>Transporte a {{ trip.school_name }} </ion-card-title>
             <ion-card-subtitle>Alumno: {{ trip.name }} {{ trip.last_name }}</ion-card-subtitle>
             <ion-card-subtitle>Fecha: {{ formatDate(trip.date) }}</ion-card-subtitle>
             <ion-card-subtitle>Turno: {{ formatShift(trip.school_shift) }}</ion-card-subtitle>
-            <ion-card-subtitle>Estado: {{ translateStatus(trip.status) }}</ion-card-subtitle>
+            <ion-card-subtitle>Estado: {{ formatTripStatus(trip.status) }}</ion-card-subtitle>
           </ion-card-header>
         </ion-card>
       </template>
@@ -28,7 +28,7 @@
             <ion-card-title>Transporte a {{ trip.authorization.school_name}} </ion-card-title>
             <ion-card-subtitle>Fecha: {{ formatDate(trip.date) }}</ion-card-subtitle>
             <ion-card-subtitle>Turno: {{ formatShift(trip.authorization.work_shift) }}</ion-card-subtitle>
-            <ion-card-subtitle>Estado de vehiculo: {{ formatAuthorizationState(trip.authorization.state) }}</ion-card-subtitle>
+            <ion-card-subtitle>Estado del viaje: {{ formatTripStatus(trip.status) }}</ion-card-subtitle>
           </ion-card-header>
         </ion-card>
       </template>
@@ -59,12 +59,12 @@
 <script setup lang="ts">
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, 
   IonCardSubtitle, IonCardTitle, IonAlert, IonFab, IonFabButton, IonIcon} from '@ionic/vue';
-import { onMounted, ref, watch, computed } from "vue";
+import { onMounted, ref, computed } from "vue";
 import {  getTripByUser, getTripChildByUserId } from "../services/api"; 
 import { add } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/store/user';
-import { formatDate, formatShift, formatAuthorizationState, redirectIfNoToken } from '@/utils/utils';
+import { formatDate, formatShift, formatTripStatus, redirectIfNoToken } from '@/utils/utils';
 
 interface Trip_Child {
   trip_child_id: number;
@@ -130,19 +130,22 @@ const loadTripAndChildren = async () => {
     const tripChildArray = Array.isArray(tripChildData)
       ? tripChildData
       : [tripChildData];
+    const seenTripChildIds = new Set();
     for (const tripChild of tripChildArray) {
-      tripandchildren.value.push({
-        trip_child_id: tripChild.trip_child_id,
-        trip_id: tripChild.trip.trip_id,
-        date: tripChild.trip.date,
-        status: tripChild.trip.status,
-        child_id: tripChild.child.child_id,
-        name: tripChild.child.name,
-        last_name: tripChild.child.last_name,
-        school_name: tripChild.child.school_name,
-        school_address: tripChild.child.school_address,
-        school_shift: tripChild.child.school_shift
-      });
+      if (!seenTripChildIds.has(tripChild.trip_child_id)) {
+        seenTripChildIds.add(tripChild.trip_child_id);
+        tripandchildren.value.push({
+          trip_child_id: tripChild.trip_child_id,
+          trip_id: tripChild.trip.trip_id,
+          date: tripChild.trip.date,
+          status: tripChild.trip.status,
+          child_id: tripChild.child.child_id,
+          name: tripChild.child.name,
+          last_name: tripChild.child.last_name,
+          school_name: tripChild.child.school_name,
+          school_address: tripChild.child.school_address,
+          school_shift: tripChild.child.school_shift
+        });}
     }
   } catch (error) {
     console.error("Error cargando viajes", error);
@@ -196,34 +199,12 @@ const upcomingTrips = computed(() => {
 
 onMounted(() => {
   if (redirectIfNoToken()) return;
-});
-
-watch(() => userStore.user, (newUser) => {
-  // if (newUser && newUser.is_confirmed == 0) {
-  //   showAlert.value = true;
-  // }
-
-  if (newUser?.role_id === 1) {
+  if (userStore.user && userStore.user.role_id === 1) {
     loadTripAndChildren();
-  } else if (newUser?.role_id === 2) {
+  } else if (userStore.user && userStore.user.role_id === 2) {
     loadTrips();
   }
-}, { immediate: true });
-
-
-
-const translateStatus = (status: string) => {
-  switch (status) {
-    case 'pending':
-      return 'Pendiente';
-    case 'completed':
-      return 'Completado';
-    case 'cancelled':
-      return 'Cancelado';
-    default:
-      return 'Desconocido';
-  }
-};
+});
 
 const router = useRouter();
 const navigateToPage = () => {

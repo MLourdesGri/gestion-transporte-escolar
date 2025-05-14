@@ -162,6 +162,20 @@ export const finishTrip = async (tripId: number, token: string) => {
   }
 }
 
+export const cancelTripById = async ( token: string, tripId: number, cancelReason: string) => {
+  try {
+    const response = await api.post(`/trips/cancel/${tripId}`, {cancelReason}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error cancelando viaje:", error);
+    return { error: "Error al cancelar el viaje. Intenta nuevamente." };
+  }
+}
+
 export const postUser = async (user: User) => {
   try {
     const response = await api.post<{ token: string, user:User, error:Error }>("/users/signup", user);
