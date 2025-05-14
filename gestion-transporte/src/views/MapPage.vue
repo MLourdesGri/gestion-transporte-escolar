@@ -12,7 +12,12 @@
     <ion-content :fullscreen="true">
       <div class="map-wrapper">
         <div class="info-box">
-          Tiempo total de viaje: {{ totalDurationText }}
+          <div class="info-content">
+            <span>Tiempo total de viaje: {{ totalDurationText }}</span>
+            <ion-button v-if="trip?.status === 'pending'" size="medium" @click="initializeTrip">Iniciar viaje</ion-button>
+            <ion-button v-else-if="trip?.status === 'in progress'" size="medium" @click="terminateTrip">Finalizar viaje</ion-button>
+            <ion-button v-else size="medium" disabled>Viaje {{ translateStatus(trip?.status || 'unknown') }}</ion-button>
+          </div>
         </div>
         <div ref="mapContainer" class="map"></div>
       </div>
@@ -21,7 +26,7 @@
 </template>
 
 <script lang="ts" setup>
-import { IonPage, IonHeader,IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent } from '@ionic/vue';
+import { IonPage, IonHeader,IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent, IonButton} from '@ionic/vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { Loader } from '@googlemaps/js-api-loader';
 import { geocodeAddresses } from '@/services/externalApi';
@@ -29,6 +34,26 @@ import { useRoute } from 'vue-router';
 import { useUserStore } from '@/store/user';
 import { io } from "socket.io-client";
 import { Socket } from "socket.io-client";
+import { finishTrip, getTripById, startTrip } from '@/services/api';
+
+const translateStatus = (status: string) => {
+  switch (status) {
+    case 'pending':
+      return 'Pendiente';
+    case 'completed':
+      return 'Completado';
+    case 'cancelled':
+      return 'Cancelado';
+    default:
+      return 'Desconocido';
+  }
+};
+
+interface Trip {
+  trip_id: number;
+  date: string;
+  status: string;
+}
 
 const socket: Socket = io("http://localhost:3000");
 
@@ -44,9 +69,16 @@ let userMarker: google.maps.Marker | null = null;
 let userCircle: google.maps.Circle | null = null;
 let choferMarker: google.maps.Marker | null = null;
 let watchId: number | null = null;
+const errorMessage = ref("");
+const trip = ref<Trip | null>(null);
 
 onMounted(async () => {
   try {
+    const tripResponse = await getTripById(tripId, token) as { data: Trip };
+    if (tripResponse) {
+      trip.value = tripResponse.data;
+    }
+
     const apiResult = await geocodeAddresses(tripId, token);
   if (!apiResult?.success || !Array.isArray(apiResult.data.locations)) {
     console.error("Error en la respuesta de la API:", apiResult);
@@ -293,6 +325,40 @@ onUnmounted(() => {
     navigator.geolocation.clearWatch(watchId);
   }
 });
+
+const initializeTrip = async () => {
+  errorMessage.value = "";
+  const token = userStore.token;
+  if (!token) {
+    errorMessage.value = "No se encontró el token. Inicia sesión nuevamente.";
+    return;
+  }
+  try {    
+    const response = await startTrip(tripId, token);
+    console.log(response);
+  }
+  catch (error) {
+    console.error("Error al iniciar el viaje:", error);
+    errorMessage.value = "Error al iniciar el viaje. Inténtalo de nuevo.";
+  }
+};
+
+const terminateTrip = async () => {
+  errorMessage.value = "";
+  const token = userStore.token;
+  if (!token) {
+    errorMessage.value = "No se encontró el token. Inicia sesión nuevamente.";
+    return;
+  }
+  try {    
+    const response = await finishTrip(tripId, token);
+    console.log(response);
+  }
+  catch (error) {
+    console.error("Error al iniciar el viaje:", error);
+    errorMessage.value = "Error al iniciar el viaje. Inténtalo de nuevo.";
+  }
+};
 </script>
 
 <style scoped>
@@ -312,13 +378,26 @@ onUnmounted(() => {
 .info-box {
   position: absolute;
   bottom: 25px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #4CAF50;
+  left: 5%;
+  right: 5%;
+  background-color: #003366;
   padding: 10px 20px;
   border-radius: 12px;
   font-weight: bold;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   z-index: 1000;
 }
+
+.info-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+ion-button {
+  margin: 10px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
 </style>
