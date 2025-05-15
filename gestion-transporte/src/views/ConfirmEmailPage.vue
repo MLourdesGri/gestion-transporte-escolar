@@ -23,7 +23,7 @@
 import { IonPage, IonContent, IonIcon } from "@ionic/vue";
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import axios from "axios";
+import api from "@/services/api";
 import CustomButton from "@/components/CustomButton.vue";
 import { checkmarkCircle, closeCircle } from "ionicons/icons";
 
@@ -36,7 +36,7 @@ const confirmEmail = async () => {
   const token = route.params.token;
   try {
     const API_URL = import.meta.env.VITE_API_URL;
-    const response = await axios.get(`${API_URL}/users/confirm-email/${token}`);
+    const response = await api.get(`${API_URL}/users/confirm-email/${token}`);
     if (response.status === 200) {
       success.value = true;
     }

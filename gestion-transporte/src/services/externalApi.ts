@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://gestion-transporte-escolar-be-production.up.railway.app"; 
+const API_URL = "https://gestion-transporte-escolar-be-production.up.railway.app"; 
 
 const api = axios.create({
   baseURL: API_URL,

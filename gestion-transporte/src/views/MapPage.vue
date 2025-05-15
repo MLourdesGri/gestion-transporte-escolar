@@ -43,7 +43,7 @@ interface Trip {
   status: string;
 }
 
-const socket: Socket = io("http://gestion-transporte-escolar-be-production.up.railway.app");
+const socket: Socket = io("https://gestion-transporte-escolar-be-production.up.railway.app");
 
 const route = useRoute();
 const tripId = Number(route.params.id);
