@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useUserStore } from "@/store/user";
 
-const API_URL = "http://localhost:3000"; 
+const API_URL = "http://gestion-transporte-escolar-be-production.up.railway.app"; 
 
 const api = axios.create({
   baseURL: API_URL,
