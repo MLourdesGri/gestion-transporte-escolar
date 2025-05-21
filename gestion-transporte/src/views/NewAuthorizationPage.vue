@@ -18,6 +18,7 @@
             <InputField label="Nombre y Apellido" type="text" placeholder="Juan" name="driver_name" v-model="form.driver_name" />
             <InputWithMaps label="Domicilio" type="text" placeholder="Cordoba 1256" v-model="form.address"/>
             <InputField label="Teléfono" type="text" placeholder="3413456677" name="phone" v-model="form.phone"/>
+            <InputField label="cbu" type="text" placeholder="12345678901234567890" name="ubc" v-model="form.ubc"/>
             <DropdownField 
               label="Género" 
               :options="genders" 
@@ -170,6 +171,7 @@ const form = ref({
   due_date_vehicle: "",
   due_date_driver: "",
   dni: "",
+  ubc: ""
 });
 
 const step = ref(1); 
@@ -264,9 +266,10 @@ const saveAuthorization = async () => {
     due_date_driver: form.value.due_date_driver,
     state: 1, //estado "subido"
     dni: form.value.dni,
+    ubc: form.value.ubc
   };
 
-  if (!authorizationData.driver_name || !authorizationData.vehicle_make || !authorizationData.vehicle_model ||
+  if (!authorizationData.ubc || !authorizationData.driver_name || !authorizationData.vehicle_make || !authorizationData.vehicle_model ||
    !authorizationData.vehicle_year || !authorizationData.vehicle_license_plate || !authorizationData.vehicle_capacity || !authorizationData.due_date_vehicle || !authorizationData.due_date_driver) {
     errorMessage.value = "Todos los campos son obligatorios";
     return;

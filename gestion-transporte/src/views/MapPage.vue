@@ -14,9 +14,11 @@
         <div class="info-box">
           <div class="info-content">
             <span>Tiempo total de viaje: {{ totalDurationText }}</span>
+            <div v-if="userStore.user?.role_id === 2">
             <ion-button v-if="trip?.status === 'pending'" size="medium" @click="initializeTrip">Iniciar viaje</ion-button>
             <ion-button v-else-if="trip?.status === 'in progress'" size="medium" @click="terminateTrip">Finalizar viaje</ion-button>
             <ion-button v-else size="medium" disabled>Viaje {{ formatTripStatus(trip?.status || 'unknown') }}</ion-button>
+            </div>
           </div>
         </div>
         <div ref="mapContainer" class="map"></div>
