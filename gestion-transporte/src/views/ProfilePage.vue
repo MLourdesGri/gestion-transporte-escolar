@@ -41,6 +41,7 @@
             />
             <InputField label="Dni" type="text" name="dni" v-model="form.dni" :disabled="!isEditing"/>
             <DatePicker label="Fecha de nacimiento" name="birth_date" v-model="form.birth_date" :disabled="!isEditing"/>
+
           </div>
 
           
@@ -93,7 +94,7 @@ const form = ref({
   address: "",
   profile_picture: "",
   birth_date: "",
-  dni: "",
+  dni: ""
 });
 
 const userStore = useUserStore();
@@ -160,7 +161,7 @@ const toggleEdit = async () => {
         address: form.value.address,
         birth_date: form.value.birth_date,
         profile_picture: previewProfilePicture.value || form.value.profile_picture,
-        dni: form.value.dni,
+        dni: form.value.dni
       };
 
       const token = userStore.token;
