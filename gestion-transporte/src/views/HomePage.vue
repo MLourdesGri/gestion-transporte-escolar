@@ -47,6 +47,15 @@
         backdrop-dismiss="false"
       />
 
+      <ion-alert
+        v-if="alertAddress"
+        :is-open="alertAddress"
+        header="No tienes una dirección guardada"
+        message="Por favor, dirígete a la sección de 'Perfil' para agregar una dirección."
+        backdrop-dismiss="true"
+        @didDismiss="() => alertAddress = false"
+      />
+
       <ion-fab slot="fixed" vertical="bottom" horizontal="end" v-if="userStore.user?.role_id === 1">
         <ion-fab-button @click="navigateToPage" class="custom-fab">
           <ion-icon :icon="add"></ion-icon>
@@ -112,7 +121,8 @@ interface Child {
   }
 
 
-const showAlert = ref(false); 
+const showAlert = ref(false);
+const alertAddress = ref(false);
 const tripandchildren = ref<TripAndChildren[]>([]);
 const trips = ref<Trip[]>([]);
 const userStore = useUserStore();
@@ -207,7 +217,12 @@ onMounted(() => {
 });
 
 const router = useRouter();
+
 const navigateToPage = () => {
+  if (!userStore.user?.address) {
+    alertAddress.value = true;
+    return;
+  }
   router.push("/home/new-trip"); 
 };
 
