@@ -17,9 +17,7 @@
         </ion-header>
 
         <template v-if="isLoading">
-          <div class="spinner-container">
-            <ion-spinner name="crescent" color="primary"></ion-spinner>
-          </div>
+          <LoadingSpinner />
         </template>
   
         <template v-else-if="children.length > 0">
@@ -90,7 +88,7 @@
   
   <script setup lang="ts">
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, 
-  IonCardSubtitle, IonCardTitle, IonAlert, IonFab, IonFabButton, IonIcon, IonModal, IonToast, IonSpinner} from '@ionic/vue';
+  IonCardSubtitle, IonCardTitle, IonAlert, IonFab, IonFabButton, IonIcon, IonModal, IonToast } from '@ionic/vue';
 import InputField from '@/components/InputField.vue';
 import { onMounted, ref } from "vue";
 import { getChildrenByUser, getUser, postChild, putChild, deleteChild } from "../services/api"; 
@@ -101,6 +99,7 @@ import CustomButton from '@/components/CustomButton.vue';
 import DropdownField from '@/components/DropdownField.vue';
 import { useUserStore } from '@/store/user';
 import { redirectIfNoToken } from '@/utils/utils';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
 enum SchoolShift {
   Manana = 1,
@@ -355,16 +354,5 @@ const userStore = useUserStore();
   display: flex;
   justify-content: center;
   }
-
-.spinner-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%; /* Ocupa toda la altura del ion-content */
-}
-ion-spinner {
-  width: 64px;
-  height: 64px;
-}
 </style>
   
