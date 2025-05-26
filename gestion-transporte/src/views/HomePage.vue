@@ -10,7 +10,11 @@
     </ion-header>
 
     <ion-content :fullscreen="true" class="ion-padding">
-      <template v-if="tripandchildren.length > 0 && userStore.user?.role_id === 1">
+      <template v-if="isLoading">
+        <LoadingSpinner />
+      </template>
+
+      <template v-else-if="tripandchildren.length > 0 && userStore.user?.role_id === 1">
         <ion-card v-for="trip in upcomingTripChildren" :key="trip.trip_child_id" :button="true" @click="getTripChildDetails(trip.trip_child_id)">
           <ion-card-header>
             <ion-card-title>Transporte a {{ trip.school_name }} </ion-card-title>
@@ -74,6 +78,7 @@ import { add } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/store/user';
 import { formatDate, formatShift, formatTripStatus, redirectIfNoToken } from '@/utils/utils';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
 interface Trip_Child {
   trip_child_id: number;
@@ -126,8 +131,10 @@ const alertAddress = ref(false);
 const tripandchildren = ref<TripAndChildren[]>([]);
 const trips = ref<Trip[]>([]);
 const userStore = useUserStore();
+const isLoading = ref(true);
 
 const loadTripAndChildren = async () => {
+  isLoading.value = true;
   const token = userStore.token;
   if (!token) return;
 
@@ -161,9 +168,11 @@ const loadTripAndChildren = async () => {
     console.error("Error cargando viajes", error);
     tripandchildren.value = [];
   }
+  isLoading.value = false;
 };
 
 const loadTrips = async () => {
+  isLoading.value = true;
   const token = userStore.token;
   if (!token) return;
 
@@ -189,6 +198,7 @@ const loadTrips = async () => {
     console.error("Error cargando viajes", error);
     trips.value = [];
   }
+  isLoading.value = false;
 };
 
 const upcomingTripChildren = computed(() => {
@@ -245,9 +255,9 @@ const getTripDetails = (trip_id: number) => {
 .custom-fab {
   --background: #003366;
   --background-hover: #002244;
-  --color: white; /* Color del icono */
+  --color: white;
 }
 .custom-menu {
-  --color: #003366; /* Color del icono */
+  --color: #003366;
 }
 </style>

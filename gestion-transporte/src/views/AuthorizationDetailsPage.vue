@@ -11,7 +11,10 @@
 
     <ion-content>
       <div class="page">
-        <div v-if="authorization">
+        <template v-if="isLoading">
+          <LoadingSpinner />
+        </template>
+      <template v-else-if="authorization">
           <div class="detail-section">
             <h2>Vehículo</h2>
             <p><strong>Marca:</strong> {{ authorization.vehicle_make }}</p>
@@ -44,7 +47,7 @@
             <strong>Motivo del rechazo:</strong> {{ authorization.rejection_reason }}
             </p>
           </div>
-        </div>
+        </template>
         <div class="bottom-button" v-if="userStore.user?.role_id != 3">
             <CustomButton expand="block" color="medium" @click="cancel">Volver</CustomButton>
           </div>
@@ -106,9 +109,7 @@
         handler: handleReject,
       }
     ]"
-
   />
-
     </ion-content>
   </ion-page>
 </template>
@@ -122,6 +123,7 @@ import CustomButton from '@/components/CustomButton.vue';
 import { useUserStore } from '@/store/user';
 import ErrorMessage from '@/components/ErrorMessage.vue';
 import { formatDate } from '@/utils/utils';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
 const route = useRoute();
 const id = ref<number>(Number(route.params.id));
@@ -135,6 +137,7 @@ const cancel = () => {
   window.location.href = '/authorization';
 };
 const toastColor = ref<'success' | 'danger'>('success');
+const isLoading = ref(true);
 
 interface User {
   full_name: string;
@@ -189,6 +192,7 @@ interface Authorization {
 const authorization = ref<Authorization | null>(null);
 
 const loadAuthorization = async () => {
+  isLoading.value = true;
   try {
     const authorizationResponse = await getAuthorizationById(id.value) as { data: Authorization };
     if (authorizationResponse.data) {
@@ -199,6 +203,7 @@ const loadAuthorization = async () => {
   } catch (error) {
     console.error("Error al cargar la habilitación", error);
   }
+  isLoading.value = false;
 };
 
 watchEffect(async () => {
@@ -338,8 +343,6 @@ const rejectAuthorization = async () => {
   right: 0;
   padding: 1rem;
 }
-
-
 
 .detail-section h2 {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);

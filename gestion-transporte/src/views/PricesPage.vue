@@ -16,14 +16,16 @@
           </ion-toolbar>
         </ion-header>
 
-        <div v-if="isLoading">
+        <template v-if="isLoading">
           <LoadingSpinner />
-        </div>
+        </template>
 
-          <div class="no-price" v-else-if="prices.length == 0">
+        <template v-else-if="prices.length == 0">
+          <div class="no-price">
             <p>Aún no has registrado ninguna tarifa.</p>
           </div>
-          <div v-else>
+        </template>
+        <template v-else>
             <div class="ion-padding">
             <ion-text>
               <h2>Tarifa actual</h2>
@@ -55,7 +57,7 @@
               </ion-card>
             </div>
           </div>
-          </div>
+        </template>
 
   
         <ion-fab slot="fixed" vertical="bottom" horizontal="end">
