@@ -19,7 +19,7 @@
               <p><strong>Nombre:</strong> {{ trip_child.child.name }}  {{ trip_child.child.last_name }}</p>
               <p><strong>Edad:</strong> {{ trip_child.child.age }}</p>
               <p><strong>Escuela:</strong> {{ trip_child.child.school_name }}</p>
-              <p><strong>Turno:</strong> {{ trip_child.child.school_shift }}</p>
+              <p><strong>Turno:</strong> {{ formatShift(trip_child.child.school_shift) }}</p>
             </div>
 
             <div class="detail-section">
@@ -39,10 +39,8 @@
             </div>
     
             <div class="detail-section">
-              <h2><strong>Estado</strong></h2>
-              <p v-if="trip_child.trip.authorization.state === 1">Pendiente</p>
-              <p v-else-if="trip_child.trip.authorization.state === 2">Aprobada</p>
-              <p v-else-if="trip_child.trip.authorization.state === 3">Rechazada</p>
+              <h2><strong>Estado del viaje</strong></h2>
+              <p>{{ formatTripStatus(trip_child.trip.status)}}</p>
             </div>
           </div>
   
@@ -81,7 +79,7 @@
   import CustomButton from '@/components/CustomButton.vue';
   import { useUserStore } from '@/store/user';
   import ErrorMessage from '@/components/ErrorMessage.vue';
-  import { formatDate } from '@/utils/utils';
+  import { formatDate, formatShift, formatTripStatus } from '@/utils/utils';
   
   const route = useRoute();
   const id = ref<number>(Number(route.params.id));
@@ -210,13 +208,12 @@ const getMapTrip = (tripId: number) => {
     bottom: 0;
     right: 0;
     top: 0;
-    padding: 1rem;
+    padding: 0 1rem 0 1rem;
   }  
 
   .detail-section h2 {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     font-size: 1.2rem;
-    margin-bottom: 15px;
     color: #003388;
   }
   
