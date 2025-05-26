@@ -17,7 +17,9 @@
         </ion-header>
 
         <template v-if="isLoading">
-          <ion-spinner name="crescent"></ion-spinner>
+          <div class="spinner-container">
+            <ion-spinner name="crescent" color="primary"></ion-spinner>
+          </div>
         </template>
   
         <template v-else-if="children.length > 0">
@@ -353,5 +355,16 @@ const userStore = useUserStore();
   display: flex;
   justify-content: center;
   }
-  </style>
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Ocupa toda la altura del ion-content */
+}
+ion-spinner {
+  width: 64px;
+  height: 64px;
+}
+</style>
   
