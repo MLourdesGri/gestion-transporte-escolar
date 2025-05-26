@@ -15,7 +15,12 @@
             <ion-title size="large">Tarifas</ion-title>
           </ion-toolbar>
         </ion-header>
-          <div class="no-price" v-if="prices.length == 0">
+
+        <div v-if="isLoading">
+          <LoadingSpinner />
+        </div>
+
+          <div class="no-price" v-else-if="prices.length == 0">
             <p>Aún no has registrado ninguna tarifa.</p>
           </div>
           <div v-else>
@@ -102,6 +107,7 @@ import CustomButton from '@/components/CustomButton.vue';
 import { useUserStore } from '@/store/user';
 import { onMounted, ref } from 'vue';
 import { formatDateTime, redirectIfNoToken } from '@/utils/utils';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
   
   interface Price {
     price_id: number;
@@ -124,10 +130,12 @@ import { formatDateTime, redirectIfNoToken } from '@/utils/utils';
   const currentPrice = ref<Price | null>(null); 
   const isModalOpen = ref(false); 
   const isEditing = ref(false);
+  const isLoading = ref(true);
 
   const userStore = useUserStore();
   
   const loadPrice = async () => {
+    isLoading.value = true;
     const token = userStore.token;
     if (token) {
       try {
@@ -147,6 +155,7 @@ import { formatDateTime, redirectIfNoToken } from '@/utils/utils';
         prices.value = [];
       }
     }
+    isLoading.value = false;
   };
   
   onMounted(() => {
