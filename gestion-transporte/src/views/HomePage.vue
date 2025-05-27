@@ -134,7 +134,6 @@ const userStore = useUserStore();
 const isLoading = ref(true);
 
 const loadTripAndChildren = async () => {
-  isLoading.value = true;
   const token = userStore.token;
   if (!token) return;
 
@@ -168,11 +167,9 @@ const loadTripAndChildren = async () => {
     console.error("Error cargando viajes", error);
     tripandchildren.value = [];
   }
-  isLoading.value = false;
 };
 
 const loadTrips = async () => {
-  isLoading.value = true;
   const token = userStore.token;
   if (!token) return;
 
@@ -198,7 +195,6 @@ const loadTrips = async () => {
     console.error("Error cargando viajes", error);
     trips.value = [];
   }
-  isLoading.value = false;
 };
 
 const upcomingTripChildren = computed(() => {
@@ -221,8 +217,10 @@ onMounted(() => {
   if (redirectIfNoToken()) return;
   if (userStore.user && userStore.user.role_id === 1) {
     loadTripAndChildren();
+    isLoading.value = false;
   } else if (userStore.user && userStore.user.role_id === 2) {
     loadTrips();
+    isLoading.value = false;
   }
 });
 
