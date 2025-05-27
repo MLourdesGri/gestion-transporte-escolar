@@ -213,16 +213,18 @@ const upcomingTrips = computed(() => {
     .slice(0, 10);
 });
 
-onMounted(() => {
+onMounted(async () => {
   if (redirectIfNoToken()) return;
+
   if (userStore.user && userStore.user.role_id === 1) {
-    loadTripAndChildren();
-    isLoading.value = false;
+    await loadTripAndChildren();
   } else if (userStore.user && userStore.user.role_id === 2) {
-    loadTrips();
-    isLoading.value = false;
+    await loadTrips();
   }
+
+  isLoading.value = false;
 });
+
 
 const router = useRouter();
 
