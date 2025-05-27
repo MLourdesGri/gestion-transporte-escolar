@@ -46,7 +46,7 @@ interface Trip {
 }
 
 const socket: Socket = io("https://gestion-transporte-escolar-be-production.up.railway.app",{ 
-  transports: ['websocket'],
+  transports: ['websocket', "polling"],
   withCredentials: true
 });
 
