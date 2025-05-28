@@ -37,6 +37,22 @@
         </ion-card>
       </template>
 
+      <template v-else-if="userStore.user?.role_id === 3">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>¡Bienvenido {{ userStore.user.full_name }}!</ion-card-title>
+            <br />
+            <ion-card-subtitle>Siendo un administrador, puedes realizar las siguientes actividades:</ion-card-subtitle>
+            <br />
+            <ion-card-content>Visualizar todas las habilitaciones de los vehículos.</ion-card-content>
+            <ion-card-content>Aprobar o rechazar las habilitaciones que aún no han sido evaluadas.</ion-card-content>
+            <ion-card-content>Realizar los pagos de los viajes a los choferes.</ion-card-content>
+            <ion-card-content>Visualizar e interactuar con los reportes con las estadisticas de los viajes.</ion-card-content>
+            <ion-card-content>Personalizar tu perfil con tus datos, incluyendo una foto de perfil.</ion-card-content>
+          </ion-card-header>
+        </ion-card>
+      </template>
+
       <template v-else>
         <div class="no-trips">
           <p>No tienes viajes registrados.</p>
@@ -71,7 +87,7 @@
 
 <script setup lang="ts">
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, 
-  IonCardSubtitle, IonCardTitle, IonAlert, IonFab, IonFabButton, IonIcon} from '@ionic/vue';
+  IonCardSubtitle, IonCardTitle, IonCardContent, IonAlert, IonFab, IonFabButton, IonIcon} from '@ionic/vue';
 import { ref, computed, watch } from "vue";
 import {  getTripByUser, getTripChildByUserId } from "../services/api"; 
 import { add } from 'ionicons/icons';
