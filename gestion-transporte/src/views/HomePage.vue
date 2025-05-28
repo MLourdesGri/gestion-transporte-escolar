@@ -72,7 +72,7 @@
 <script setup lang="ts">
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, 
   IonCardSubtitle, IonCardTitle, IonAlert, IonFab, IonFabButton, IonIcon} from '@ionic/vue';
-import { onMounted, ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import {  getTripByUser, getTripChildByUserId } from "../services/api"; 
 import { add } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
@@ -213,18 +213,23 @@ const upcomingTrips = computed(() => {
     .slice(0, 10);
 });
 
-onMounted(async () => {
-  if (redirectIfNoToken()) return;
+// Redirect if no token
+redirectIfNoToken();
 
-  if (userStore.user && userStore.user.role_id === 1) {
-    await loadTripAndChildren();
-  } else if (userStore.user && userStore.user.role_id === 2) {
-    await loadTrips();
-  }
-
-  isLoading.value = false;
-});
-
+watch(
+  () => userStore.user,
+  async (newUser) => {
+    if (newUser) {
+      if (newUser.role_id === 1) {
+        await loadTripAndChildren();
+      } else if (newUser.role_id === 2) {
+        await loadTrips();
+      }
+      isLoading.value = false;
+    }
+  },
+  { immediate: true }
+);
 
 const router = useRouter();
 
