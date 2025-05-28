@@ -40,12 +40,12 @@
       <template v-else-if="userStore.user?.role_id === 3">
         <ion-card>
           <ion-card-header>
-            <ion-card-title>¡Bienvenido {{ userStore.user.full_name }}!</ion-card-title>
+            <ion-card-title>¡Bienvenido/a {{ userStore.user.full_name }}!</ion-card-title>
             <br />
             <ion-card-subtitle>Siendo un administrador, puedes realizar las siguientes actividades:</ion-card-subtitle>
             <br />
             <ion-card-content>Visualizar todas las habilitaciones de los vehículos.</ion-card-content>
-            <ion-card-content>Aprobar o rechazar las habilitaciones que aún no han sido evaluadas.</ion-card-content>
+            <ion-card-content>Realizar seguimientos de las habilitaciones de vehiculos y choferes.</ion-card-content>
             <ion-card-content>Realizar los pagos de los viajes a los choferes.</ion-card-content>
             <ion-card-content>Visualizar e interactuar con los reportes con las estadisticas de los viajes.</ion-card-content>
             <ion-card-content>Personalizar tu perfil con tus datos, incluyendo una foto de perfil.</ion-card-content>

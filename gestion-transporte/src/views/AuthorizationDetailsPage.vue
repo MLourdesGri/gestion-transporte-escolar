@@ -322,6 +322,8 @@ const rejectAuthorization = async () => {
       toastColor.value = 'success';
       showToast.value = true;
       message.value = "Habilitación rechazada correctamente.";
+
+      window.location.href = '/authorization';
     } else {
       errorMessage.value = "Error al rechazar la habilitación. Inténtalo nuevamente.";
     }
