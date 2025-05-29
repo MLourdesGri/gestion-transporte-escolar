@@ -10,6 +10,12 @@
       </ion-header>
 
     <ion-content class="ion-padding">
+    <template v-if="payments.length === 0">
+      <div class="no-payments">
+          <p>No tienes pagos pendientes.</p>
+        </div>
+    </template>
+    <template v-else>
       <ion-card v-for="payment in payments" :key="payment.userId + payment.month">
         <ion-card-header>
           <ion-card-title>Pago a {{ payment.full_name }}</ion-card-title>
@@ -31,6 +37,7 @@
         color="success"
         duration="3000"
       ></ion-toast>
+    </template>
     </ion-content>
   </ion-page>
 </template>
@@ -65,8 +72,8 @@ const loadPayments = async () => {
           formattedMonth.value = getPreviousMonth();
           const paymentResponse = await getPaymentsByDriver(token); 
           if (paymentResponse) {
-            payments.value = paymentResponse.data;
-            payments.value = paymentResponse.data.sort((a, b) => a.is_paid - b.is_paid);
+            console.log('Payments fetched successfully', paymentResponse);
+            payments.value = paymentResponse.sort((a, b) => a.is_paid - b.is_paid);
           } else {
             console.error('Error fetching payments', paymentResponse);
           }
@@ -99,6 +106,12 @@ ion-button {
   --background: #003366;
   --background-hover: #002244;
   --color: white; 
+}
+.no-payments {
+  text-align: center;
+  padding: 20px;
+  color: gray;
+  font-size: 18px;
 }
 
 </style>
