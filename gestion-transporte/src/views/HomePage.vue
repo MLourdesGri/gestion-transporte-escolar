@@ -236,6 +236,9 @@ watch(
   () => userStore.user,
   async (newUser) => {
     if (newUser) {
+      if (newUser.is_confirmed == 0) {
+        showAlert.value = true;
+      }
       if (newUser.role_id === 1) {
         await loadTripAndChildren();
       } else if (newUser.role_id === 2) {
