@@ -229,6 +229,10 @@ watch(
     if (!newUser) return;
     if (redirectIfNoToken()) return;
 
+    if (newUser.is_confirmed == 0) {
+      showAlert.value = true;
+    }
+
     if (newUser.role_id === 1) {
       loadTripAndChildren();
     } else if (newUser.role_id === 2) {
