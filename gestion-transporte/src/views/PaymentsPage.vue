@@ -64,6 +64,7 @@ const loadPayments = async () => {
       try {
           formattedMonth.value = getPreviousMonth();
           const paymentResponse = await getPaymentsByDriver(token);
+          console.log('Respuesta de pagos:', paymentResponse);
             if (Array.isArray(paymentResponse)) {
               payments.value = paymentResponse.sort((a, b) => a.is_paid - b.is_paid);
             } else {
