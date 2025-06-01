@@ -66,7 +66,9 @@ const loadPayments = async () => {
           const paymentResponse = await getPaymentsByDriver(token); 
           if (paymentResponse) {
             payments.value = paymentResponse.data;
-            payments.value = paymentResponse.data.sort((a, b) => a.is_paid - b.is_paid);
+            if (Array.isArray(payments.value)) {
+              payments.value = paymentResponse.data.sort((a, b) => a.is_paid - b.is_paid);
+            }
           } else {
             console.error('Error fetching payments', paymentResponse);
           }
