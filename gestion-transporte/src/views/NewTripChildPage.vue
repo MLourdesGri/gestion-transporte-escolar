@@ -353,7 +353,7 @@ const payWithMercadoPago = async () => {
         user_id: userResponse.data.id,
         authorization_id: currentDriver.value?.authorization_id || 0,
         trip: { trip_id: 0, date: "", available_capacity: 0, status: "" },
-        child: currentChild.value?.child_id || 0,
+        child_id: currentChild.value?.child_id || 0,
         selected_dates: toRaw(selectedDates.value)
     };
     const response = await createPayment(token, trip_child);
