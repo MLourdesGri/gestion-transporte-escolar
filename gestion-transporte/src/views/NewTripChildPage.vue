@@ -354,6 +354,7 @@ const payWithMercadoPago = async () => {
         child: currentChild.value?.child_id || 0,
         selected_dates: toRaw(selectedDates.value)
     };
+    console.log(trip_child.value);
     const response = await createPayment(token, trip_child);
     if (response && typeof response === "object" && "data" in response) {
         const responseData = response.data as { preferenceId: string };
