@@ -72,7 +72,7 @@ const loadPayments = async () => {
           formattedMonth.value = getPreviousMonth();
           const paymentResponse = await getPaymentsByDriver(token); 
           if (paymentResponse && Array.isArray(paymentResponse.data)) {
-            payments.value = paymentResponse.data.sort((a, b) => a.is_paid - b.is_paid);
+            payments.value = paymentResponse.data;
           } else {
             console.error('La respuesta no contiene un array válido:', paymentResponse);
           }
