@@ -23,7 +23,7 @@
                 <p><strong>Nombre:</strong> {{ trip_child.child.name }}  {{ trip_child.child.last_name }}</p>
                 <p><strong>Edad:</strong> {{ trip_child.child.age }}</p>
                 <p><strong>Escuela:</strong> {{ trip_child.child.school_name }}</p>
-                <p><strong>Turno:</strong> {{ trip_child.child.school_shift }}</p>
+                <p><strong>Turno:</strong> {{ formatShift(trip_child.child.school_shift) }}</p>
               </div>
 
               <div class="detail-section">
@@ -86,7 +86,7 @@ import { getUser, getTripChildById, deleteTripChild } from '@/services/api';
 import CustomButton from '@/components/CustomButton.vue';
 import { useUserStore } from '@/store/user';
 import ErrorMessage from '@/components/ErrorMessage.vue';
-import { formatDate } from '@/utils/utils';
+import { formatDate, formatShift } from '@/utils/utils';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
   
 const route = useRoute();
