@@ -71,6 +71,7 @@ const loadPayments = async () => {
       try {
           formattedMonth.value = getPreviousMonth();
           const paymentResponse = await getPaymentsByDriver(token); 
+          console.log('Respuesta de pagos:', paymentResponse);
           if (paymentResponse && Array.isArray(paymentResponse.data)) {
             payments.value = paymentResponse.data;
           } else {
