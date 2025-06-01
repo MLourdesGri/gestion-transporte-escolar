@@ -257,6 +257,7 @@ const maxDate = new Date(today.getFullYear(), today.getMonth() + 2, 0).toISOStri
 
 const selectChild = async (child: Child) => {
   currentChild.value = child;
+  console.log("Hijo seleccionado:", child);
   await loadDriver();
   try {
     const response = await getTripChildByChildId(child.child_id) as {data: Trip_Child[]};
@@ -273,6 +274,7 @@ const selectChild = async (child: Child) => {
 
 const selectDriver = async (driver: Authorization) => {
     currentDriver.value = driver;
+    console.log("Chofer seleccionado:", driver);
     if (token) {
         const priceResponse = await getPriceByUserAuthorization(token, currentDriver.value?.user.id || 0) as {data: Price};
         price.value = priceResponse.data;
@@ -354,7 +356,6 @@ const payWithMercadoPago = async () => {
         child: currentChild.value?.child_id || 0,
         selected_dates: toRaw(selectedDates.value)
     };
-    console.log(trip_child.value);
     const response = await createPayment(token, trip_child);
     if (response && typeof response === "object" && "data" in response) {
         const responseData = response.data as { preferenceId: string };
