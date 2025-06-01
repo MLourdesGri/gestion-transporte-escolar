@@ -45,8 +45,7 @@
         <ion-modal ref="modalRef" :is-open="isModalOpen" @did-dismiss="closeModal">
           <ion-header :translucent="true">
             <ion-toolbar>
-              <ion-title v-if="isEditing">Crear hijo/a</ion-title>
-              <ion-title v-else>Editar hijo/a</ion-title>
+              <ion-title>Perfil del hijo/a</ion-title>
             </ion-toolbar>
           </ion-header>
         <ion-content class="ion-padding">
