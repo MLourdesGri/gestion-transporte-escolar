@@ -14,7 +14,7 @@
         <LoadingSpinner />
       </template>
 
-      <template v-else-if="tripandchildren.length > 0 && userStore.user?.role_id === 1">
+      <template v-else-if="upcomingTripChildren.length > 0 && userStore.user?.role_id === 1">
         <ion-card v-for="trip in upcomingTripChildren" :key="trip.trip_child_id" :button="true" @click="getTripChildDetails(trip.trip_child_id)">
           <ion-card-header>
             <ion-card-title>Transporte a {{ trip.school_name }} </ion-card-title>
@@ -26,7 +26,7 @@
         </ion-card>
       </template>
 
-      <template v-else-if="trips.length > 0 && userStore.user?.role_id === 2">
+      <template v-else-if="upcomingTrips.length > 0 && userStore.user?.role_id === 2">
         <ion-card v-for="trip in upcomingTrips" :key="trip.trip_id" :button="true" @click="getTripDetails(trip.trip_id)">
           <ion-card-header>
             <ion-card-title>Transporte a {{ trip.authorization.school_name}} </ion-card-title>
