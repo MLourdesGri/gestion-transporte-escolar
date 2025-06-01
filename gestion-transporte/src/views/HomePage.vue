@@ -147,7 +147,7 @@ const alertAddress = ref(false);
 const tripandchildren = ref<TripAndChildren[]>([]);
 const trips = ref<Trip[]>([]);
 const userStore = useUserStore();
-const isLoading = ref(false);
+const isLoading = ref(true);
 
 const loadTripAndChildren = async () => {
   const token = userStore.token;
@@ -245,7 +245,7 @@ watch(
       } else if (newUser.role_id === 2) {
         await loadTrips();
       }
-      // isLoading.value = false;
+      isLoading.value = false;
     }
   },
   { immediate: true }
