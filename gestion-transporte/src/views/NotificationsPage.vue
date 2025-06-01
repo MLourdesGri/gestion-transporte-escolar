@@ -10,11 +10,18 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <div v-if="notifications.length === 0" class="no-children">
-        No hay notificaciones por el momento.
-      </div>
+      <template v-if="isLoading">
+        <LoadingSpinner />
+      </template>
 
-      <ion-card
+      <template v-else-if="notifications.length === 0">
+        <div class="no-children">
+          No hay notificaciones por el momento.
+        </div>
+      </template>
+
+      <template v-else>
+        <ion-card
           v-for="(notif, index) in notifications"
           :key="index"
           :class="{ 'unread': !notif.is_read }"
@@ -22,27 +29,28 @@
           style="cursor: pointer;"
         >
 
-        <ion-card-header>
-          <ion-card-title>{{ notif.title }}</ion-card-title>
-          <ion-card-subtitle>{{ notif.detail.substring(0, 60) }}...</ion-card-subtitle>
-        </ion-card-header>
-      </ion-card>
+          <ion-card-header>
+            <ion-card-title>{{ notif.title }}</ion-card-title>
+            <ion-card-subtitle>{{ notif.detail.substring(0, 60) }}...</ion-card-subtitle>
+          </ion-card-header>
+        </ion-card>
 
-      <!-- Modal para ver detalle -->
-      <ion-modal :is-open="selectedNotification !== null" @did-dismiss="selectedNotification = null">
-        <ion-header>
-          <ion-toolbar>
-            <ion-title>Detalle</ion-title>
-            <ion-buttons slot="end">
-              <ion-button @click="selectedNotification = null">Cerrar</ion-button>
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content class="ion-padding">
-          <h2>{{ selectedNotification?.title }}</h2>
-          <p>{{ selectedNotification?.detail }}</p>
-        </ion-content>
-      </ion-modal>
+        <!-- Modal para ver detalle -->
+        <ion-modal :is-open="selectedNotification !== null" @did-dismiss="selectedNotification = null">
+          <ion-header>
+            <ion-toolbar>
+              <ion-title>Detalle</ion-title>
+              <ion-buttons slot="end">
+                <ion-button @click="selectedNotification = null">Cerrar</ion-button>
+              </ion-buttons>
+            </ion-toolbar>
+          </ion-header>
+          <ion-content class="ion-padding">
+            <h2>{{ selectedNotification?.title }}</h2>
+            <p>{{ selectedNotification?.detail }}</p>
+          </ion-content>
+        </ion-modal>
+      </template>
     </ion-content>
   </ion-page>
 </template>
@@ -55,12 +63,13 @@ import {
 import { ref, onMounted } from 'vue';
 import { getNotificationsByUser, markNotificationAsRead } from '../services/api';
 import { useUserStore } from '@/store/user';
-
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
 const unreadCount = ref(0);
 const notifications = ref<any[]>([]);
 const selectedNotification = ref<any | null>(null);
 const userStore = useUserStore();
+const isLoading = ref(true);
 
 interface Notification {
   id: number;
@@ -71,6 +80,7 @@ interface Notification {
 }
 
 const loadNotifications = async () => {
+  isLoading.value = true;
   if (userStore.token) {
     try {
       const response = await getNotificationsByUser(userStore.token) as { data: Notification[] };
@@ -84,9 +94,8 @@ const loadNotifications = async () => {
       console.error("Error al cargar notificaciones", error);
     }
   }
+  isLoading.value = false;
 };
-
-
 
 onMounted(
   () => {

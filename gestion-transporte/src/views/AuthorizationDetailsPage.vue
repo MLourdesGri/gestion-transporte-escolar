@@ -77,13 +77,13 @@
       message="¿Estás seguro que deseas aprobar la habilitación?"
       :buttons="[
         {
-          text: 'Sí',
-          handler: approveAuthorization,
-        },
-        {
           text: 'No',
           role: 'cancel',
           handler: () => (showApproveAlert = false),
+        },
+        {
+          text: 'Sí',
+          handler: approveAuthorization,
         },
       ]"
     />
