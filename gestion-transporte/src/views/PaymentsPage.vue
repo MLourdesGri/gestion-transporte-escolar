@@ -63,14 +63,12 @@ const loadPayments = async () => {
     if (token) {
       try {
           formattedMonth.value = getPreviousMonth();
-          const paymentResponse = await getPaymentsByDriver(token); 
-          if (paymentResponse) {
-            payments.value = paymentResponse.data;
-            if (Array.isArray(payments.value)) {
-              payments.value = paymentResponse.data.sort((a, b) => a.is_paid - b.is_paid);
-            }
-          } else {
-            console.error('Error fetching payments', paymentResponse);
+          const paymentResponse = await getPaymentsByDriver(token);
+            if (Array.isArray(paymentResponse)) {
+              payments.value = paymentResponse.sort((a, b) => a.is_paid - b.is_paid);
+            } else {
+              console.error('Respuesta inesperada (no es array):', paymentResponse);
+              console.error('Error fetching payments', paymentResponse);
           }
         } catch (err) {
           console.error('Error fetching payments', err);
