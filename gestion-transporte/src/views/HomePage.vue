@@ -235,6 +235,7 @@ redirectIfNoToken();
 watch(
   () => userStore.user,
   async (newUser) => {
+    isLoading.value = true;
     if (newUser) {
       if (newUser.is_confirmed == 0) {
         showAlert.value = true;
