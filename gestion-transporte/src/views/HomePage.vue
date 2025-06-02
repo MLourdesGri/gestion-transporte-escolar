@@ -60,11 +60,11 @@
       </template>
 
       <ion-alert
-        v-if="showAlert"
         :is-open="showAlert"
         header="Cuenta no confirmada"
         message="Revise su casilla de correo y confirme su cuenta para continuar usando la aplicación."
         backdrop-dismiss="false"
+        @didDismiss="() => showAlert = false"
       />
 
       <ion-alert
