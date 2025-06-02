@@ -329,6 +329,7 @@ const initializeTrip = async () => {
   try {    
     const response = await startTrip(tripId, token);
     console.log(response);
+    window.location.reload();
   }
   catch (error) {
     console.error("Error al iniciar el viaje:", error);
@@ -346,6 +347,7 @@ const terminateTrip = async () => {
   try {    
     const response = await finishTrip(tripId, token);
     console.log(response);
+    window.location.reload();
   }
   catch (error) {
     console.error("Error al iniciar el viaje:", error);
