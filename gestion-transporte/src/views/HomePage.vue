@@ -88,7 +88,7 @@
 <script setup lang="ts">
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, 
   IonCardSubtitle, IonCardTitle, IonCardContent, IonAlert, IonFab, IonFabButton, IonIcon} from '@ionic/vue';
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, watch } from "vue";
 import {  getTripByUser, getTripChildByUserId } from "../services/api"; 
 import { add } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
@@ -162,7 +162,10 @@ const loadTripAndChildren = async () => {
     const tripChildArray = Array.isArray(tripChildData)
       ? tripChildData
       : [tripChildData];
+    const seenTripChildIds = new Set();
     for (const tripChild of tripChildArray) {
+      if (!seenTripChildIds.has(tripChild.trip_child_id)) {
+        seenTripChildIds.add(tripChild.trip_child_id);
         tripandchildren.value.push({
           trip_child_id: tripChild.trip_child_id,
           trip_id: tripChild.trip.trip_id,
@@ -174,9 +177,8 @@ const loadTripAndChildren = async () => {
           school_name: tripChild.child.school_name,
           school_address: tripChild.child.school_address,
           school_shift: tripChild.child.school_shift
-        });
+        });}
     }
-    console.log("Viajes y niños cargados correctamente", tripandchildren.value);
   } catch (error) {
     console.error("Error cargando viajes", error);
     tripandchildren.value = [];
@@ -213,13 +215,8 @@ const loadTrips = async () => {
 
 const upcomingTripChildren = computed(() => {
   const today = new Date().toISOString().split('T')[0];
-  const unique = new Map();
-  for (const trip of tripandchildren.value) {
-    if (trip.date >= today) {
-      unique.set(trip.trip_child_id, trip);
-    }
-  }
-  return Array.from(unique.values())
+  return tripandchildren.value
+    .filter((trip) => trip.date >= today)
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(0, 10);
 });
@@ -235,21 +232,25 @@ const upcomingTrips = computed(() => {
 // Redirect if no token
 redirectIfNoToken();
 
+watch(
+  () => userStore.user,
+  async (newUser) => {
+    isLoading.value = true;
+    if (newUser) {
+      if (newUser.is_confirmed == 0) {
+        showAlert.value = true;
+      }
 
-onMounted(async () => {
-  const user = userStore.user;
-  if (user?.is_confirmed === 0) {
-    showAlert.value = true;
-  }
-
-  if (user?.role_id === 1) {
-    await loadTripAndChildren();
-  } else if (user?.role_id === 2) {
-    await loadTrips();
-  }
-
-  isLoading.value = false;
-});
+      if (newUser.role_id === 1) {
+        await loadTripAndChildren();
+      } else if (newUser.role_id === 2) {
+        await loadTrips();
+      }
+      isLoading.value = false;
+    }
+  },
+  { immediate: true }
+);
 
 const router = useRouter();
 
