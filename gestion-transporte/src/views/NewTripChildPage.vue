@@ -39,9 +39,10 @@
                 <template v-if="drivers.length > 0">
                     <ion-card v-for="driver in drivers" :key="driver.authorization_id" :button="true" @click="selectDriver(driver)" :class="{ selected: currentDriver && currentDriver.authorization_id === driver.authorization_id }">
                         <ion-card-header>
-                          <ion-card-title>{{ driver.vehicle_license_plate }}</ion-card-title>
+                          <ion-card-title>{{ driver.driver_name }}</ion-card-title>
                         </ion-card-header>
                         <ion-card-content>
+                          <p><strong>Patente: </strong> {{ driver.vehicle_license_plate }}</p>
                           <p><strong>Marca:</strong> {{ driver.vehicle_make }}</p>
                           <p><strong>Modelo:</strong> {{ driver.vehicle_model }}</p>
                           <p><strong>Año:</strong> {{ driver.vehicle_year }}</p>
@@ -154,7 +155,7 @@ interface Trip_Child{
     user_id: number;
     authorization_id: number;
     trip: Trip;
-    child: number;
+    child_id: number;
     selected_dates: string[];
 }
 
