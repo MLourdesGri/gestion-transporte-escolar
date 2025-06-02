@@ -48,7 +48,7 @@
 
           <div slot="fixed" class="bottom-buttons">
             <CustomButton vertical="bottom" horizontal="start" expand="block" color="medium" @click="cancel">Volver</CustomButton>
-            <CustomButton v-if="trip?.status != 'cancelled'" vertical="bottom" horizontal="start" expand="block" color="danger" @click="showRejectAlert = true">Cancelar viaje</CustomButton>
+            <CustomButton v-if="trip?.status != 'cancelled' && trip?.status != 'completed'" vertical="bottom" horizontal="start" expand="block" color="danger" @click="showRejectAlert = true">Cancelar viaje</CustomButton>
             <CustomButton v-if="trip?.status != 'cancelled'" vertical="bottom" horizontal="end" class="btnMap" @click="getMapTrip(id)">Ver en mapa</CustomButton>
           </div>
           <IonAlert
