@@ -88,7 +88,7 @@
 <script setup lang="ts">
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, 
   IonCardSubtitle, IonCardTitle, IonCardContent, IonAlert, IonFab, IonFabButton, IonIcon} from '@ionic/vue';
-import { ref, computed, watch } from "vue";
+import { ref, computed, onMounted } from "vue";
 import {  getTripByUser, getTripChildByUserId } from "../services/api"; 
 import { add } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
@@ -176,6 +176,7 @@ const loadTripAndChildren = async () => {
           school_shift: tripChild.child.school_shift
         });
     }
+    console.log("Viajes y niños cargados correctamente", tripandchildren.value);
   } catch (error) {
     console.error("Error cargando viajes", error);
     tripandchildren.value = [];
@@ -229,25 +230,21 @@ const upcomingTrips = computed(() => {
 // Redirect if no token
 redirectIfNoToken();
 
-watch(
-  () => userStore.user,
-  async (newUser) => {
-    isLoading.value = true;
-    if (newUser) {
-      if (newUser.is_confirmed == 0) {
-        showAlert.value = true;
-      }
 
-      if (newUser.role_id === 1) {
-        await loadTripAndChildren();
-      } else if (newUser.role_id === 2) {
-        await loadTrips();
-      }
-      isLoading.value = false;
-    }
-  },
-  { immediate: true }
-);
+onMounted(async () => {
+  const user = userStore.user;
+  if (user?.is_confirmed === 0) {
+    showAlert.value = true;
+  }
+
+  if (user?.role_id === 1) {
+    await loadTripAndChildren();
+  } else if (user?.role_id === 2) {
+    await loadTrips();
+  }
+
+  isLoading.value = false;
+});
 
 const router = useRouter();
 
