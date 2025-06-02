@@ -72,8 +72,12 @@ const loadPayments = async () => {
           formattedMonth.value = getPreviousMonth();
           const paymentResponse = await getPaymentsByDriver(token); 
           if (paymentResponse) {
-            console.log('Payments fetched successfully', paymentResponse);
-            payments.value = paymentResponse.data;
+            payments.value = paymentResponse.data.sort((a, b) => {
+              if (a.is_paid !== b.is_paid) {
+                return a.is_paid - b.is_paid; 
+              }
+              return a.full_name.localeCompare(b.full_name);
+            });
           } else {
             console.error('Error fetching payments', paymentResponse);
           }
@@ -90,6 +94,10 @@ const markAsPaid = async (userId, month) => {
     if (response && typeof response === 'object' && 'data' in response)
     {
       showToast.value = true;
+      setTimeout(() => {
+        showToast.value = false;
+      }, 3000);
+      window.location.reload();
       loadPayments(); 
     }
   } catch (err) {
