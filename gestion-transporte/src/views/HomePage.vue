@@ -213,6 +213,10 @@ const loadTrips = async () => {
 
 const upcomingTripChildren = computed(() => {
   const today = new Date().toISOString().split('T')[0];
+  console.log("aver", tripandchildren.value
+    .filter((trip) => trip.date >= today)
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(0, 10))
   return tripandchildren.value
     .filter((trip) => trip.date >= today)
     .sort((a, b) => a.date.localeCompare(b.date))
