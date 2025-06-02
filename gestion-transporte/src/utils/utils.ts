@@ -90,6 +90,8 @@ export function redirectIfNoToken() {
       return 'Completado';
     case 'cancelled':
       return 'Cancelado';
+    case 'in_progress':
+      return 'En Progreso';
     default:
       return 'Desconocido';
   }
