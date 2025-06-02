@@ -162,10 +162,7 @@ const loadTripAndChildren = async () => {
     const tripChildArray = Array.isArray(tripChildData)
       ? tripChildData
       : [tripChildData];
-    const seenTripChildIds = new Set();
     for (const tripChild of tripChildArray) {
-      if (!seenTripChildIds.has(tripChild.trip_child_id)) {
-        seenTripChildIds.add(tripChild.trip_child_id);
         tripandchildren.value.push({
           trip_child_id: tripChild.trip_child_id,
           trip_id: tripChild.trip.trip_id,
@@ -177,7 +174,7 @@ const loadTripAndChildren = async () => {
           school_name: tripChild.child.school_name,
           school_address: tripChild.child.school_address,
           school_shift: tripChild.child.school_shift
-        });}
+        });
     }
   } catch (error) {
     console.error("Error cargando viajes", error);
