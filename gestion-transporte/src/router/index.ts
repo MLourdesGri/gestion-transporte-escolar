@@ -34,6 +34,8 @@ const routes: Array<RouteRecordRaw> = [
       { path: 'children', component: () => import('../views/ChildrenPage.vue') },
 
       { path: 'prices', component: () => import('../views/PricesPage.vue')},
+
+      { path: 'user-manual', component: () => import('../views/UserManualPage.vue') }
     ]
   },
   {
