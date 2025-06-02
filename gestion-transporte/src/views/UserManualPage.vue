@@ -29,6 +29,9 @@
           <p>En la pantalla principal podrá ver los próximos viajes registrados, junto con el estado del viaje, la fecha y el turno.</p>
           <p>Podrá ingresar a cada viaje para ver más detalles y realizar el seguimiento del chofer.</p>
 
+          <h3>Estadísticas y reportes</h3>
+          <p>Desde la sección de reportes puede visualizar gráficos e informes con métricas de uso, viajes realizados, pagos, etc.</p>
+
           <h3>Perfil</h3>
           <p>Puede editar sus datos personales y cargar una foto de perfil desde la sección "Perfil".</p>
         </ion-card-content>
@@ -42,9 +45,15 @@
           <h3>Alta de vehículo</h3>
           <p>Desde la sección "Habilitaciones" puede registrar su vehículo, incluyendo toda la documentación requerida. Deberá esperar a que su habilitación sea aprobada para empezar a trabajar.</p>
 
+          <h3>Alta de tarifas</h3>
+          <p>Desde la sección "Tarifas" puede registrar y gestionar las tarifas de los viajes. Puede cargar tarifa diaria y mensual.</p>
+
           <h3>Viajes</h3>
           <p>Desde la pantalla principal podrá ver los viajes asignados con la información de los pasajeros y la institución.</p>
           <p>Debe marcar el inicio y finalización del viaje en la app para registrar el recorrido.</p>
+
+          <h3>Estadísticas y reportes</h3>
+          <p>Desde la sección de reportes puede visualizar gráficos e informes con métricas de uso, viajes realizados, pagos, etc.</p>
 
           <h3>Perfil</h3>
           <p>Puede editar sus datos personales y cargar una foto de perfil desde la sección "Perfil".</p>
