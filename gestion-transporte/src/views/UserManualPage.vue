@@ -15,21 +15,19 @@
           <ion-card-title>Manual del Tutor</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <h3>Registro en el sistema</h3>
-          <p>Ingrese a la app.</p>
-          <p>Haga clic en "Registrarse".</p>
-          <p>Ingrese un email y contraseña válidos. Seleccione su perfil como Tutor (esta elección no se podrá cambiar después). Complete sus datos personales.</p>
-
           <h3>Alta de dirección</h3>
-          <p>Desde la sección "Perfil" puede ingresar su dirección para poder comenzar a solicitar viajes.</p>
+          <p>Desde la sección "Perfil" puede ingresar la dirección de su hogar para poder comenzar a solicitar viajes.</p>
+
+          <h3>Alta de hijos</h3>
+          <p>Desde la sección "Hijos" debe dar de alta a sus hijos y la institución a la que asisten.</p>
 
           <h3>Solicitud de viaje</h3>
           <p>Desde la pantalla de inicio, haga clic en el botón flotante "+" para registrar un nuevo viaje.</p>
-          <p>Complete los datos del menor y la institución a la que se dirige.</p>
+          <p>Elija un hijo, el chofer y la o las fechas que necesita, y luego abone el viaje via Mercado Pago.</p>
 
           <h3>Seguimiento</h3>
           <p>En la pantalla principal podrá ver los próximos viajes registrados, junto con el estado del viaje, la fecha y el turno.</p>
-          <p>Podrá ingresar a cada viaje para ver más detalles.</p>
+          <p>Podrá ingresar a cada viaje para ver más detalles y realizar el seguimiento del chofer.</p>
 
           <h3>Perfil</h3>
           <p>Puede editar sus datos personales y cargar una foto de perfil desde la sección "Perfil".</p>
@@ -41,23 +39,12 @@
           <ion-card-title>Manual del Chofer</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <h3>Registro en el sistema</h3>
-          <p>Ingrese a la app.</p>
-          <p>Haga clic en "Registrarse".</p>
-          <p>Ingrese un email y contraseña válidos. Seleccione su perfil como Chofer. Complete sus datos personales.</p>
-
           <h3>Alta de vehículo</h3>
-          <p>Desde la sección "Vehículos" puede registrar su vehículo, incluyendo toda la documentación requerida.</p>
-
-          <h3>Habilitaciones</h3>
-          <p>Debe tener la documentación del chofer y del vehículo al día para poder tomar viajes.</p>
+          <p>Desde la sección "Habilitaciones" puede registrar su vehículo, incluyendo toda la documentación requerida. Deberá esperar a que su habilitación sea aprobada para empezar a trabajar.</p>
 
           <h3>Viajes</h3>
-          <p>Desde la pantalla principal podrá ver los viajes asignados con la información del pasajero y la institución.</p>
+          <p>Desde la pantalla principal podrá ver los viajes asignados con la información de los pasajeros y la institución.</p>
           <p>Debe marcar el inicio y finalización del viaje en la app para registrar el recorrido.</p>
-
-          <h3>Pagos</h3>
-          <p>Los viajes realizados se visualizarán en la sección de pagos, indicando su estado (pendiente, pagado, etc.).</p>
 
           <h3>Perfil</h3>
           <p>Puede editar sus datos personales y cargar una foto de perfil desde la sección "Perfil".</p>
@@ -69,10 +56,6 @@
           <ion-card-title>Manual del Administrador</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <h3>Ingreso al sistema</h3>
-          <p>Los administradores son dados de alta por el equipo de soporte técnico.</p>
-          <p>Ingrese con sus credenciales.</p>
-
           <h3>Visualización de habilitaciones</h3>
           <p>Desde la sección correspondiente, puede ver y gestionar las habilitaciones de vehículos y choferes.</p>
 
