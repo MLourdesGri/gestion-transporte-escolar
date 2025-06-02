@@ -213,12 +213,13 @@ const loadTrips = async () => {
 
 const upcomingTripChildren = computed(() => {
   const today = new Date().toISOString().split('T')[0];
-  console.log("aver", tripandchildren.value
-    .filter((trip) => trip.date >= today)
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .slice(0, 10))
-  return tripandchildren.value
-    .filter((trip) => trip.date >= today)
+  const unique = new Map();
+  for (const trip of tripandchildren.value) {
+    if (trip.date >= today) {
+      unique.set(trip.trip_child_id, trip);
+    }
+  }
+  return Array.from(unique.values())
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(0, 10);
 });
