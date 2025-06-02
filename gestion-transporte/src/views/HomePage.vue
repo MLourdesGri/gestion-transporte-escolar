@@ -176,6 +176,7 @@ const loadTripAndChildren = async () => {
           school_shift: tripChild.child.school_shift
         });
     }
+    console.log("Viajes y niños cargados correctamente", tripandchildren.value);
   } catch (error) {
     console.error("Error cargando viajes", error);
     tripandchildren.value = [];
