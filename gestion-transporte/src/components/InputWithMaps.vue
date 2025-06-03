@@ -85,6 +85,7 @@ const onInputChange = async (event: Event) => {
   try {
     const response = await searchPlaces(searchQuery.value, props.name || '') as ApiResponse;
     const results = response.data;
+  
     if (Array.isArray(results)) {
       suggestions.value = results as Place[];
     } else {

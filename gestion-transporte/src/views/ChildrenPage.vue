@@ -15,8 +15,12 @@
             <ion-title size="large">Alumnos</ion-title>
           </ion-toolbar>
         </ion-header>
+
+        <template v-if="isLoading">
+          <LoadingSpinner />
+        </template>
   
-        <template v-if="children.length > 0">
+        <template v-else-if="children.length > 0">
           <ion-card v-for="child in children" :key="child.child_id" :button="true" @click="editChild(child)">
             <ion-card-header>
               <ion-card-title>{{ child.name }} {{ child.last_name }}</ion-card-title>
@@ -28,7 +32,7 @@
   
         <template v-else>
           <div class="no-children">
-            <p>No tienes alumnos registrados.</p>
+            <p>No tienes hijos registrados.</p>
           </div>
         </template>
   
@@ -41,8 +45,7 @@
         <ion-modal ref="modalRef" :is-open="isModalOpen" @did-dismiss="closeModal">
           <ion-header :translucent="true">
             <ion-toolbar>
-              <ion-title v-if="!isEditing">Crear hijo/a</ion-title>
-              <ion-title v-else>Editar hijo/a</ion-title>
+              <ion-title>Perfil del hijo/a</ion-title>
             </ion-toolbar>
           </ion-header>
         <ion-content class="ion-padding">
@@ -83,16 +86,19 @@
   </template>
   
   <script setup lang="ts">
-  import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, 
-  IonCardSubtitle, IonCardTitle, IonAlert, IonFab, IonFabButton, IonIcon, IonModal, IonToast} from '@ionic/vue';
-  import InputField from '@/components/InputField.vue';
-  import { onMounted, ref } from "vue";
-  import { getChildrenByUser, getUser, postChild, putChild, deleteChild } from "../services/api"; 
-  import { add } from 'ionicons/icons';
-  import ErrorMessage from '@/components/ErrorMessage.vue';
-  import InputWithMaps from '@/components/InputWithMaps.vue';
+import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, 
+  IonCardSubtitle, IonCardTitle, IonAlert, IonFab, IonFabButton, IonIcon, IonModal, IonToast } from '@ionic/vue';
+import InputField from '@/components/InputField.vue';
+import { onMounted, ref } from "vue";
+import { getChildrenByUser, getUser, postChild, putChild, deleteChild } from "../services/api"; 
+import { add } from 'ionicons/icons';
+import ErrorMessage from '@/components/ErrorMessage.vue';
+import InputWithMaps from '@/components/InputWithMaps.vue';
 import CustomButton from '@/components/CustomButton.vue';
 import DropdownField from '@/components/DropdownField.vue';
+import { useUserStore } from '@/store/user';
+import { redirectIfNoToken } from '@/utils/utils';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
 enum SchoolShift {
   Manana = 1,
@@ -103,10 +109,6 @@ const schoolShifts = [
   { value: SchoolShift.Manana, label: 'Mañana' },
   { value: SchoolShift.Tarde, label: 'Tarde' },
 ];
-
-
-  import { useUserStore } from '@/store/user';
-import { redirectIfNoToken } from '@/utils/utils';
   
   interface Child {
     child_id: number;
@@ -135,17 +137,18 @@ import { redirectIfNoToken } from '@/utils/utils';
     school_shift: null as number | null,
   });
   
-  const children = ref<Child[]>([]);
-  const showAlert = ref(false); 
-  const errorMessage = ref("");
-  const showToast = ref(false);
-  const currentChild = ref<Child | null>(null); 
-  const isModalOpen = ref(false); 
-  const isEditing = ref(false);
-
-  const userStore = useUserStore();
+const children = ref<Child[]>([]);
+const showAlert = ref(false); 
+const errorMessage = ref("");
+const showToast = ref(false);
+const currentChild = ref<Child | null>(null); 
+const isModalOpen = ref(false); 
+const isEditing = ref(false);
+const isLoading = ref(true);
+const userStore = useUserStore();
   
   const loadChildren = async () => {
+    isLoading.value = true;
     const token = userStore.token;
     if (token) {
       try {
@@ -161,6 +164,7 @@ import { redirectIfNoToken } from '@/utils/utils';
         children.value = [];
       }
     }
+    isLoading.value = false;
   };
   
   const token = userStore.token;
@@ -349,5 +353,5 @@ import { redirectIfNoToken } from '@/utils/utils';
   display: flex;
   justify-content: center;
   }
-  </style>
+</style>
   

@@ -10,6 +10,9 @@
       </ion-header>
 
     <ion-content class="ion-padding">
+      <template v-if="isLoading">
+          <LoadingSpinner />
+      </template>
     <template v-if="payments.length === 0">
       <div class="no-payments">
           <p>No tienes pagos pendientes.</p>
@@ -49,11 +52,13 @@ import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardH
 import { getPaymentsByDriver, markTripsAsPaid} from "../services/api"; 
 import { useUserStore } from '@/store/user';
 import { formatMonthName } from '@/utils/utils';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
 const payments = ref([]);
 const formattedMonth = ref('');
 const userStore = useUserStore();
 const showToast = ref(false);
+const isLoading = ref(true);
 
 const getPreviousMonth = () => {
   const today = new Date();
@@ -66,14 +71,19 @@ onMounted(async () => {
 });
 
 const loadPayments = async () => {
+  isLoading.value = true;
   const token = userStore.token;
     if (token) {
       try {
           formattedMonth.value = getPreviousMonth();
           const paymentResponse = await getPaymentsByDriver(token); 
-          console.log('Respuesta de pagos:', paymentResponse);
-          if (paymentResponse && Array.isArray(paymentResponse.data)) {
-            payments.value = paymentResponse.data;
+          if (paymentResponse) {
+            payments.value = paymentResponse.data.sort((a, b) => {
+              if (a.is_paid !== b.is_paid) {
+                return a.is_paid - b.is_paid; 
+              }
+              return a.full_name.localeCompare(b.full_name);
+            });
           } else {
             console.error('La respuesta no contiene un array válido:', paymentResponse);
           }
@@ -81,6 +91,7 @@ const loadPayments = async () => {
           console.error('Error fetching payments', err);
         }
       }
+  isLoading.value = false;
 }
 
 const markAsPaid = async (userId, month) => {
@@ -90,6 +101,10 @@ const markAsPaid = async (userId, month) => {
     if (response && typeof response === 'object' && 'data' in response)
     {
       showToast.value = true;
+      setTimeout(() => {
+        showToast.value = false;
+      }, 3000);
+      window.location.reload();
       loadPayments(); 
     }
   } catch (err) {

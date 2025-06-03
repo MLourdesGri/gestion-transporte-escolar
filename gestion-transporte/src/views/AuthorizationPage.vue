@@ -10,7 +10,12 @@
     </ion-header>
 
     <ion-content class="ion-padding">
-      <template v-if="authorizations.length == 0">
+
+      <template v-if="isLoading">
+        <LoadingSpinner />
+      </template>
+
+      <template v-else-if="authorizations.length == 0">
         <div v-if="userStore.user?.role_id == 2">
           <div class="no-authorization">
             <p>Aún no has registrado ninguna habilitación de chofer y vehículo.</p>
@@ -61,6 +66,8 @@ import { getAllAuthorizations, getUser } from "@/services/api";
 import { getAuthorizationByUser } from "@/services/api";
 import { useUserStore } from "@/store/user";
 import { formatDate, redirectIfNoToken } from "@/utils/utils";
+import { computed } from 'vue';
+import LoadingSpinner from "@/components/LoadingSpinner.vue";
 
 interface User {
   full_name: string;
@@ -68,7 +75,8 @@ interface User {
 }
 
 const userStore = useUserStore();
-console.log(userStore.user?.role_id);
+
+const isLoading = ref(true);
 
 const loadUser = async () => { 
   const token = userStore.token;
@@ -101,6 +109,7 @@ const router = useRouter();
 const authorizations = ref<Authorization[]>([]);
   
 const loadAuthorizations = async () => {
+  isLoading.value = true;
   const token = userStore.token;
   if (token) {
     try {
@@ -128,9 +137,8 @@ const loadAuthorizations = async () => {
       authorizations.value = [];
     }
   }
+  isLoading.value = false;
 };
-
-import { computed } from 'vue';
 
 const showNewAuthorizationButton = computed(() => {
   // Solo para usuarios con rol chofer

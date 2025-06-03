@@ -39,9 +39,10 @@
                 <template v-if="drivers.length > 0">
                     <ion-card v-for="driver in drivers" :key="driver.authorization_id" :button="true" @click="selectDriver(driver)" :class="{ selected: currentDriver && currentDriver.authorization_id === driver.authorization_id }">
                         <ion-card-header>
-                          <ion-card-title>{{ driver.vehicle_license_plate }}</ion-card-title>
+                          <ion-card-title>{{ driver.driver_name }}</ion-card-title>
                         </ion-card-header>
                         <ion-card-content>
+                          <p><strong>Patente: </strong> {{ driver.vehicle_license_plate }}</p>
                           <p><strong>Marca:</strong> {{ driver.vehicle_make }}</p>
                           <p><strong>Modelo:</strong> {{ driver.vehicle_model }}</p>
                           <p><strong>Año:</strong> {{ driver.vehicle_year }}</p>
@@ -154,7 +155,7 @@ interface Trip_Child{
     user_id: number;
     authorization_id: number;
     trip: Trip;
-    child: number;
+    child_id: number;
     selected_dates: string[];
 }
 
@@ -257,6 +258,7 @@ const maxDate = new Date(today.getFullYear(), today.getMonth() + 2, 0).toISOStri
 
 const selectChild = async (child: Child) => {
   currentChild.value = child;
+  console.log("Hijo seleccionado:", child);
   await loadDriver();
   try {
     const response = await getTripChildByChildId(child.child_id) as {data: Trip_Child[]};
@@ -273,6 +275,7 @@ const selectChild = async (child: Child) => {
 
 const selectDriver = async (driver: Authorization) => {
     currentDriver.value = driver;
+    console.log("Chofer seleccionado:", driver);
     if (token) {
         const priceResponse = await getPriceByUserAuthorization(token, currentDriver.value?.user.id || 0) as {data: Price};
         price.value = priceResponse.data;
@@ -351,7 +354,7 @@ const payWithMercadoPago = async () => {
         user_id: userResponse.data.id,
         authorization_id: currentDriver.value?.authorization_id || 0,
         trip: { trip_id: 0, date: "", available_capacity: 0, status: "" },
-        child: currentChild.value?.child_id || 0,
+        child_id: currentChild.value?.child_id || 0,
         selected_dates: toRaw(selectedDates.value)
     };
     const response = await createPayment(token, trip_child);

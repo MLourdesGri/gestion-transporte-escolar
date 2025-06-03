@@ -12,6 +12,10 @@
   
       <ion-content>
         <div class="page">
+          <template v-if="isLoading">
+            <LoadingSpinner />
+          </template>
+          <template v-else>
             <div class="detail-section">
               <h2><strong>Datos del viaje</strong></h2>
               <p><strong>Fecha:</strong> {{ formatDate(trip?.date || '') }}</p>
@@ -40,10 +44,11 @@
               :color="toastColor"
               duration="3000"
             />
-  
+          </template>
+
           <div slot="fixed" class="bottom-buttons">
             <CustomButton vertical="bottom" horizontal="start" expand="block" color="medium" @click="cancel">Volver</CustomButton>
-            <CustomButton v-if="trip?.status != 'cancelled'" vertical="bottom" horizontal="start" expand="block" color="danger" @click="showRejectAlert = true">Cancelar viaje</CustomButton>
+            <CustomButton v-if="trip?.status != 'cancelled' && trip?.status != 'completed'" vertical="bottom" horizontal="start" expand="block" color="danger" @click="showRejectAlert = true">Cancelar viaje</CustomButton>
             <CustomButton v-if="trip?.status != 'cancelled'" vertical="bottom" horizontal="end" class="btnMap" @click="getMapTrip(id)">Ver en mapa</CustomButton>
           </div>
           <IonAlert
@@ -82,6 +87,7 @@
   import { useUserStore } from '@/store/user';
   import ErrorMessage from '@/components/ErrorMessage.vue';
 import { formatDate, formatTripStatus } from '@/utils/utils';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
   
 const route = useRoute();
 const id = ref<number>(Number(route.params.id));
@@ -89,7 +95,6 @@ const errorMessage = ref<string | undefined>(undefined);
 const showToast = ref(false);
 const message = ref<string | null>(null);
 const showRejectAlert = ref(false);
-
 const cancel = () => {
     window.location.href = '/home';
 };
@@ -99,6 +104,7 @@ const trip = ref<Trip | null>(null);
 const userStore = useUserStore();
 const token = userStore.token;
 const cancelReason = ref('');
+const isLoading = ref(true);
   
 interface User {
   full_name: string;
@@ -153,6 +159,7 @@ const loadTripChild = async () => {
 };
   
 watchEffect(async () => {
+    isLoading.value = true;
     const token = userStore.token;
     const newId = route.params.id;
     if (newId && token) {
@@ -162,6 +169,7 @@ watchEffect(async () => {
       const tripResponse = await getTripById(id.value, token) as { data: Trip };
       trip.value = tripResponse.data;
     }
+    isLoading.value = false;
 });
 
 const getMapTrip = (tripId: number) => {

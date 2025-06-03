@@ -15,9 +15,9 @@
           <div class="info-content">
             <span>Tiempo total de viaje: {{ totalDurationText }}</span>
             <div v-if="userStore.user?.role_id === 2">
-            <ion-button v-if="trip?.status === 'pending'" size="medium" @click="initializeTrip">Iniciar viaje</ion-button>
-            <ion-button v-else-if="trip?.status === 'in progress'" size="medium" @click="terminateTrip">Finalizar viaje</ion-button>
-            <ion-button v-else size="medium" disabled>Viaje {{ formatTripStatus(trip?.status || 'unknown') }}</ion-button>
+            <ion-button v-if="trip?.status === 'pending'" @click="initializeTrip">Iniciar viaje</ion-button>
+            <ion-button v-else-if="trip?.status === 'in progress'" @click="terminateTrip">Finalizar viaje</ion-button>
+            <ion-button v-else disabled>Viaje {{ formatTripStatus(trip?.status || 'unknown') }}</ion-button>
             </div>
           </div>
         </div>
@@ -326,6 +326,7 @@ const initializeTrip = async () => {
   try {    
     const response = await startTrip(tripId, token);
     console.log(response);
+    window.location.reload();
   }
   catch (error) {
     console.error("Error al iniciar el viaje:", error);
@@ -343,6 +344,7 @@ const terminateTrip = async () => {
   try {    
     const response = await finishTrip(tripId, token);
     console.log(response);
+    window.location.reload();
   }
   catch (error) {
     console.error("Error al iniciar el viaje:", error);

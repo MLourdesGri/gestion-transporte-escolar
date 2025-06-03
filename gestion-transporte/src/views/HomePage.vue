@@ -10,7 +10,11 @@
     </ion-header>
 
     <ion-content :fullscreen="true" class="ion-padding">
-      <template v-if="tripandchildren.length > 0 && userStore.user?.role_id === 1">
+      <template v-if="isLoading">
+        <LoadingSpinner />
+      </template>
+
+      <template v-else-if="upcomingTripChildren.length > 0 && userStore.user?.role_id === 1">
         <ion-card v-for="trip in upcomingTripChildren" :key="trip.trip_child_id" :button="true" @click="getTripChildDetails(trip.trip_child_id)">
           <ion-card-header>
             <ion-card-title>Transporte a {{ trip.school_name }} </ion-card-title>
@@ -22,7 +26,7 @@
         </ion-card>
       </template>
 
-      <template v-else-if="trips.length > 0 && userStore.user?.role_id === 2">
+      <template v-else-if="upcomingTrips.length > 0 && userStore.user?.role_id === 2">
         <ion-card v-for="trip in upcomingTrips" :key="trip.trip_id" :button="true" @click="getTripDetails(trip.trip_id)">
           <ion-card-header>
             <ion-card-title>Transporte a {{ trip.authorization.school_name}} </ion-card-title>
@@ -56,11 +60,11 @@
       </template>
 
       <ion-alert
-        v-if="showAlert"
         :is-open="showAlert"
         header="Cuenta no confirmada"
         message="Revise su casilla de correo y confirme su cuenta para continuar usando la aplicación."
         backdrop-dismiss="false"
+        @didDismiss="() => showAlert = false"
       />
 
       <ion-alert
@@ -84,12 +88,13 @@
 <script setup lang="ts">
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, 
   IonCardSubtitle, IonCardTitle, IonCardContent, IonAlert, IonFab, IonFabButton, IonIcon} from '@ionic/vue';
-import { watch, ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import {  getTripByUser, getTripChildByUserId } from "../services/api"; 
 import { add } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/store/user';
 import { formatDate, formatShift, formatTripStatus, redirectIfNoToken } from '@/utils/utils';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
 interface Trip_Child {
   trip_child_id: number;
@@ -142,6 +147,7 @@ const alertAddress = ref(false);
 const tripandchildren = ref<TripAndChildren[]>([]);
 const trips = ref<Trip[]>([]);
 const userStore = useUserStore();
+const isLoading = ref(true);
 
 const loadTripAndChildren = async () => {
   const token = userStore.token;
@@ -223,23 +229,26 @@ const upcomingTrips = computed(() => {
     .slice(0, 10);
 });
 
+// Redirect if no token
+redirectIfNoToken();
+
 watch(
   () => userStore.user,
-  (newUser) => {
-    if (!newUser) return;
-    if (redirectIfNoToken()) return;
+  async (newUser) => {
+    if (newUser) {
+      if (newUser.is_confirmed == 0) {
+        showAlert.value = true;
+      }
 
-    if (newUser.is_confirmed == 0) {
-      showAlert.value = true;
-    }
-
-    if (newUser.role_id === 1) {
-      loadTripAndChildren();
-    } else if (newUser.role_id === 2) {
-      loadTrips();
+      if (newUser.role_id === 1) {
+        await loadTripAndChildren();
+      } else if (newUser.role_id === 2) {
+        await loadTrips();
+      }
+      isLoading.value = false;
     }
   },
-  { immediate: true } 
+  { immediate: true }
 );
 
 const router = useRouter();
@@ -271,9 +280,9 @@ const getTripDetails = (trip_id: number) => {
 .custom-fab {
   --background: #003366;
   --background-hover: #002244;
-  --color: white; /* Color del icono */
+  --color: white;
 }
 .custom-menu {
-  --color: #003366; /* Color del icono */
+  --color: #003366;
 }
 </style>
