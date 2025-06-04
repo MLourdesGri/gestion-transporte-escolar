@@ -65,7 +65,7 @@
 <script setup lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonTitle, IonCard, IonCardHeader, IonCardTitle, IonCardContent } from '@ionic/vue';
 import { useUserStore } from '@/store/user';
-import { getAllAuthorizations, getTripByUser } from '@/services/api';
+import { getAllAuthorizations, getTripsByDriver } from '@/services/api';
 import { ref, onMounted } from 'vue';
 import { use } from 'echarts/core';
 import VChart from 'vue-echarts';
@@ -383,8 +383,10 @@ const loadInformationForDriver = async () => {
     try {
       trips.value = [];
 
-      const tripResponse = await getTripByUser(token) as { data: Trip[] };
+      const tripResponse = await getTripsByDriver(token) as { data: Trip[] };
       const tripData = tripResponse.data ?? [];
+
+      console.log('Datos de viajes:', tripData);
 
       const tripArray = Array.isArray(tripData) ? tripData : [tripData];
       trips.value = tripArray.map(trip => ({
