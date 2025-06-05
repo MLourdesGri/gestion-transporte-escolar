@@ -136,6 +136,20 @@ export const getTripByUser = async (token: string) => {
   }
 }
 
+export const getTripsByDriver = async (token: string) => {
+  try {
+    const response = await api.get("/trips/driver", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error obteniendo viajes del conductor:", error);
+    return [];
+  }
+}
+
 export const startTrip = async (tripId: number, token: string) => {
   try {
     const response = await api.post(`/trips/start/${tripId}`,{},  {
