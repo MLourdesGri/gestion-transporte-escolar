@@ -56,6 +56,7 @@
             <!-- Paso 3: Elección de fecha -->
             <div v-if="step === 3">
               <ion-title size="large" class="title">Elige las fechas de transporte</ion-title>
+
               <!-- Selector -->
               <div class="calendar-container">
               <ion-datetime
@@ -63,12 +64,19 @@
                 :preferWheel="false"
                 :value="selectedDates"
                 :is-date-enabled="isEnabledDate"
-                :multiple= "true"
+                :multiple="true"
                 :min="minDate"
                 :max="maxDate"
                 @ionChange="handleChange"
+                @ionIonChange="onDateChange"
+                @ionVisibleMonthChange="onVisibleMonthChange"
               />
+
               </div>
+              <ion-button @click="selectFullMonth" expand="block" class="select-month-button">
+                {{ isFullMonthSelected ? 'Deseleccionar mes completo' : 'Seleccionar mes completo' }}
+              </ion-button>
+
               <p class="text_cal">Selecciona las fechas en las que necesitas el transporte.</p>
               <p class="text_cal">Solo aparecen las fechas disponibles para el chofer seleccionado, y las fechas para las que el alumno seleccionado no tiene viaje</p>
             </div>
@@ -115,7 +123,7 @@
   
 <script setup lang="ts">
 import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonContent, IonCard, IonCardHeader, 
-    IonCardSubtitle, IonCardTitle, IonCardContent, IonDatetime, IonToast} from '@ionic/vue';
+    IonCardSubtitle, IonCardTitle, IonCardContent, IonDatetime, IonToast, IonButton} from '@ionic/vue';
 import { ref, onMounted, toRaw, computed, watch } from 'vue';
 import CustomButton from '@/components/CustomButton.vue';
 import { createPayment, getChildAuthorizations, getChildrenByUser, getPriceByUserAuthorization, getTripChildByChildId, getUser } from '@/services/api';
@@ -215,6 +223,77 @@ const prevStep = () => {
 if (step.value > 1) step.value--;
 };
 
+const visibleMonth = ref<string>(new Date().toISOString().substring(0, 7));
+console.log("Visible Month:", visibleMonth.value);
+
+const onDateChange = (event: CustomEvent) => {
+  const value = event.detail.value;
+  if (!value) return;
+
+  // value puede ser un string o array si es multiple
+  const date = Array.isArray(value) ? value[0] : value;
+  if (date) {
+    const month = date.substring(0, 7); // "YYYY-MM"
+    if (month !== visibleMonth.value) {
+      visibleMonth.value = month;
+    }
+  }
+};
+
+
+const selectFullMonth = () => {
+  const [yearStr, monthStr] = visibleMonth.value.split("-");
+  const year = parseInt(yearStr);
+  const month = parseInt(monthStr) - 1; // Date usa 0-based months
+
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const monthDates: string[] = [];
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(year, month, day);
+    const isoDate = date.toISOString().split("T")[0];
+
+    if (isEnabledDate(isoDate)) {
+      monthDates.push(isoDate);
+    }
+  }
+
+  const allSelected = monthDates.every(date => selectedDates.value.includes(date));
+
+  if (allSelected) {
+    selectedDates.value = selectedDates.value.filter(date => !monthDates.includes(date));
+  } else {
+    const datesToAdd = monthDates.filter(date => !selectedDates.value.includes(date));
+    selectedDates.value = [...selectedDates.value, ...datesToAdd];
+  }
+};
+
+const isFullMonthSelected = computed(() => {
+  const [yearStr, monthStr] = visibleMonth.value.split("-");
+  const year = parseInt(yearStr);
+  const month = parseInt(monthStr) - 1;
+
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const monthDates: string[] = [];
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(year, month, day);
+    const isoDate = date.toISOString().split("T")[0];
+    if (isEnabledDate(isoDate)) {
+      monthDates.push(isoDate);
+    }
+  }
+
+  return monthDates.every(date => selectedDates.value.includes(date));
+});
+
+const onVisibleMonthChange = (event: CustomEvent) => {
+  const visibleMonthStr = event.detail.month; // viene en formato "YYYY-MM"
+  if (visibleMonthStr && visibleMonthStr !== visibleMonth.value) {
+    visibleMonth.value = visibleMonthStr;
+  }
+};
+
 
 const loadChildren = async () => {
 if (token) {
@@ -241,6 +320,7 @@ if (token && currentChild.value) {
     const driverResponse = await getChildAuthorizations(childId);
     if (driverResponse && typeof driverResponse === "object" && "data" in driverResponse) {
         const driverData = driverResponse.data;
+        console.log("Choferes cargados:", driverData);
         drivers.value = Array.isArray(driverData) ? driverData : (driverData ? [driverData] : []);
     } else {
         drivers.value = [];
@@ -258,7 +338,6 @@ const maxDate = new Date(today.getFullYear(), today.getMonth() + 2, 0).toISOStri
 
 const selectChild = async (child: Child) => {
   currentChild.value = child;
-  console.log("Hijo seleccionado:", child);
   await loadDriver();
   try {
     const response = await getTripChildByChildId(child.child_id) as {data: Trip_Child[]};
@@ -275,7 +354,6 @@ const selectChild = async (child: Child) => {
 
 const selectDriver = async (driver: Authorization) => {
     currentDriver.value = driver;
-    console.log("Chofer seleccionado:", driver);
     if (token) {
         const priceResponse = await getPriceByUserAuthorization(token, currentDriver.value?.user.id || 0) as {data: Price};
         price.value = priceResponse.data;
