@@ -15,7 +15,19 @@
       </template>
       
       <template v-else-if="filteredTripAndChildren.length > 0 && userStore.user?.role_id === 1">
-        <DateFilters :showDriverFilter="false" @filter="handleFilter"/>
+        <DateFilters
+        :showDriverFilter="false"
+        :modelValueDay="selectedDay"
+        :modelValueMonth="selectedMonth"
+        :modelValueYear="selectedYear"
+        :modelValueDriver="selectedDriver"
+        @update:modelValueDay="updateDay"
+        @update:modelValueMonth="updateMonth"
+        @update:modelValueYear="updateYear"
+        @update:modelValueDriver="updateDriver"
+        @filter="handleFilter"
+        />
+
         <ion-card v-for="trip in filteredTripAndChildren" :key="trip.trip_child_id" :button="true" @click="getTripChildDetails(trip.trip_child_id)">
           <ion-card-header>
             <ion-card-title>Transporte a {{ trip.school_name }} </ion-card-title>
@@ -28,7 +40,19 @@
       </template>
 
       <template v-else-if="filteredTrips.length > 0 && userStore.user?.role_id === 2">
-        <DateFilters :showDriverFilter="false" @filter="handleFilter"/>
+        <DateFilters
+        :showDriverFilter="false"
+        :modelValueDay="selectedDay"
+        :modelValueMonth="selectedMonth"
+        :modelValueYear="selectedYear"
+        :modelValueDriver="selectedDriver"
+        @update:modelValueDay="updateDay"
+        @update:modelValueMonth="updateMonth"
+        @update:modelValueYear="updateYear"
+        @update:modelValueDriver="updateDriver"
+        @filter="handleFilter"
+        />
+
         <ion-card v-for="trip in filteredTrips" :key="trip.trip_id" :button="true" @click="getTripDetails(trip.trip_id)">
           <ion-card-header>
             <ion-card-title>Transporte a {{ trip.authorization.school_name}} </ion-card-title>
@@ -40,7 +64,19 @@
       </template>
 
       <template v-else-if="trips.length > 0 && userStore.user?.role_id === 3">
-        <DateFilters :showDriverFilter="false" @filter="handleFilter"/>
+        <DateFilters
+        :showDriverFilter="false"
+        :modelValueDay="selectedDay"
+        :modelValueMonth="selectedMonth"
+        :modelValueYear="selectedYear"
+        :modelValueDriver="selectedDriver"
+        @update:modelValueDay="updateDay"
+        @update:modelValueMonth="updateMonth"
+        @update:modelValueYear="updateYear"
+        @update:modelValueDriver="updateDriver"
+        @filter="handleFilter"
+        />
+
         <ion-card v-for="trip in trips" :key="trip.trip_id" :button="true" @click="getTripDetails(trip.trip_id)">
           <ion-card-header>
             <ion-card-title>Transporte a {{ trip.authorization.school_name}} </ion-card-title>
@@ -53,7 +89,19 @@
       </template>
 
       <template v-else>
-        <DateFilters :showDriverFilter="false" @filter="handleFilter"/>
+        <DateFilters
+        :showDriverFilter="false"
+        :modelValueDay="selectedDay"
+        :modelValueMonth="selectedMonth"
+        :modelValueYear="selectedYear"
+        :modelValueDriver="selectedDriver"
+        @update:modelValueDay="updateDay"
+        @update:modelValueMonth="updateMonth"
+        @update:modelValueYear="updateYear"
+        @update:modelValueDriver="updateDriver"
+        @filter="handleFilter"
+        />
+        
         <div class="no-trips">
           <p>No hay viajes registrados.</p>
         </div>
@@ -240,6 +288,27 @@ const getTripChildDetails = (trip_child_id: number) => {
 const getTripDetails = (trip_id: number) => {
   router.push(`home/trip/${trip_id}`); 
 };
+
+const selectedDay = ref<number | null>(null);
+const selectedMonth = ref<number | null>(null);
+const selectedYear = ref<number | null>(null);
+const selectedDriver = ref<number | null>(null);
+
+function updateDay(val: number | null) {
+  selectedDay.value = val;
+}
+
+function updateMonth(val: number | null) {
+  selectedMonth.value = val;
+}
+
+function updateYear(val: number | null) {
+  selectedYear.value = val;
+}
+
+function updateDriver(val: number | null) {
+  selectedDriver.value = val;
+}
 
 interface FilterCriteria {
   day: number | null;
