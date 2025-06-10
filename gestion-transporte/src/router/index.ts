@@ -35,7 +35,9 @@ const routes: Array<RouteRecordRaw> = [
 
       { path: 'prices', component: () => import('../views/PricesPage.vue')},
 
-      { path: 'user-manual', component: () => import('../views/UserManualPage.vue') }
+      { path: 'user-manual', component: () => import('../views/UserManualPage.vue') },
+
+      { path: 'trips-history', component: () => import('../views/TripsHistoryPage.vue') },
     ]
   },
   {
