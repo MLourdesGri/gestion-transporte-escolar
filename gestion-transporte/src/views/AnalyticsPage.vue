@@ -386,8 +386,6 @@ const loadInformationForDriver = async () => {
       const tripResponse = await getTripsByDriver(token) as { data: Trip[] };
       const tripData = tripResponse.data ?? [];
 
-      console.log('Datos de viajes:', tripData);
-
       const tripArray = Array.isArray(tripData) ? tripData : [tripData];
       trips.value = tripArray.map(trip => ({
         trip_id: trip.trip_id,

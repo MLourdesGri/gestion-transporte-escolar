@@ -269,8 +269,6 @@ const loadAllTrips = async () => {
     const tripResponse = await getAllTrips() as { data: Trip[] };
     const tripData = tripResponse.data ?? [];
 
-    console.log("Datos de viajes:", tripData);
-
     const tripArray = Array.isArray(tripData) ? tripData : [tripData];
 
     const tempList: Trip[] = [];
