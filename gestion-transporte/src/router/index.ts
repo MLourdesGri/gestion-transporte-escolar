@@ -38,6 +38,7 @@ const routes: Array<RouteRecordRaw> = [
       { path: 'user-manual', component: () => import('../views/UserManualPage.vue') },
 
       { path: 'trips-history', component: () => import('../views/TripsHistoryPage.vue') },
+      { path: 'payments-history', component: () => import('../views/PaymentsHistoryPage.vue') },
     ]
   },
   {
