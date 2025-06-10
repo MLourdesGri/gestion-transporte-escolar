@@ -54,7 +54,6 @@
       <!-- Chofer -->
       <ion-col size="12" size-sm="3" v-if="showDriverFilter">
         <ion-item lines="none" class="filter-item">
-          <ion-label position="stacked">Chofer</ion-label>
           <ion-select
             :value="modelValueDriver"
             interface="popover"
@@ -62,31 +61,33 @@
             clearable
             @ionChange="e => emit('update:modelValueDriver', e.target.value)"
           >
-            <!-- <ion-select-option :value="null">Chofer</ion-select-option>
-            <ion-select-option v-for="driver in drivers" :key="driver.id" :value="driver.id">
-              {{ driver.name }}
-            </ion-select-option> -->
+            <ion-select-option :value="null">Chofer</ion-select-option>
+            <ion-select-option v-for="driverName in drivers" :key="driverName" :value="driverName">
+              {{ driverName }}
+            </ion-select-option>
           </ion-select>
         </ion-item>
       </ion-col>
 
       <ion-col size="12" size-sm="2" class="ion-text-end">
-        <ion-button size="small" @click="emitFilters" color="primary">Filtrar</ion-button>
+        <ion-button v-if="hasFilters" size="default" @click="clearFilters" color="medium" fill="outline">Limpiar filtros</ion-button>
+        <ion-button size="default" @click="emitFilters" color="blue">Filtrar</ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>
 </template>
 
 <script setup lang="ts">
-import { IonGrid, IonRow, IonCol, IonItem, IonSelect, IonSelectOption, IonLabel, IonButton } from '@ionic/vue'
-import { defineProps, defineEmits } from 'vue'
+import { IonGrid, IonRow, IonCol, IonItem, IonSelect, IonSelectOption, IonButton } from '@ionic/vue'
+import { defineProps, defineEmits, nextTick, computed } from 'vue'
 
 const props = defineProps<{
   showDriverFilter: boolean,
   modelValueDay: number | null,
   modelValueMonth: number | null,
   modelValueYear: number | null,
-  modelValueDriver: number | null
+  modelValueDriver: string | null,
+  drivers?: string[],
 }>()
 
 const emit = defineEmits([
@@ -112,6 +113,26 @@ function emitFilters() {
     driver: props.modelValueDriver ?? null,
   })
 }
+
+function clearFilters() {
+  emit('update:modelValueDay', null)
+  emit('update:modelValueMonth', null)
+  emit('update:modelValueYear', null)
+  emit('update:modelValueDriver', null)
+
+  nextTick(() => {
+    emitFilters()
+  })
+}
+
+const hasFilters = computed(() => {
+  return (
+    props.modelValueDay !== null ||
+    props.modelValueMonth !== null ||
+    props.modelValueYear !== null ||
+    props.modelValueDriver !== null
+  )
+})
 </script>
 
 <style scoped>
@@ -124,6 +145,7 @@ ion-select {
 ion-select::part(text) {
   width: 100%;
   text-align: center;
+  color: gray !important;
 }
 
 ion-select::part(icon) {

@@ -5,7 +5,7 @@
         <ion-buttons slot="start">
           <ion-menu-button class="custom-menu"></ion-menu-button>
         </ion-buttons>
-        <ion-title>Inicio</ion-title>
+        <ion-title>Historial de viajes</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -63,13 +63,14 @@
         </ion-card>
       </template>
 
-      <template v-else-if="trips.length > 0 && userStore.user?.role_id === 3">
+      <template v-else-if="filteredAllTrips.length > 0 && userStore.user?.role_id === 3">
         <DateFilters
-        :showDriverFilter="false"
+        :showDriverFilter="true"
         :modelValueDay="selectedDay"
         :modelValueMonth="selectedMonth"
         :modelValueYear="selectedYear"
         :modelValueDriver="selectedDriver"
+        :drivers="drivers"
         @update:modelValueDay="updateDay"
         @update:modelValueMonth="updateMonth"
         @update:modelValueYear="updateYear"
@@ -77,7 +78,7 @@
         @filter="handleFilter"
         />
 
-        <ion-card v-for="trip in trips" :key="trip.trip_id" :button="true" @click="getTripDetails(trip.trip_id)">
+        <ion-card v-for="trip in filteredAllTrips" :key="trip.trip_id" :button="true" @click="getTripDetails(trip.trip_id)">
           <ion-card-header>
             <ion-card-title>Transporte a {{ trip.authorization.school_name}} </ion-card-title>
             <ion-card-subtitle>Fecha: {{ trip.authorization.driver_name }}</ion-card-subtitle>
@@ -113,8 +114,8 @@
 <script setup lang="ts">
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, 
   IonCardSubtitle, IonCardTitle } from '@ionic/vue';
-import { ref, watch } from "vue";
-import {  getTripByUser, getTripChildByUserId } from "../services/api"; 
+import { computed, ref, watch } from "vue";
+import {  getAllTrips, getTripByUser, getTripChildByUserId } from "../services/api"; 
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/store/user';
 import { formatDate, formatShift, formatTripStatus, redirectIfNoToken } from '@/utils/utils';
@@ -171,9 +172,11 @@ interface Child {
 const showAlert = ref(false);
 const tripandchildren = ref<TripAndChildren[]>([]);
 const trips = ref<Trip[]>([]);
+const alltrips = ref<Trip[]>([]);
 const userStore = useUserStore();
 const isLoading = ref(true);
 const filteredTrips = ref<Trip[]>([]);
+const filteredAllTrips = ref<Trip[]>([]);
 const filteredTripAndChildren = ref<TripAndChildren[]>([]);
 
 const loadTripAndChildren = async () => {
@@ -213,7 +216,7 @@ const loadTripAndChildren = async () => {
     }
 
     tripandchildren.value = tempList;
-    filteredTripAndChildren.value = [...tempList]; // <- para tener copia para los filtros
+    filteredTripAndChildren.value = [...tempList];
   } catch (error) {
     console.error("Error cargando viajes", error);
     tripandchildren.value = [];
@@ -234,7 +237,6 @@ const loadTrips = async () => {
 
     const tripArray = Array.isArray(tripData) ? tripData : [tripData];
 
-    // No hace falta set para IDs porque acá no manejás duplicados por id, solo trips
     const tempList: Trip[] = [];
 
     for (const trip of tripArray) {
@@ -243,17 +245,52 @@ const loadTrips = async () => {
         date: trip.date,
         status: trip.status,
         authorization: trip.authorization,
-        // agrega más campos si los necesitas
       });
     }
 
     trips.value = tempList;
-    filteredTrips.value = [...tempList]; // copia para filtros
+    filteredTrips.value = [...tempList];
 
   } catch (error) {
     console.error("Error cargando viajes", error);
     trips.value = [];
     filteredTrips.value = [];
+  }
+};
+
+const loadAllTrips = async () => {
+  const token = userStore.token;
+  if (!token) return;
+
+  try {
+    alltrips.value = [];
+    filteredAllTrips.value = [];
+
+    const tripResponse = await getAllTrips() as { data: Trip[] };
+    const tripData = tripResponse.data ?? [];
+
+    console.log("Datos de viajes:", tripData);
+
+    const tripArray = Array.isArray(tripData) ? tripData : [tripData];
+
+    const tempList: Trip[] = [];
+
+    for (const trip of tripArray) {
+      tempList.push({
+        trip_id: trip.trip_id,
+        date: trip.date,
+        status: trip.status,
+        authorization: trip.authorization,
+      });
+    }
+
+    alltrips.value = tempList;
+    filteredAllTrips.value = [...tempList];
+
+  } catch (error) {
+    console.error("Error cargando viajes", error);
+    alltrips.value = [];
+    filteredAllTrips.value = [];
   }
 };
 
@@ -272,6 +309,8 @@ watch(
         await loadTripAndChildren();
       } else if (newUser.role_id === 2) {
         await loadTrips();
+      } else {
+        await loadAllTrips();
       }
       isLoading.value = false;
     }
@@ -292,7 +331,7 @@ const getTripDetails = (trip_id: number) => {
 const selectedDay = ref<number | null>(null);
 const selectedMonth = ref<number | null>(null);
 const selectedYear = ref<number | null>(null);
-const selectedDriver = ref<number | null>(null);
+const selectedDriver = ref<string | null>(null);
 
 function updateDay(val: number | null) {
   selectedDay.value = val;
@@ -306,15 +345,27 @@ function updateYear(val: number | null) {
   selectedYear.value = val;
 }
 
-function updateDriver(val: number | null) {
+function updateDriver(val: string | null) {
   selectedDriver.value = val;
 }
+
+const drivers = computed<string[]>(() => {
+  const names = new Set<string>();
+  if (alltrips.value && alltrips.value.length > 0) {
+    for (const trip of alltrips.value) {
+      if (trip.authorization && trip.authorization.driver_name) {
+        names.add(trip.authorization.driver_name);
+      }
+    }
+  }
+  return Array.from(names);
+});
 
 interface FilterCriteria {
   day: number | null;
   month: number | null;
   year: number | null;
-  driverId?: number | null;
+  driver?: string | null;
 }
 
 const handleFilter = (filters: FilterCriteria) => {
@@ -333,7 +384,7 @@ const handleFilter = (filters: FilterCriteria) => {
 
       return matchDay && matchMonth && matchYear;
     });
-  } else if (role === 2 || role === 3) {
+  } else if (role === 2) {
     filteredTrips.value = trips.value.filter(trip => {
       const tripDate = new Date(trip.date);
       const day = tripDate.getUTCDate();
@@ -345,6 +396,23 @@ const handleFilter = (filters: FilterCriteria) => {
       const matchYear = !filters.year || year === filters.year;
 
       return matchDay && matchMonth && matchYear;
+    });
+  } else if (role === 3) {
+    filteredAllTrips.value = alltrips.value.filter(trip => {
+      const tripDate = new Date(trip.date);
+      const day = tripDate.getUTCDate();
+      const month = tripDate.getUTCMonth() + 1;
+      const year = tripDate.getUTCFullYear();
+
+      const matchDay = !filters.day || day === filters.day;
+      const matchMonth = !filters.month || month === filters.month;
+      const matchYear = !filters.year || year === filters.year;
+
+      const matchDriver = !filters.driver ||
+                          (trip.authorization && trip.authorization.driver_name &&
+                           trip.authorization.driver_name === filters.driver);
+
+      return matchDay && matchMonth && matchYear && matchDriver;
     });
   }
 };

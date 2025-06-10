@@ -304,7 +304,7 @@ export const getAllAuthorizations = async () => {
 
 export const getAllTrips = async () => {
   try {
-    const response = await api.get("/trips");
+    const response = await api.get("/trips/all");
     return response.data;
   }
   catch (error) {
