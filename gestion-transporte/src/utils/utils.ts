@@ -96,3 +96,47 @@ export function redirectIfNoToken() {
       return 'Desconocido';
   }
   }
+
+  export const holidaysArgentina = [
+  // Feriados 2025
+  "2025-01-01", // Año Nuevo
+  "2025-03-03", // Carnaval
+  "2025-03-04", // Carnaval
+  "2025-03-24", // Día Nacional de la Memoria por la Verdad y la Justicia
+  "2025-04-18", // Viernes Santo
+  "2025-05-01", // Día del Trabajador
+  "2025-05-25", // Día de la Revolución de Mayo
+  "2025-06-16", // Día del Paso a la Inmortalidad del Gral. Güemes (lunes por traslado)
+  "2025-06-20", // Día del Paso a la Inmortalidad del Gral. Belgrano
+  "2025-07-09", // Día de la Independencia
+  "2025-08-18", // Día del Paso a la Inmortalidad del Gral. San Martín (lunes por traslado)
+  "2025-10-13", // Día del Respeto a la Diversidad Cultural (lunes por traslado)
+  "2025-11-20", // Día de la Soberanía Nacional
+  "2025-12-08", // Inmaculada Concepción de María
+  "2025-12-25", // Navidad
+
+  // Vacaciones de Invierno 2025 (7 al 18 de julio)
+  "2025-07-07", "2025-07-08", "2025-07-09", "2025-07-10", "2025-07-11",
+  "2025-07-14", "2025-07-15", "2025-07-16", "2025-07-17", "2025-07-18",
+
+  // Feriados 2026 (ejemplo, ajustar según calendario oficial)
+  "2026-01-01", // Año Nuevo
+  "2026-02-16", // Carnaval
+  "2026-02-17", // Carnaval
+  "2026-03-24", // Día Nacional de la Memoria por la Verdad y la Justicia
+  "2026-04-03", // Viernes Santo
+  "2026-05-01", // Día del Trabajador
+  "2026-05-25", // Día de la Revolución de Mayo
+  "2026-06-15", // Día del Paso a la Inmortalidad del Gral. Güemes (lunes por traslado)
+  "2026-06-20", // Día del Paso a la Inmortalidad del Gral. Belgrano
+  "2026-07-09", // Día de la Independencia
+  "2026-08-17", // Día del Paso a la Inmortalidad del Gral. San Martín (lunes por traslado)
+  "2026-10-12", // Día del Respeto a la Diversidad Cultural (lunes por traslado)
+  "2026-11-20", // Día de la Soberanía Nacional
+  "2026-12-08", // Inmaculada Concepción de María
+  "2026-12-25", // Navidad
+
+  // Vacaciones de Invierno 2026 (Fechas de ejemplo, ajustar según calendario oficial)
+  "2026-07-06", "2026-07-07", "2026-07-08", "2026-07-09", "2026-07-10",
+  "2026-07-13", "2026-07-14", "2026-07-15", "2026-07-16", "2026-07-17",
+];
