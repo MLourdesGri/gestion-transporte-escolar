@@ -17,6 +17,7 @@
       <template v-else-if="filteredTripAndChildren.length > 0 && userStore.user?.role_id === 1">
         <DateFilters
         :showDriverFilter="false"
+        :shownDayFilter="true"
         :modelValueDay="selectedDay"
         :modelValueMonth="selectedMonth"
         :modelValueYear="selectedYear"
@@ -42,6 +43,7 @@
       <template v-else-if="filteredTrips.length > 0 && userStore.user?.role_id === 2">
         <DateFilters
         :showDriverFilter="false"
+        :shownDayFilter="true"
         :modelValueDay="selectedDay"
         :modelValueMonth="selectedMonth"
         :modelValueYear="selectedYear"
@@ -66,6 +68,7 @@
       <template v-else-if="filteredAllTrips.length > 0 && userStore.user?.role_id === 3">
         <DateFilters
         :showDriverFilter="true"
+        :shownDayFilter="false"
         :modelValueDay="selectedDay"
         :modelValueMonth="selectedMonth"
         :modelValueYear="selectedYear"
@@ -81,7 +84,7 @@
         <ion-card v-for="trip in filteredAllTrips" :key="trip.trip_id" :button="true" @click="getTripDetails(trip.trip_id)">
           <ion-card-header>
             <ion-card-title>Transporte a {{ trip.authorization.school_name}} </ion-card-title>
-            <ion-card-subtitle>Fecha: {{ trip.authorization.driver_name }}</ion-card-subtitle>
+            <ion-card-subtitle>Chofer: {{ trip.authorization.driver_name }}</ion-card-subtitle>
             <ion-card-subtitle>Fecha: {{ formatDate(trip.date) }}</ion-card-subtitle>
             <ion-card-subtitle>Turno: {{ formatShift(trip.authorization.work_shift) }}</ion-card-subtitle>
             <ion-card-subtitle>Estado del viaje: {{ formatTripStatus(trip.status) }}</ion-card-subtitle>
@@ -92,6 +95,7 @@
       <template v-else>
         <DateFilters
         :showDriverFilter="false"
+        :shownDayFilter="false"
         :modelValueDay="selectedDay"
         :modelValueMonth="selectedMonth"
         :modelValueYear="selectedYear"

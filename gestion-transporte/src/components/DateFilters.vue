@@ -2,14 +2,14 @@
   <ion-grid class="ion-padding-top">
     <ion-row class="ion-align-items-center ion-justify-content-between">
       <!-- Día -->
-      <ion-col size="4" size-sm="2" v-if="shownDayFilter">
+      <ion-col size="3.5" size-sm="2" v-if="shownDayFilter">
         <ion-item lines="none" class="filter-item">
           <ion-select
             :value="modelValueDay"
             interface="popover"
             placeholder="Día"
             clearable
-            @ionChange="e => emit('update:modelValueDay', e.target.value)"
+            @ionChange="(e: any) => emit('update:modelValueDay', e.target.value)"
           >
             <ion-select-option :value="null">Día</ion-select-option>
             <ion-select-option v-for="day in days" :key="day" :value="day">{{ day }}</ion-select-option>
@@ -18,14 +18,14 @@
       </ion-col>
 
       <!-- Mes -->
-      <ion-col size="4" size-sm="3" class="ion-text-end">
+      <ion-col size="4.5" size-sm="3" class="ion-text-end">
         <ion-item lines="none" class="filter-item">
           <ion-select
             :value="modelValueMonth"
             interface="popover"
             placeholder="Mes"
             clearable
-            @ionChange="e => emit('update:modelValueMonth', e.target.value)"
+            @ionChange="(e: any) => emit('update:modelValueMonth', e.target.value)"
           >
             <ion-select-option :value="null">Mes</ion-select-option>
             <ion-select-option v-for="(month, index) in months" :key="month" :value="index + 1">
@@ -43,7 +43,7 @@
             interface="popover"
             placeholder="Año"
             clearable
-            @ionChange="e => emit('update:modelValueYear', e.target.value)"
+            @ionChange="(e: any) => emit('update:modelValueYear', e.target.value)"
           >
             <ion-select-option :value="null">Año</ion-select-option>
             <ion-select-option v-for="year in years" :key="year" :value="year">{{ year }}</ion-select-option>
@@ -59,7 +59,7 @@
             interface="popover"
             placeholder="Chofer"
             clearable
-            @ionChange="e => emit('update:modelValueDriver', e.target.value)"
+            @ionChange="(e: any) => emit('update:modelValueDriver', e.target.value)"
           >
             <ion-select-option :value="null">Chofer</ion-select-option>
             <ion-select-option v-for="driverName in drivers" :key="driverName" :value="driverName">
@@ -68,9 +68,12 @@
           </ion-select>
         </ion-item>
       </ion-col>
-
-      <ion-col size="12" size-sm="2" class="ion-text-end">
+    </ion-row>
+    <ion-row class="ion-align-items-center ion-justify-content-between">
+      <ion-col size="7" size-sm="2" class="ion-text-end">
         <ion-button v-if="hasFilters" size="default" @click="clearFilters" color="medium" fill="outline">Limpiar filtros</ion-button>
+      </ion-col>
+      <ion-col size-sm="2" class="ion-text-end">
         <ion-button size="default" @click="emitFilters" color="blue">Filtrar</ion-button>
       </ion-col>
     </ion-row>

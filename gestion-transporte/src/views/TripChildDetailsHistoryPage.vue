@@ -44,7 +44,7 @@
       
               <div class="detail-section">
                 <h2><strong>Estado</strong></h2>
-                <p><strong>Estado:</strong> {{ formatTripStatus(trip_child.trip.status || '') }}</p>
+                <p>{{ formatTripStatus(trip_child.trip.status || '') }}</p>
               </div>
 
               <div class="detail-section">

@@ -51,38 +51,17 @@
             <CustomButton v-if="trip?.status != 'cancelled' && trip?.status != 'completed'" vertical="bottom" horizontal="start" expand="block" color="danger" @click="showRejectAlert = true">Cancelar viaje</CustomButton>
             <CustomButton v-if="trip?.status != 'cancelled'" vertical="bottom" horizontal="end" class="btnMap" @click="getMapTrip(id)">Ver en mapa</CustomButton>
           </div>
-          <IonAlert
-            :is-open="showRejectAlert"
-            header="Motivo de cancelación"
-            message="Por favor, ingrese el motivo de la cancelación:"
-            :inputs="[
-              {
-                name: 'reason',
-                type: 'textarea',
-                placeholder: 'Escriba el motivo aquí...',
-              },
-            ]"
-            :buttons="[
-              {
-                text: 'Cancelar',
-                role: 'cancel',
-                handler: () => (showRejectAlert = false),
-              },
-              {
-                text: 'Cancelar',
-                handler: handleReject,
-              }
-            ]" />
+          
         </div>
       </ion-content>
     </ion-page>
   </template>
   
   <script setup lang="ts">
-  import { IonPage, IonTitle, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonToast, IonAlert} from '@ionic/vue';
+  import { IonPage, IonTitle, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonToast} from '@ionic/vue';
   import { useRoute } from 'vue-router';
   import { ref, watchEffect } from 'vue';
-  import { getUser, getTripChildByTripId, cancelTripById, getTripById } from '@/services/api';
+  import { getUser, getTripChildByTripId, getTripById } from '@/services/api';
   import CustomButton from '@/components/CustomButton.vue';
   import { useUserStore } from '@/store/user';
   import ErrorMessage from '@/components/ErrorMessage.vue';
@@ -103,7 +82,6 @@ const trip_children = ref<TripChild[] | null>(null);
 const trip = ref<Trip | null>(null);
 const userStore = useUserStore();
 const token = userStore.token;
-const cancelReason = ref('');
 const isLoading = ref(true);
   
 interface User {
@@ -174,40 +152,6 @@ watchEffect(async () => {
 
 const getMapTrip = (tripId: number) => {
     window.location.href = `/home/map/${tripId}`;
-};
-
-function handleReject(data: any) {
-  if (!data.reason || data.reason.trim() === '') {
-    toastColor.value = 'danger';
-    message.value = 'Debe ingresar un motivo para cancelar.';
-    showToast.value = true;
-    return false;
-  }
-  cancelReason.value = data.reason;
-  cancelTrip();
-}
-
-const cancelTrip = async () => {
-    if (token) {
-      try {
-        const response = await cancelTripById(token, id.value, cancelReason.value);
-        if (response) {
-          message.value = "Viaje cancelado con éxito";
-          toastColor.value = 'success';
-          showToast.value = true;
-          window.location.reload();
-        } else {
-          message.value = "Error al cancelar el viaje";
-          toastColor.value = 'danger';
-          showToast.value = true;
-        }
-      } catch (error) {
-        console.error("Error al cancelar el viaje", error);
-        message.value = "Error al cancelar el viaje";
-        toastColor.value = 'danger';
-        showToast.value = true;
-      }
-    }
 };
 </script>
   
