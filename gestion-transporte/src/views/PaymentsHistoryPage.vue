@@ -13,34 +13,11 @@
       <template v-if="isLoading">
         <LoadingSpinner />
       </template>
-      
-      <template v-else-if="filteredPayments.length > 0 && (userStore.user?.role_id === 1 || userStore.user?.role_id === 2)">
-        <DateFilters
-        :showDriverFilter="false"
-        :modelValueDay="selectedDay"
-        :modelValueMonth="selectedMonth"
-        :modelValueYear="selectedYear"
-        :modelValueDriver="selectedDriver"
-        @update:modelValueDay="updateDay"
-        @update:modelValueMonth="updateMonth"
-        @update:modelValueYear="updateYear"
-        @update:modelValueDriver="updateDriver"
-        @filter="handleFilter"
-        />
 
-        <ion-card v-for="payment in filteredPayments" :key="payment.payment_id" :button="true">
-          <ion-card-header>
-            <ion-card-title>Pago al chofer {{ payment.driver.full_name }} </ion-card-title>
-            <ion-card-subtitle>Pagador: {{ payment.user.full_name }} </ion-card-subtitle>
-            <ion-card-subtitle>Fecha: {{ formatDate(payment.date) }}</ion-card-subtitle>
-            <ion-card-subtitle>Monto: ${{ payment.amount }}</ion-card-subtitle>
-          </ion-card-header>
-        </ion-card>
-      </template>
-
-      <template v-else-if="filteredPayments.length > 0 && userStore.user?.role_id === 3">
+      <template v-else-if="filteredAllPayments.length > 0 && userStore.user?.role_id === 3">
         <DateFilters
         :showDriverFilter="true"
+        :shownDayFilter="false"
         :modelValueDay="selectedDay"
         :modelValueMonth="selectedMonth"
         :modelValueYear="selectedYear"
@@ -53,12 +30,12 @@
         @filter="handleFilter"
         />
 
-        <ion-card v-for="payment in filteredPayments" :key="payment.payment_id" :button="true">
+        <ion-card v-for="payment in filteredAllPayments" :key="payment.userId + payment.month">
           <ion-card-header>
-            <ion-card-title>Pago al chofer {{ payment.driver.full_name }} </ion-card-title>
-            <ion-card-subtitle>Pagador: {{ payment.user.full_name }} </ion-card-subtitle>
-            <ion-card-subtitle>Fecha: {{ formatDate(payment.date) }}</ion-card-subtitle>
-            <ion-card-subtitle>Monto: ${{ payment.amount }}</ion-card-subtitle>
+            <ion-card-title>Pago a {{ payment.full_name }}</ion-card-title>
+            <ion-card-subtitle>{{ formatMonthName(payment.month) }}</ion-card-subtitle>
+            <ion-card-subtitle>Total a pagar: <strong>${{ parseFloat(payment.totalAmount).toFixed(2) }}</strong></ion-card-subtitle>
+            <ion-card-subtitle>CBU: {{ payment.ubc }}</ion-card-subtitle>
           </ion-card-header>
         </ion-card>
       </template>
@@ -66,6 +43,7 @@
       <template v-else>
         <DateFilters
         :showDriverFilter="false"
+        :shownDayFilter="false"
         :modelValueDay="selectedDay"
         :modelValueMonth="selectedMonth"
         :modelValueYear="selectedYear"
@@ -77,7 +55,7 @@
         @filter="handleFilter"
         />
         
-        <div class="no-payments">
+        <div class="no-trips">
           <p>No hay pagos registrados.</p>
         </div>
       </template>
@@ -89,59 +67,63 @@
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonCard, IonCardHeader, 
   IonCardSubtitle, IonCardTitle } from '@ionic/vue';
 import { computed, ref, watch } from "vue";
+import {  getAllPayments } from "../services/api"; 
 import { useUserStore } from '@/store/user';
-import { formatDate, redirectIfNoToken } from '@/utils/utils';
+import { formatMonthName, redirectIfNoToken } from '@/utils/utils';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
 import DateFilters from '@/components/DateFilters.vue';
 
-interface User {
-  full_name: string;
-}
-
-interface Payment {
-    payment_id: number;
-    amount: number;
-    date: string;
-    driver: User;
-    user: User;
-}
-
 const showAlert = ref(false);
+const payments = ref<PaymentResponse[]>([]);
 const userStore = useUserStore();
 const isLoading = ref(true);
-const payments = ref<Payment[]>([]);
-const filteredPayments = ref<Payment[]>([]);
+const filteredAllPayments = ref<PaymentResponse[]>([]);
 
-const loadPaymentsGeneric = async (getPaymentsFn: (token: string) => Promise<{ data: Payment[] | Payment }>) => {
-    const token = userStore.token;
-    if (!token) return;
+interface PaymentResponse {
+  userId: string;
+  month: string;
+  full_name: string;
+  totalAmount: string;
+  ubc: string;
+  is_paid: number;
+}
 
-    try {
-        payments.value = [];
-        filteredPayments.value = [];
+const loadpayments = async () => {
+  const token = userStore.token;
+  if (!token) return;
 
-        const paymentResponse = await getPaymentsFn(token);
-        const paymentData = paymentResponse.data ?? [];
+  try {
+    payments.value = [];
+    filteredAllPayments.value = [];
 
-        const paymentArray = Array.isArray(paymentData) ? paymentData : [paymentData];
+    const paymentResponse = await getAllPayments() as { data: PaymentResponse[] };
+    const paymentData = paymentResponse.data ?? [];
 
-        const tempList: Payment[] = paymentArray.map(payment => ({
-        payment_id: payment.payment_id,
-        date: payment.date,
-        amount: payment.amount,
-        driver: payment.driver,
-        user: payment.user,
-    }));
+    const paymentArray = Array.isArray(paymentData)
+      ? paymentData
+      : [paymentData];
 
-        payments.value = tempList;
-        filteredPayments.value = [...tempList];
+    const tempList: PaymentResponse[] = [];
 
-    } catch (error) {
-       console.error("Error cargando payments", error);
-        payments.value = [];
-        filteredPayments.value = [];
+    for (const trip of paymentArray) {
+      tempList.push({
+        userId: trip.userId,
+        month: trip.month,
+        full_name: trip.full_name,
+        totalAmount: trip.totalAmount,
+        ubc: trip.ubc,
+        is_paid: trip.is_paid,
+      });
     }
-};
+
+    payments.value = tempList;
+    filteredAllPayments.value = [...tempList];
+  } catch (error) {
+    console.error("Error cargando viajes", error);
+    payments.value = [];
+    filteredAllPayments.value = [];
+  }
+}
 
 // Redirect if no token
 redirectIfNoToken();
@@ -154,13 +136,8 @@ watch(
         showAlert.value = true;
       }
 
-      if (newUser.role_id === 1) {
-        await loadPaymentsGeneric(getPaymentsByUser);
-      } else if (newUser.role_id === 2) {
-        await loadPaymentsGeneric(getPaymentsByDriver);
-      } else {
-        await loadPaymentsGeneric(getAllPayments);
-      }
+      loadpayments()
+
       isLoading.value = false;
     }
   },
@@ -191,9 +168,9 @@ function updateDriver(val: string | null) {
 const drivers = computed<string[]>(() => {
   const names = new Set<string>();
   if (payments.value && payments.value.length > 0) {
-    for (const payment of payments.value) {
-      if (payment.user && payment.user.full_name) {
-        names.add(payment.user.full_name);
+    for (const trip of payments.value) {
+      if (trip.full_name) {
+        names.add(trip.full_name);
       }
     }
   }
@@ -208,24 +185,25 @@ interface FilterCriteria {
 }
 
 const handleFilter = (filters: FilterCriteria) => {
+  filteredAllPayments.value = payments.value.filter(trip => {
+      const tripDate = new Date(trip.month);
+      const month = tripDate.getUTCMonth() + 1;
+      const year = tripDate.getUTCFullYear();
 
-    filteredPayments.value = payments.value.filter(payment => {
-      const paymentDate = new Date(payment.date);
-      const day = paymentDate.getUTCDate();
-      const month = paymentDate.getUTCMonth() + 1;
-      const year = paymentDate.getUTCFullYear();
-
-      const matchDay = !filters.day || day === filters.day;
       const matchMonth = !filters.month || month === filters.month;
       const matchYear = !filters.year || year === filters.year;
 
-      return matchDay && matchMonth && matchYear;
+      const matchDriver = !filters.driver ||
+                          (trip.full_name &&
+                           trip.full_name === filters.driver);
+
+      return matchMonth && matchYear && matchDriver;
     });
 };
 </script>
 
 <style scoped>
-.no-payments {
+.no-trips {
   text-align: center;
   padding: 20px;
   color: gray;

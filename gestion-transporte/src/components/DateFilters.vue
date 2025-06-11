@@ -2,7 +2,7 @@
   <ion-grid class="ion-padding-top">
     <ion-row class="ion-align-items-center ion-justify-content-between">
       <!-- Día -->
-      <ion-col size="4" size-sm="2">
+      <ion-col size="4" size-sm="2" v-if="shownDayFilter">
         <ion-item lines="none" class="filter-item">
           <ion-select
             :value="modelValueDay"
@@ -18,7 +18,7 @@
       </ion-col>
 
       <!-- Mes -->
-      <ion-col size="4" size-sm="3">
+      <ion-col size="4" size-sm="3" class="ion-text-end">
         <ion-item lines="none" class="filter-item">
           <ion-select
             :value="modelValueMonth"
@@ -83,6 +83,7 @@ import { defineProps, defineEmits, nextTick, computed } from 'vue'
 
 const props = defineProps<{
   showDriverFilter: boolean,
+  shownDayFilter: boolean,
   modelValueDay: number | null,
   modelValueMonth: number | null,
   modelValueYear: number | null,

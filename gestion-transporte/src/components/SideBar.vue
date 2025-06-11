@@ -171,10 +171,10 @@ const allPages = [
   { title: "Hijos", url: "/children", iosIcon: accessibilityOutline, roles: [1] },
   { title: 'Habilitaciones', url: "/authorization", iosIcon: carOutline, roles: [2, 3] },
   { title: "Tarifas", url: "/prices", iosIcon: pricetagOutline, roles: [2]},
+  { title: "Pagos", url: "/payments", iosIcon: pricetagOutline, roles: [3] },
+  { title: "Historial de pagos", url: "/payments-history", iosIcon: pricetagOutline, roles: [3] },
   { title: "Notificaciones", url: "/notifications", iosIcon: notificationsOutline, roles: [1, 2, 3] },
   { title: "Historial de viajes", url: "/trips-history", iosIcon: carOutline, roles: [1, 2, 3] },
-  { title: "Historial de pagos", url: "/payments-history", iosIcon: pricetagOutline, roles: [1, 2, 3] },
-  { title: "Pagos", url: "/payments", iosIcon: pricetagOutline, roles: [3] },
   { title: "Reportes", url: "/analytics", iosIcon: barChartOutline, roles: [2, 3] },
   { title: "Manual de usuario", url: "/user-manual", iosIcon: bookOutline, roles: [1, 2, 3] }
 ];
