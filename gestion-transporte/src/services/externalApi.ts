@@ -12,7 +12,7 @@ const api = axios.create({
 interface Response {
   success: boolean;
   data: { url: string };
-  error: string | null;
+  error: string | null; 
 }
 
 interface SignatureResponse {

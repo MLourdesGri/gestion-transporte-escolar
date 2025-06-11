@@ -26,18 +26,21 @@ import { useRoute, useRouter } from "vue-router";
 import api from "@/services/api";
 import CustomButton from "@/components/CustomButton.vue";
 import { checkmarkCircle, closeCircle } from "ionicons/icons";
+import { useUserStore } from "@/store/user";
 
 const route = useRoute();
 const router = useRouter();
 const success = ref(false);
 const error = ref("");
+const userStore = useUserStore();
 
 const confirmEmail = async () => {
   const token = route.params.token;
   try {
     const API_URL = import.meta.env.VITE_API_URL;
-    const response = await api.get(`${API_URL}/users/confirm-email/${token}`);
+    const response = await api.get(`${API_URL}/users/confirm-email/${token}`) as any;
     if (response.status === 200) {
+      userStore.setUser(response.data);
       success.value = true;
     }
   } catch (err: any) {

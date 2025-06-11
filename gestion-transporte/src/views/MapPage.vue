@@ -45,10 +45,7 @@ interface Trip {
   status: string;
 }
 
-const socket: Socket = io("https://gestion-transporte-escolar-be-production.up.railway.app",{ 
-  transports: ['websocket', "polling"],
-  withCredentials: true
-});
+const socket: Socket = io("https://gestion-transporte-escolar-be-production-e770.up.railway.app");
 
 const route = useRoute();
 const tripId = Number(route.params.id);

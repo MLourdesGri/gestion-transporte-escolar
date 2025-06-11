@@ -14,10 +14,10 @@
         <div class="input-fields">
           <div v-if="step === 1">
             <ion-title size="large" class="title">Datos del chofer</ion-title>
-            <InputField label="Documento" type="text" placeholder="43403067" name="dni" v-model="form.dni" />
-            <InputField label="Nombre y Apellido" type="text" placeholder="Juan" name="driver_name" v-model="form.driver_name" />
-            <InputWithMaps label="Domicilio" type="text" placeholder="Cordoba 1256" v-model="form.address"/>
-            <InputField label="Teléfono" type="text" placeholder="3413456677" name="phone" v-model="form.phone"/>
+            <InputField label="Documento" type="text" placeholder="43403067" name="dni" v-model="form.dni" disabled/>
+            <InputField label="Nombre y Apellido" type="text" placeholder="Juan" name="driver_name" v-model="form.driver_name" disabled/>
+            <InputField label="Domicilio" type="text" placeholder="Cordoba 1256" v-model="form.address" disabled/>
+            <InputField label="Teléfono" type="text" placeholder="3413456677" name="phone" v-model="form.phone" disabled/>
             <InputField label="cbu" type="text" placeholder="12345678901234567890" name="ubc" v-model="form.ubc"/>
             <DropdownField 
               label="Género" 
@@ -96,11 +96,12 @@ import InputField from '@/components/InputField.vue';
 import CustomButton from '@/components/CustomButton.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
 import InputFile from '@/components/InputFile.vue';
-import { getAuthorizationByUser, postAuthorization} from '@/services/api';
+import { getAuthorizationByUser, postAuthorization, getUser} from '@/services/api';
 import DropdownField from '@/components/DropdownField.vue';
 import InputWithMaps from '@/components/InputWithMaps.vue';
 import { useUserStore } from '@/store/user';
 import { redirectIfNoToken } from '@/utils/utils';
+
 
 
 enum WorkShift {
@@ -202,8 +203,16 @@ const getAuthorizationData = async () => {
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
   if (redirectIfNoToken()) return;
+  if (userStore.token) {
+    const actualUser = await getUser(userStore.token) as any;
+    form.value.dni = actualUser.data.dni || "";
+    form.value.driver_name = actualUser.data.full_name || "";
+    form.value.address = actualUser.data.address || "";
+    form.value.phone = actualUser.data.phone_number || "";
+    form.value.ubc = actualUser.data.ubc || "";
+  }
   getAuthorizationData();
 });
 

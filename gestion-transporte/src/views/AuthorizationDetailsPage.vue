@@ -48,7 +48,7 @@
             </p>
           </div>
         </template>
-        <div class="bottom-button" v-if="userStore.user?.role_id != 3">
+        <div>
             <CustomButton expand="block" color="medium" @click="cancel">Volver</CustomButton>
           </div>
 

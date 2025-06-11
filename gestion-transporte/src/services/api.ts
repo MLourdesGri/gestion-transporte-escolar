@@ -94,6 +94,15 @@ export const getPaymentsByDriver = async (token: string) => {
     return [];
   }
 }
+export const getAllPayments = async () => {
+  try {
+    const response = await api.get("/trips/payments");
+    return response.data;
+  } catch (error) {
+    console.error("Error obteniendo pagos:", error);
+    return [];
+  }
+}
 
 export const markTripsAsPaid = async (userId: number, month:string, token: string) => {
   try {
@@ -132,6 +141,20 @@ export const getTripByUser = async (token: string) => {
     return response.data;
   } catch (error) {
     console.error("Error obteniendo viajes:", error);
+    return [];
+  }
+}
+
+export const getTripsByDriver = async (token: string) => {
+  try {
+    const response = await api.get("/trips/driver", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error obteniendo viajes del conductor:", error);
     return [];
   }
 }
@@ -290,7 +313,7 @@ export const getAllAuthorizations = async () => {
 
 export const getAllTrips = async () => {
   try {
-    const response = await api.get("/trips");
+    const response = await api.get("/trips/all");
     return response.data;
   }
   catch (error) {

@@ -10,6 +10,9 @@
       </ion-header>
 
     <ion-content class="ion-padding">
+      <template v-if="isLoading">
+          <LoadingSpinner />
+      </template>
     <template v-if="payments.length === 0">
       <div class="no-payments">
           <p>No tienes pagos pendientes.</p>
@@ -49,11 +52,13 @@ import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardH
 import { getPaymentsByDriver, markTripsAsPaid} from "../services/api"; 
 import { useUserStore } from '@/store/user';
 import { formatMonthName } from '@/utils/utils';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
 const payments = ref([]);
 const formattedMonth = ref('');
 const userStore = useUserStore();
 const showToast = ref(false);
+const isLoading = ref(true);
 
 const getPreviousMonth = () => {
   const today = new Date();
@@ -66,6 +71,7 @@ onMounted(async () => {
 });
 
 const loadPayments = async () => {
+  isLoading.value = true;
   const token = userStore.token;
     if (token) {
       try {
@@ -79,12 +85,13 @@ const loadPayments = async () => {
               return a.full_name.localeCompare(b.full_name);
             });
           } else {
-            console.error('Error fetching payments', paymentResponse);
+            console.error('La respuesta no contiene un array válido:', paymentResponse);
           }
         } catch (err) {
           console.error('Error fetching payments', err);
         }
       }
+  isLoading.value = false;
 }
 
 const markAsPaid = async (userId, month) => {

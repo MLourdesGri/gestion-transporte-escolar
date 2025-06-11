@@ -44,10 +44,15 @@
       
               <div class="detail-section">
                 <h2><strong>Estado</strong></h2>
-                <p v-if="trip_child.trip.authorization.state === 1">Pendiente</p>
-                <p v-else-if="trip_child.trip.authorization.state === 2">Aprobada</p>
-                <p v-else-if="trip_child.trip.authorization.state === 3">Rechazada</p>
+                <p>{{ formatTripStatus(trip_child.trip.status || '') }}</p>
               </div>
+
+              <div class="detail-section">
+                <h2><strong>Precio</strong></h2>
+                <p><strong>Monto:</strong> {{ trip_child.price }}</p>
+                <p><strong>Fecha de pago:</strong> {{ formatDate(trip_child.date_paid) }}</p>
+              </div>
+                
             </div>
     
               <div class="error">
@@ -64,7 +69,6 @@
     
             <div slot="fixed" class="bottom-buttons">
               <CustomButton vertical="bottom" horizontal="start" expand="block" color="medium" @click="cancel">Volver</CustomButton>
-              <CustomButton vertical="bottom" horizontal="center" color="danger" class="btnDelete" @click="showAlert = true">Eliminar</CustomButton>
               <CustomButton vertical="bottom" horizontal="end" class="btnMap" @click="trip_child?.trip.trip_id !== undefined && getMapTrip(trip_child.trip.trip_id)">Ver en mapa</CustomButton>
             </div>
           </div>
@@ -86,7 +90,7 @@ import { getUser, getTripChildById, deleteTripChild } from '@/services/api';
 import CustomButton from '@/components/CustomButton.vue';
 import { useUserStore } from '@/store/user';
 import ErrorMessage from '@/components/ErrorMessage.vue';
-import { formatDate, formatShift } from '@/utils/utils';
+import { formatDate, formatShift, formatTripStatus } from '@/utils/utils';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
   
 const route = useRoute();
@@ -96,7 +100,7 @@ const showToast = ref(false);
 const message = ref<string | null>(null);
 const showAlert = ref(false);
 const cancel = () => {
-  window.location.href = '/home';
+  window.location.href = '/trips-history';
 };
 const toastColor = ref<'success' | 'danger'>('success');
 const trip_child = ref<TripChild | null>(null);
@@ -113,6 +117,8 @@ const isLoading = ref(true);
     trip_child_id: number;
     trip: Trip;
     child: Child;
+    price: number;
+    date_paid: string;
   }
 
   interface Trip {
@@ -233,7 +239,6 @@ const getMapTrip = (tripId: number) => {
   }
   
   .bottom-buttons {
-    position: fixed;
     display: flex;
     justify-content: space-between;
     width: 100%;
