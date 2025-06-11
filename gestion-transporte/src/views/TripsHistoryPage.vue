@@ -319,11 +319,11 @@ watch(
 const router = useRouter();
 
 const getTripChildDetails = (trip_child_id: number) => {
-  router.push(`home/childtrip/${trip_child_id}`); 
+  router.push(`trips-history/child/${trip_child_id}`); 
 };
 
 const getTripDetails = (trip_id: number) => {
-  router.push(`home/trip/${trip_id}`); 
+  router.push(`trips-history/${trip_id}`); 
 };
 
 const selectedDay = ref<number | null>(null);

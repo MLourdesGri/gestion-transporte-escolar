@@ -36,6 +36,7 @@
             <ion-card-subtitle>{{ formatMonthName(payment.month) }}</ion-card-subtitle>
             <ion-card-subtitle>Total a pagar: <strong>${{ parseFloat(payment.totalAmount).toFixed(2) }}</strong></ion-card-subtitle>
             <ion-card-subtitle>CBU: {{ payment.ubc }}</ion-card-subtitle>
+            <ion-card-subtitle>Estado: {{ payment.is_paid === 1 ? 'Pagado' : 'Pendiente' }}</ion-card-subtitle>
           </ion-card-header>
         </ion-card>
       </template>
