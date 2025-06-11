@@ -50,6 +50,15 @@
           <ion-icon :icon="add" />
         </ion-fab-button>
       </ion-fab>
+
+       <ion-alert
+        v-if="alertProfileData"
+        :is-open="alertProfileData"
+        header="Atención"
+        message="Debe completar sus datos de perfil antes de registrar una nueva habilitación."
+        backdrop-dismiss="true"
+        @didDismiss="() => alertProfileData = false"
+      />
     </ion-content>
 
   </ion-page>
@@ -58,7 +67,7 @@
 
 <script setup lang="ts">
 import { IonButtons, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonContent, IonCard, IonCardContent, IonCardHeader,
-  IonCardSubtitle, IonCardTitle, IonIcon, IonFab, IonFabButton} from "@ionic/vue";
+  IonCardSubtitle, IonCardTitle, IonIcon, IonFab, IonFabButton, IonAlert } from "@ionic/vue";
 import { ref, onMounted } from "vue";
 import { add } from "ionicons/icons";
 import { useRouter } from "vue-router";
@@ -105,6 +114,7 @@ interface Authorization {
   state: number;
 }
 
+const alertProfileData = ref(false);
 const router = useRouter();
 const authorizations = ref<Authorization[]>([]);
   
@@ -196,9 +206,23 @@ const getCardClass = (state: number) => {
   }
 };
 
-const navigateToAddAuthorization = () => {
+const navigateToAddAuthorization = async () => {
+  if (userStore.token) {
+    const actualUser = await getUser(userStore.token) as any;
+    if (
+      !actualUser.data.full_name ||
+      !actualUser.data.phone_number ||
+      !actualUser.data.address ||
+      !actualUser.data.dni
+    ) {
+      alertProfileData.value = true;
+      return;
+    }
+  }
+
   router.push("/authorization/new-authorization");
 };
+
 </script>
 
 <style scoped>

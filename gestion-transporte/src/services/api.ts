@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useUserStore } from "@/store/user";
 
-const API_URL = "https://gestion-transporte-escolar-be-production-e770.up.railway.app"; 
+const API_URL = "http://localhost:3000"; 
 
 const api = axios.create({
   baseURL: API_URL,
@@ -88,6 +88,15 @@ export const getPaymentsByDriver = async (token: string) => {
         Authorization: `Bearer ${token}`,
       },
     });
+    return response.data;
+  } catch (error) {
+    console.error("Error obteniendo pagos:", error);
+    return [];
+  }
+}
+export const getAllPayments = async () => {
+  try {
+    const response = await api.get("/trips/payments");
     return response.data;
   } catch (error) {
     console.error("Error obteniendo pagos:", error);
@@ -304,7 +313,7 @@ export const getAllAuthorizations = async () => {
 
 export const getAllTrips = async () => {
   try {
-    const response = await api.get("/trips");
+    const response = await api.get("/trips/all");
     return response.data;
   }
   catch (error) {

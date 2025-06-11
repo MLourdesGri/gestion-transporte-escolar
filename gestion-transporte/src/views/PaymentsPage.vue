@@ -85,7 +85,7 @@ const loadPayments = async () => {
               return a.full_name.localeCompare(b.full_name);
             });
           } else {
-            console.error('Error fetching payments', paymentResponse);
+            console.error('La respuesta no contiene un array válido:', paymentResponse);
           }
         } catch (err) {
           console.error('Error fetching payments', err);
