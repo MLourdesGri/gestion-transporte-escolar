@@ -19,7 +19,6 @@ export function redirectIfNoToken() {
       router.push('/login');
       return true;
     }
-  
     return false;
   }
 
