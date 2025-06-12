@@ -473,7 +473,7 @@ const isEnabledDate = (dateString: string) => {
 
   const dayOfWeek = date.getDay();
   // Domingo (0) y Sábado (6) son fines de semana.
-  const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+  const isWeekend = dayOfWeek === 5 || dayOfWeek === 6;
 
   // Verificar si es feriado o vacación (usando la lista combinada)
   const isHolidayOrVacation = holidaysArgentina.includes(formatted);
