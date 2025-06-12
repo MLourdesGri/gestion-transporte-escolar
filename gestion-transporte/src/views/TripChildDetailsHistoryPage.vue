@@ -49,7 +49,7 @@
 
               <div class="detail-section">
                 <h2><strong>Precio</strong></h2>
-                <p><strong>Monto:</strong> {{ trip_child.price }}</p>
+                <p><strong>Monto:</strong> {{ trip_child.price }} pesos</p>
                 <p><strong>Fecha de pago:</strong> {{ formatDate(trip_child.date_paid) }}</p>
               </div>
                 

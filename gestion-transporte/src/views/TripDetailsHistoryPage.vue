@@ -20,7 +20,7 @@
               <h2><strong>Datos del viaje</strong></h2>
               <p><strong>Fecha:</strong> {{ formatDate(trip?.date || '') }}</p>
               <p><strong>Estado:</strong> {{ formatTripStatus(trip?.status || '') }}</p>
-              <p><strong>Monto total:</strong> {{ trip?.total_price }}</p>
+              <p><strong>Monto total:</strong> {{ trip?.total_price }} pesos</p>
               <p><strong>Viaje pagado:</strong> {{ trip?.is_paid == 1 ? 'Sí' : 'No' }}</p>
               <p><strong>Fecha de pago:</strong> {{ formatDate(trip?.date_paid || '') }}</p>
 
