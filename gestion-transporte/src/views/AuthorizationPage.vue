@@ -248,16 +248,16 @@ const navigateToAddAuthorization = async () => {
 }
 
 .card-green {
-  --background: #d4f5d4; /* verde pastel */
+  --background: #bfffbf; /* verde pastel */
   color: #333; /* texto oscuro/gris */
 }
 
 .card-red {
-  --background: #f8d6d6; /* rojo pastel */
+  --background: #ffb7b7; /* rojo pastel */
   color: #333;
 }
 .card-blue {
-  --background: #d6e8f8; /* azul pastel */
+  --background: #9bd0ff; /* azul pastel */
   color: #333;
 }
 .custom-fab {
