@@ -22,7 +22,8 @@
               <p><strong>Estado:</strong> {{ formatTripStatus(trip?.status || '') }}</p>
               <p><strong>Monto total:</strong> {{ trip?.total_price }} pesos</p>
               <p><strong>Viaje pagado:</strong> {{ trip?.is_paid == 1 ? 'Sí' : 'No' }}</p>
-              <p><strong>Fecha de pago:</strong> {{ formatDate(trip?.date_paid || '') }}</p>
+              <p v-if="trip?.is_paid == 1"><strong>Fecha de pago:</strong> {{ formatDate(trip?.date_paid || '') }}</p>
+              <p v-else><strong>Fecha de pago:</strong> No pagado</p>
 
               <p v-if="trip?.status === 'cancelled'" ><strong>Motivo de cancelación:</strong> {{ trip?.cancel_reason || 'No hay motivo' }}</p>
 
