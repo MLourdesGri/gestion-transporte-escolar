@@ -49,7 +49,7 @@
           </div>
         </template>
         <div>
-            <CustomButton expand="block" color="medium" @click="cancel">Volver</CustomButton>
+            <CustomButton v-if="authorization?.state !== 1" expand="block" color="medium" @click="cancel">Volver</CustomButton>
           </div>
 
           <div class="error">
